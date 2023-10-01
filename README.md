@@ -6,7 +6,7 @@ This repository is used as an example how to do CI/CD with GitHub actions.
 The root folder contains several batch files as helper.
 In order to have compiler and J-Link not hardcoded in the project itself, rund the setenv script file.
 
-setenv:
+setenv example for Windows:
 ```
 set TOOLCHAIN_PREFIX=C:/Raspy/arm-none-eabi-gcc-12.2.1-1.2
 set SEGGER_PATH=C:/Program Files/SEGGER/JLink
