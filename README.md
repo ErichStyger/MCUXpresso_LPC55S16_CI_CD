@@ -37,6 +37,48 @@ CleanClean:
 rmdir /S /Q build 2>nul
 ```
 
+## Docker Quick-Steps
+- Installed Docker Desktop on Windows
+- Test it first with a local docker image
+- 'cd' to the Dockerfile
+- Build docker image with the instructions in the Dockerfile (-t tags the image)
+```
+docker build -t lpc55s16-image .
+```
+- To view the actual images:
+```
+docker images
+```
+- To deleta docker image:
+```
+docker rmi <image>
+```
+
+- To test the image, create a container from the Image (-i for interactive mode, -t to add a pseudo terminal for interaction with the container, --entrypoint so we can log into the container)
+```
+docker create -i -t --entrypoint="/bin/bash" --name lpc55s16-container lpc55s16-image
+```
+- To list the container:
+```
+docker container ls -a
+```
+- To remove a container:
+```
+docker rm <container>
+```
+- To copy a file into the container:
+```
+docker cp <file> <container>:<pathInContainer>
+```
+- Start the container in interactive mode -i:
+```
+docker start -i lpc55s16-container
+```
+- To exit the container
+```
+exit
+```
+
 ## Links
 - How to create a GitHub action: https://www.incredibuild.com/blog/using-github-actions-with-your-c-project https://github.blog/2021-11-04-10-github-actions-resources-basics-ci-cd/
 - Solving 'permission denied' on config file: \href{https://dev.to/aileenr/github-actions-fixing-the-permission-denied-error-for-shell-scripts-4gbl}{permission denied}
