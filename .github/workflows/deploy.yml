@@ -28,9 +28,9 @@ jobs:
             
           - name: run a one-line script
             run: echo Hello world!
-            
-          #- name: Build Docker image
-          #  run: docker build -t lpc55s16-image .
+
+          - name: Build Docker image
+            run: docker build -t lpc55s16-image .
             
           #- name: Create Docker container
           #  run: docker create --name lpc55s16-container lpc55s16-image
