@@ -1,6 +1,7 @@
+# Name of the workflow
 name: Deploy new version
 
-# define the trigger event(s)
+# Define the trigger event(s)
 # Only deploy when a new tag is pushed ('push:tags:') or manually (with 'workflow_dispatch:')
 on:
     workflow_dispatch:
@@ -15,38 +16,43 @@ env:
 # Allow this workflow to write back to the repository
 permissions:
     contents: write
-    
-# Build binary and send to releases
+
+# Jobs run in parallel by default, each runs steps in sequence
 jobs:
-    build-deploy:
-        runs-on: ubuntu-latest
-        name: Build and deploy
-        steps:
+  # Job to print something out
+  say-hello:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Say hello
+        run: echo "Hello, GitHub Actions!"
+
+# Build binary and send to releases
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    name: Build and deploy
+    steps:
+      - name: Check out this repository
+        uses: actions/checkout@v3
         
-          - name: Check out this repository
-            uses: actions/checkout@v3
-            
-          - name: run a one-line script
-            run: echo Hello world!
+      - name: run a one-line script
+        run: echo "Hello world!"
 
-          - name: Build Docker image
-            run: docker build -t lpc55s16-image .
-            
-          #- name: Create Docker container
-          #  run: docker create --name lpc55s16-container lpc55s16-image
-            
-          #- name: Copy out Intel Hex file
-          #  run: docker cp lpc55s16-container:/project/build/${APP_NAME}.hex ./${APP_NAME}.hex
-            
-          - name: Put environment variable into the env context
-            run: echo "app_name=$APP_NAME" >> $GITHUB_ENV
-            
-            # for the push, we need the tag!
-          #- name: Push to release
-          #  uses: softprops/action-gh-release@v1
-          #  if: startsWith(github.ref, 'refs/tags/')
-          #  with:
-          #      files: ${{ env.app_name }}.hex
-          #      body_path: CHANGELOG.md
-
-                
+      - name: Build Docker image
+        run: docker build -t lpc55s16-image .
+        
+      #- name: Create Docker container
+      #  run: docker create --name lpc55s16-container lpc55s16-image
+        
+      #- name: Copy out Intel Hex file
+      #  run: docker cp lpc55s16-container:/project/build/${APP_NAME}.hex ./${APP_NAME}.hex
+        
+      - name: Put environment variable into the env context
+        run: echo "app_name=$APP_NAME" >> $GITHUB_ENV
+        
+        # for the push, we need the tag!
+      #- name: Push to release
+      #  uses: softprops/action-gh-release@v1
+      #  if: startsWith(github.ref, 'refs/tags/')
+      #  with:
+      #      files: ${{ env.app_name }}.hex
+      #      body_path: CHANGELOG.md
