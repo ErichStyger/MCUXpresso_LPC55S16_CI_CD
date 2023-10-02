@@ -47,7 +47,7 @@ jobs:
       - name: Put environment variable into the env context
         run: echo "app_name=$APP_NAME" >> $GITHUB_ENV
         
-        # for the push, we need the tag!
+        # for the push, we need the tag! This step is skipped if we run it manually
       - name: Push to release
         uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')

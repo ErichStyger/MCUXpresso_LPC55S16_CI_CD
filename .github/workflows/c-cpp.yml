@@ -1,3 +1,4 @@
+# Experimental GitHub action. Uses native GitHub machine, won't work for our cross-platform project!
 name: C/C++ CI Test
 
 # Controls when the workflow will run
