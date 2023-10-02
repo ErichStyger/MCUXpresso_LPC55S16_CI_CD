@@ -1,5 +1,6 @@
 name: Deploy new version
 
+# define the trigger event(s)
 # Only deploy when a new tag is pushed or manually (workflow_dispatch)
 on:
     workflow_dispatch:
@@ -9,7 +10,7 @@ on:
           
 # Must match the project() name in CMakeLists.txt
 env:
-    APP_NAME: blink
+    APP_NAME: LPC55S16_Blinky
     
 # Allow this workflow to write back to the repository
 permissions:
