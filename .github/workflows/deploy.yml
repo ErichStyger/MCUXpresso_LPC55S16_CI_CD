@@ -31,7 +31,7 @@ jobs:
           - name: Create Docker container
             run: docker create --name lpc55s16-container lpc55s16-image
             
-          - name: Copy out .uf2 file
+          - name: Copy out Intel Hex file
             run: docker cp lpc55s16-container:/project/build/${APP_NAME}.hex ./${APP_NAME}.hex
             
           - name: Put environment variable into the env context
