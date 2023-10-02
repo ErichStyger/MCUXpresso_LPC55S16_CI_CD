@@ -3,13 +3,14 @@ name: Deploy new version
 
 # Define the trigger event(s)
 # Only deploy when a new tag is pushed ('push:tags:') or manually (with 'workflow_dispatch:')
+# If pushing tag, it has to match "v*.*.*"
 on:
     workflow_dispatch:
     push:
         tags:
           - "v*.*.*"
           
-# Must match the project() name in CMakeLists.txt
+# Must match the project() name in CMakeLists.txt, variable used below to copy .hex file
 env:
     APP_NAME: LPC55S16_Blinky
     
@@ -26,7 +27,7 @@ jobs:
       - name: Say hello
         run: echo "Hello, GitHub Actions!"
 
-# Build binary and send to releases
+  # Build binary and send to releases
   build-and-deploy:
     runs-on: ubuntu-latest
     name: Build and deploy
