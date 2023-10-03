@@ -95,17 +95,14 @@ target_compile_definitions(${EXECUTABLE} PRIVATE
 set(PROJECT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
 add_compile_options(-include "${PROJECT_ROOT_DIR}/src/IncludeMcuLibConfig.h")
 
+# McuLib needs to find the SDK header files, plus local sources
+add_compile_options(-I${PROJECT_ROOT_DIR}/sdk/device -I${PROJECT_ROOT_DIR}/sdk/CMSIS -I${PROJECT_ROOT_DIR}/sdk/board -I${PROJECT_ROOT_DIR}/sdk/drivers -I${PROJECT_ROOT_DIR}/src) 
+
 # Linker options
 target_link_options(${EXECUTABLE} PRIVATE
   -L "${PROJECT_ROOT_DIR}/sdk/LPC55S16/mcuxpresso/"
   -T "${LINKER_FILE}"
 )
-
-# McuLib to find our local header files
-add_compile_options(-I${PROJECT_ROOT_DIR}/src -I${PROJECT_ROOT_DIR}/sdk/drivers)
-
-# McuLib to find the SDK header files
-add_compile_options(-I${PROJECT_ROOT_DIR}/sdk/device -I${PROJECT_ROOT_DIR}/sdk/CMSIS -I${PROJECT_ROOT_DIR}/sdk/board) 
 
 add_subdirectory(./src            build/src)
 add_subdirectory(./sdk            build/sdk) 
