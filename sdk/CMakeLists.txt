@@ -12,6 +12,8 @@ file(GLOB SRC_FILES
   ./component/uart/*.c
   ./drivers/*.c
   ./utilities/*.c
+  ./startup/*.c
+  ./device/*.c
   )
 
 # add_library: With this declaration, you express the intent to build a library. 
