@@ -19,3 +19,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+IMPORTANT:
+There are the following parts which use possible *different* licenses.
+Consult the license in information in the follwoing subfolders:
+- McuLib: Library with different open source components, see subfolder
+- sdk: NXP MCUXpresso SDK, see subfolder
+
