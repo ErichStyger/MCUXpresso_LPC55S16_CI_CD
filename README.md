@@ -1,6 +1,7 @@
 # MCUXpresso_LPC55S16_CI_CD
 Project for the LPC55S16-EVK, using VS Code with CMake and Ninja, blinking the blue onboard LED.
 This repository is used as an example how to do CI/CD with GitHub actions.
+The setup is described in details in my blog article: https://mcuoneclipse.com/2023/10/02/ci-cd-for-embedded-with-vs-code-docker-and-github-actions/
 
 ## Environment
 In order to have compiler and J-Link not hardcoded in the project itself, rund the setenv script file.
