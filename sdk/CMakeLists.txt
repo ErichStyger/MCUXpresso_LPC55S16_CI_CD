@@ -5,9 +5,14 @@
 set(THIS_LIBRARY_NAME sdkLib)
 
 file(GLOB SRC_FILES
-  *.c
   ./LPC55S16/drivers/fsl_power.c
- )
+  ./board/*.c
+  ./component/lists/*.c
+  ./component/serial_manager/*.c
+  ./component/uart/*.c
+  ./drivers/*.c
+  ./utilities/*.c
+  )
 
 # add_library: With this declaration, you express the intent to build a library. 
 # The first argument, here its pico-shift-register, is the name of the library, 
@@ -26,8 +31,14 @@ target_include_directories(
   ${THIS_LIBRARY_NAME}  
   PUBLIC
   .
-  ./device
-  ./board
-  ./drivers
-  ./CMSIS
+  board
+  CMSIS
+  component/serial_manager
+  component/uart
+  component/lists
+  device
+  drivers
+  utilities
+  device
+  utilities
 )

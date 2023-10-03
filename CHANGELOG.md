@@ -2,6 +2,7 @@
 
 Fixes:
  - added extra license information
+ - restructured build for SDK
  
 Features:
  - none

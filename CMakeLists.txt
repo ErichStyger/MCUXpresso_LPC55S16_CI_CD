@@ -104,26 +104,18 @@ target_link_options(${EXECUTABLE} PRIVATE
 # McuLib to find our local header files
 add_compile_options(-I${PROJECT_ROOT_DIR}/src -I${PROJECT_ROOT_DIR}/sdk/drivers)
 
-# RNET to find SDK header files
+# McuLib to find the SDK header files
 add_compile_options(-I${PROJECT_ROOT_DIR}/sdk/device -I${PROJECT_ROOT_DIR}/sdk/CMSIS -I${PROJECT_ROOT_DIR}/sdk/board) 
 
-add_subdirectory(./sdk            build/sdk) 
 add_subdirectory(./src            build/src)
+add_subdirectory(./sdk            build/sdk) 
 add_subdirectory(./McuLib         build/McuLib)
-add_subdirectory(./sdk/board      build/sdk/board)
-add_subdirectory(./sdk/drivers    build/sdk/drivers)
-add_subdirectory(./sdk/utilities  build/sdk/utilities)
-add_subdirectory(./sdk/component  build/sdk/component)
 
 target_link_libraries(
   ${EXECUTABLE}
-  sdkLib
-  componentLib
-  McuLib
-  boardLib
-  driversLib
-  utilitiesLib
   srcLib
+  sdkLib
+  McuLib
 )
 
 # Optional: Print executable size as part of the post build process
