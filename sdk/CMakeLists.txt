@@ -39,6 +39,4 @@ target_include_directories(
   device
   drivers
   utilities
-  device
-  utilities
 )
