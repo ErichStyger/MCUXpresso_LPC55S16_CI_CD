@@ -79,6 +79,10 @@ docker start -i lpc55s16-container
 exit
 ```
 
+## UART
+For UART over the (J-Link or LinkServer) Debug virtual COM port:
+JP9 (lower left corner, near PMod connector) has to be *open*, and JP12 (left of JP3/UART Header) needs to be *closed*.
+
 ## Links
 - How to create a GitHub action: https://github.blog/2021-11-04-10-github-actions-resources-basics-ci-cd/
 - Solving 'permission denied' on config file: https://dev.to/aileenr/github-actions-fixing-the-permission-denied-error-for-shell-scripts-4gbl

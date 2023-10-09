@@ -10,7 +10,11 @@
 #include "McuGPIO.h"
 #include "McuLED.h"
 #include "McuRTOS.h"
+#include "McuLog.h"
+#include "McuShellUart.h"
+#include "McuShell.h"
 #include "leds.h"
+#include "shell.h"
 
 void PL_Init(void) {
   CLOCK_EnableClock(kCLOCK_Iocon); /* ungate clock for IOCON */
@@ -24,6 +28,12 @@ void PL_Init(void) {
   McuWait_Init();
   McuGPIO_Init();
   McuLED_Init();
+  McuLog_Init();
+#if PL_CONFIG_USE_SHELL_UART
+  McuShellUart_Init();
+#endif
+  McuShell_Init();
 
   LEDS_Init();
+  SHELL_Init();
 }

@@ -22,7 +22,7 @@
             "rtos": "FreeRTOS",
             "svdFile": "./device/LPC55S16.svd",
             "rttConfig": {
-                "enabled": true,
+                "enabled": false,
                 "address": "auto",
                 "decoders": [
                     {
