@@ -13,6 +13,7 @@
 #include "McuLog.h"
 #include "McuShellUart.h"
 #include "McuShell.h"
+#include "McuRTT.h"
 #include "leds.h"
 #include "shell.h"
 
@@ -29,6 +30,7 @@ void PL_Init(void) {
   McuGPIO_Init();
   McuLED_Init();
   McuLog_Init();
+  McuRTT_Init();
 #if PL_CONFIG_USE_SHELL_UART
   McuShellUart_Init();
 #endif

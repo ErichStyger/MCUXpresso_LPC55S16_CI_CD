@@ -28,4 +28,7 @@ void LEDS_Init(void);
 /* use this after the driver is not needed any more */
 void LEDS_Deinit(void);
 
+/* Unit test entry point */
+void LEDS_Test(void);
+
 #endif /* MY_LEDS_H_ */

@@ -7,6 +7,8 @@
 #include "platform.h"
 #include "application.h"
 #include "McuRTOS.h"
+#include "McuRTT.h"
+#include "McuLog.h"
 #include "leds.h"
 
  void __assertion_failed(char *_Expr) {
@@ -24,6 +26,12 @@ static void AppTask(void *pv) {
 
 void APP_Run(void) {
   PL_Init(); /* init modules */
+#if PL_RUN_UNIT_TEST
+  McuLog_info("starting tests");
+  LEDS_Test();
+  McuLog_info("finished tests");
+  return;
+#endif
   if (xTaskCreate(
       AppTask,  /* pointer to the task */
       "App", /* task name for kernel awareness debugging */

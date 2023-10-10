@@ -106,6 +106,7 @@ target_link_options(${EXECUTABLE} PRIVATE
 )
 
 add_subdirectory(./src            build/src)
+add_subdirectory(./unity          build/unity) 
 add_subdirectory(./sdk            build/sdk) 
 add_subdirectory(./McuLib         build/McuLib)
 
@@ -114,6 +115,7 @@ target_link_libraries(
   srcLib
   sdkLib
   McuLib
+  unityLib
 )
 
 # Optional: Print executable size as part of the post build process

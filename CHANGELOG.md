@@ -1,11 +1,12 @@
 # CHANGELOG.md
 
 Fixes:
- - added extra license information
- - restructured build for SDK
+ - Added extra license information
+ - Restructured build for SDK
+ - Added Unity test framework
  
 Features:
- - none
+ - Added UART shell and RTT
 
 ## 0.0.3 (2023-10-02)
 

@@ -2,7 +2,7 @@
 # You can use a GLOB function as shown here, or explicitly mention the specific files
 #file(GLOB FILES *.c *.h)
 
-set(THIS_LIBRARY_NAME srcLib)
+set(THIS_LIBRARY_NAME unityLib)
 
 file(GLOB SRC_FILES
   *.c 
@@ -16,9 +16,6 @@ add_library(${THIS_LIBRARY_NAME} OBJECT ${SRC_FILES})
 # target_link_libraries: If you link with other libraries, list them here
 target_link_libraries(
   ${THIS_LIBRARY_NAME}
-  McuLib
-  sdkLib
-  unityLib
 )
 
 # target_include_directories: Libraries need to publish their header files 

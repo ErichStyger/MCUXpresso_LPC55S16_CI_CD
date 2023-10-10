@@ -9,7 +9,9 @@
 
 #define PL_CONFIG_USE_SHELL               (1)
 #define PL_CONFIG_USE_SHELL_UART          (1)
-#define PL_CONFIG_USE_RTT                 (0)
+#define PL_CONFIG_USE_RTT                 (1)
+
+#define PL_RUN_UNIT_TEST                  (1)
 
 /*!
  * \brief Module initialization

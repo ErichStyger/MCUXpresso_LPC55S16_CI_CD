@@ -46,6 +46,16 @@
 #define McuLog_CONFIG_IS_ENABLED                (1)
 #define McuLog_CONFIG_USE_FILE                  (0)
 #define McuLog_CONFIG_NOF_CONSOLE_LOGGER        (2)
-#define McuLog_CONFIG_USE_COLOR                 (0)
+#define McuLog_CONFIG_USE_COLOR                 (1)
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE        (0)
+/* -------------------------------------------------*/
+/* Unity */
+#define UNITY_OUTPUT_CHAR(a)                        McuUnity_putc(a)
+#define UNITY_OUTPUT_CHAR_HEADER_DECLARATION        McuUnity_putc(char)
+#define UNITY_OUTPUT_FLUSH()                        McuUnity_flush()
+#define UNITY_OUTPUT_FLUSH_HEADER_DECLARATION       McuUnity_flush(void)
+#define UNITY_OUTPUT_START()                        McuUnity_start()
+#define UNITY_OUTPUT_START_HEADER_DECLARATION       McuUnity_start(void)
+#define UNITY_OUTPUT_COMPLETE()                     McuUnity_complete()
+#define UNITY_OUTPUT_COMPLETE_HEADER_DECLARATION    McuUnity_complete(void)
 /* ---------------------------------------------------------------------------------------*/

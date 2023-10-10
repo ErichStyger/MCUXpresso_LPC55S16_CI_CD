@@ -83,3 +83,13 @@ void LED_Deinit(void) {
   ledGreen = McuLED_DeinitLed(ledGreen);
   ledBlue = McuLED_DeinitLed(ledBlue);
 }
+
+#include "unity.h"
+
+void LEDS_Test(void) {
+  UNITY_BEGIN();
+  TEST_ASSERT_NOT_NULL(ledRed);
+  TEST_ASSERT_NOT_NULL(ledGreen);
+  TEST_ASSERT_NOT_NULL(ledBlue);
+  UNITY_END();
+}
