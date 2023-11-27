@@ -8,7 +8,7 @@
             "label": "doxygen",
             "command": "doxygen Doxyfile",
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}/doxy"
             },
             "group": {
                 "kind": "build",

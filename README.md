@@ -14,29 +14,6 @@ set SEGGER_PATH=C:/Program Files/SEGGER/JLink
 Note that the commands have to be set up *before* starting VS Code, to have the environment set.
 Alternatively, these variables can be set on user level.
 
-## CMake commands
-There are a set of CMake and build related commands you can use:
-
-init:
-```
-cmake -G"Ninja" . -B build
-```
-
-build:
-```
-cmake --build build
-```
-
-clean:
-```
-cmake --build build --target clean
-```
-
-CleanClean:
-```
-rmdir /S /Q build 2>nul
-```
-
 ## Docker Quick-Steps
 - Installed Docker Desktop on Windows
 - Test it first with a local docker image
@@ -88,6 +65,25 @@ JP9 (lower left corner, near PMod connector) has to be *open*, and JP12 (left of
 ```
 "c:\Program Files\SEGGER\JLink\JRun.exe" -device LPC55S16 -if SWD build\LPC55S16_Blinky.elf
 ```
+
+## Unit Tests
+Enable 'PL_CONFIG_USE_UNIT_TESTS' in platform.h
+
+Run JRun manually:
+```
+"c:\Program Files\SEGGER\JLink\JRun.exe" --device RP2040_M0_0 build/TSM_PicoW_Sensor.elf
+```
+CTest: add the following in the main CMakeLists.txt:
+```
+enable_testing()
+add_test(NAME ${CMAKE_PROJECT_NAME} COMMAND JRun.exe)
+```
+Manual test run:
+```
+ctest --test-dir build --timeout 120
+```
+https://coderefinery.github.io/cmake-workshop/testing/
+ctest -v (verbose)
 
 ## Links
 - How to create a GitHub action: https://github.blog/2021-11-04-10-github-actions-resources-basics-ci-cd/
