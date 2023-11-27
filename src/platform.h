@@ -13,6 +13,11 @@
 
 #define PL_RUN_UNIT_TEST                  (1)
 
+#define PL_CONFIG_USE_UNIT_TESTS          (1 && defined(ENABLE_UNIT_TESTS) && ENABLE_UNIT_TESTS==1) /* if using unit tests. ENABLE_UNIT_TESTS is set by the CMake file */
+#if PL_CONFIG_USE_UNIT_TESTS && !defined(UNITY_OUTPUT_CHAR)
+   #error "needs to be defined in IncludeMcuLibConfig.h!"
+#endif
+
 /*!
  * \brief Module initialization
  */

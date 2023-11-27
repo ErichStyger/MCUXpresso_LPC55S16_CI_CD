@@ -7,7 +7,7 @@
 #ifndef MCU_UNITY_H_
 #define MCU_UNITY_H_
 
-void McuUnity_putc(char c);
+void McuUnity_putc(int c);
 void McuUnity_flush(void);
 void McuUnity_start(void);
 void McuUnity_complete(void);

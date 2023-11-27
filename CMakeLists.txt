@@ -4,14 +4,14 @@ option(BUILD_SHARED_LIBS "Build using object libraries" 0)
 
 # Required for McuLib, to know the target system
 set(
-    MCULIB_TARGET MCUXPRESSO CACHE STRING 
-    "Select McuLib target: RP2040, MCUXPRESSO or ESP32"
+  MCULIB_TARGET MCUXPRESSO CACHE STRING 
+  "Select McuLib target: MCUXPRESSO, RP2040 or ESP32"
 )
 
-# Optional: print out extra messages to see what is going on. Comment it to have less verbose messages
-#set(CMAKE_VERBOSE_MAKEFILE ON)
+# turn variable on for verbose output, useful for build debugging. Or run 'ninja --verbose' in the build folder
+#set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
 
-# Set variables for project directory and SDK
+# set variables for directories
 set(PROJECT_ROOT_DIR  "${CMAKE_CURRENT_SOURCE_DIR}")
 set(MCULIB_DIR        "${PROJECT_ROOT_DIR}/McuLib")
 set(SDK_DIR           "${PROJECT_ROOT_DIR}/sdk")
@@ -113,3 +113,18 @@ add_custom_command(TARGET ${EXECUTABLE}
   COMMAND ${CMAKE_OBJCOPY} -O ihex "${EXECUTABLE_OUTPUT_PATH}/${EXECUTABLE}" "${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME}.hex"
   COMMAND ${CMAKE_OBJCOPY} -O binary "${EXECUTABLE_OUTPUT_PATH}/${EXECUTABLE}" "${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME}.bin" 
 )
+
+# Unit Test support
+enable_testing()
+
+set (JRUN_CTEST_COMMAND cmd.exe & "$ENV{SEGGER_PATH}/JRun.exe" --rtt --nosemihost -if swd --device LPC55S16 ${CMAKE_PROJECT_NAME}.elf)
+set (passRegex "\\*\\* PASSED \\*\\*\\*")
+set (failRegex "\\*\\*\\* FAILED \\*\\*\\*")
+
+add_test(
+  NAME MyTest 
+  COMMAND ${JRUN_CTEST_COMMAND}
+)
+
+set_property (TEST MyTest PROPERTY PASS_REGULAR_EXPRESSION "${passRegex}")
+set_property (TEST MyTest PROPERTY FAIL_REGULAR_EXPRESSION "${failRegex}")

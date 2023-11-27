@@ -1,10 +1,12 @@
 /*
- * Copyright (c) 2019, Erich Styger
+ * Copyright (c) 2023, Erich Styger
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
 /* header file is included with -include compiler option */
+#ifndef MCULIB_CONFIG_CONFIG_H_
+#define MCULIB_CONFIG_CONFIG_H_
 
 #define SIM_UIDH       /* FIX: SDK does not define this one, but should be! See https://mcuoneclipse.com/2020/11/30/getting-a-96bit-unique-id-for-each-kinetis-device-using-mcuxpresso-sdk/ */
 
@@ -40,15 +42,12 @@
 #define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE        (96)
 /* -------------------------------------------------*/
 /* McuLog */
-#define McuLog_CONFIG_IS_ENABLED                    (1)
-#define McuLog_CONFIG_USE_FILE                      (0)
-#define McuLog_CONFIG_USE_COLOR                     (0)
-#define McuLog_CONFIG_LOG_TIMESTAMP_DATE            (0)
-#define McuLog_CONFIG_LOG_TIMESTAMP_TIME            (0)
-#define McuLog_CONFIG_NOF_CONSOLE_LOGGER            (2) /* UART and RTT */
-/* ---------------------------------------------------------------------------------------*/
-/* McuRdimon */
-#define McuRdimon_CONFIG_IS_ENABLED                     (0)       /* 1: RdiMon is enabled; 0: RdiMon is disabled*/
+#define McuLog_CONFIG_IS_ENABLED                (1)
+#define McuLog_CONFIG_USE_FILE                  (0)
+#define McuLog_CONFIG_USE_COLOR                 (0)
+#define McuLog_CONFIG_LOG_TIMESTAMP_DATE        (0)
+#define McuLog_CONFIG_LOG_TIMESTAMP_TIME        (0)
+#define McuLog_CONFIG_NOF_CONSOLE_LOGGER        (2) /* UART and RTT */
 /* ---------------------------------------------------------------------------------------*/
 /* McuShellUart */
 #define McuShellUart_CONFIG_UART                         McuShellUart_CONFIG_UART_LPC55S16_USART0
@@ -60,12 +59,15 @@
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS       (5)
 /* -------------------------------------------------*/
 /* Unity */
+#include "McuUnity.h"
 #define UNITY_OUTPUT_CHAR(a)                        McuUnity_putc(a)
-#define UNITY_OUTPUT_CHAR_HEADER_DECLARATION        McuUnity_putc(char)
 #define UNITY_OUTPUT_FLUSH()                        McuUnity_flush()
-#define UNITY_OUTPUT_FLUSH_HEADER_DECLARATION       McuUnity_flush(void)
 #define UNITY_OUTPUT_START()                        McuUnity_start()
-#define UNITY_OUTPUT_START_HEADER_DECLARATION       McuUnity_start(void)
 #define UNITY_OUTPUT_COMPLETE()                     McuUnity_complete()
-#define UNITY_OUTPUT_COMPLETE_HEADER_DECLARATION    McuUnity_complete(void)
+#define UNITY_OUTPUT_COLOR                          /* use colored output */
 /* ---------------------------------------------------------------------------------------*/
+/* McuRdimon */
+#define McuRdimon_CONFIG_IS_ENABLED                 (0)       /* 1: RdiMon is enabled; 0: RdiMon is disabled*/
+/* ---------------------------------------------------------------------------------------*/
+
+#endif /* MCULIB_CONFIG_CONFIG_H_ */

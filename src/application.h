@@ -1,13 +1,13 @@
 /*
- * Copyright (c) 2021, Erich Styger
+ * Copyright (c) 2023, Erich Styger
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef APPLICATION_H_
-#define APPLICATION_H_
+#ifndef __APPLICATION_H__
+#define __APPLICATION_H__
 
 /*! \brief Run application */
 void APP_Run(void);
 
-#endif /* APPLICATION_H_ */
+#endif /* __APPLICATION_H__ */

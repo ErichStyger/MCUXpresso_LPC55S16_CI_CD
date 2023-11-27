@@ -5,7 +5,7 @@
 set(THIS_LIBRARY_NAME unityLib)
 
 file(GLOB SRC_FILES
-  *.c 
+  *.c
  )
 
 # add_library: With this declaration, you express the intent to build a library. 
