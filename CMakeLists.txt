@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15.3)
+cmake_minimum_required(VERSION 3.27)
 
 option(BUILD_SHARED_LIBS "Build using object libraries" 0)
 
@@ -11,25 +11,20 @@ set(
 # Optional: print out extra messages to see what is going on. Comment it to have less verbose messages
 #set(CMAKE_VERBOSE_MAKEFILE ON)
 
-# set build type. Without 'Debug', it won't generate line information if using build subfolders.
-set(CMAKE_BUILD_TYPE DEBUG)
-
-# enable export of compiler commands to compile_commands.json
-#set (CMAKE_EXPORT_COMPILE_COMMANDS ON)
+# Set variables for project directory and SDK
+set(PROJECT_ROOT_DIR  "${CMAKE_CURRENT_SOURCE_DIR}")
+set(MCULIB_DIR        "${PROJECT_ROOT_DIR}/McuLib")
+set(SDK_DIR           "${PROJECT_ROOT_DIR}/sdk")
+set(BUILD_DIR         "${PROJECT_ROOT_DIR}/build")
 
 # Path to toolchain file. This one has to be before 'project()' below
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/arm-none-eabi-gcc.cmake)
 
-# Setup project, output and linker file
-set(BUILD_FOLDER ./build)
+# Setup project name
 project(LPC55S16_Blinky)
 
-# Set variables for project directory and SDK
-set(PROJECT_ROOT_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-set(SDK_DIR "${PROJECT_ROOT_DIR}/sdk")
-
 set(EXECUTABLE ${PROJECT_NAME}.elf)
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_SOURCE_DIR}/build)
+set(EXECUTABLE_OUTPUT_PATH ${BUILD_DIR}/${CMAKE_BUILD_TYPE})
 set(LINKER_FILE "${SDK_DIR}/device/linker.ld")
 
 enable_language(C ASM)
@@ -37,15 +32,11 @@ set(CMAKE_C_STANDARD 99)
 set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS OFF)
 
-set(CMAKE_BUILD_TYPE Debug)
-
-# Optional: issue a message to be sure it uses the correct toolchain file.
-message(STATUS "CMAKE_TOOLCHAIN_FILE is: ${CMAKE_TOOLCHAIN_FILE}")
-
 # Build the executable based on the source files
 add_executable(${EXECUTABLE} ${SRC_FILES})
 
-set(DEFINE_OPTIONS
+# Defines for the project
+set(PROJECT_DEFINES
   -DCPU_LPC55S16JBD100
   -DCPU_LPC55S16JBD100_cm33
   -DSDK_OS_BAREMETAL
@@ -61,50 +52,51 @@ set(DEFINE_OPTIONS
 
 # List of compiler defines, prefix with -D compiler option. Copy from the project settings
 add_compile_options(
-  ${DEFINE_OPTIONS}
+  ${PROJECT_DEFINES}
+  -O0 
+  -fno-common 
+  -g3 
+  -Wall 
 
--O0 
--fno-common 
--g3 
--Wall 
+  -ffunction-sections 
+  -fdata-sections 
 
--ffunction-sections 
--fdata-sections 
-
--ffreestanding 
--fno-builtin 
--fmerge-constants 
--mcpu=cortex-m4 
--mfpu=fpv4-sp-d16 
--mfloat-abi=hard 
--mthumb
+  -ffreestanding 
+  -fno-builtin 
+  -fmerge-constants 
+  -mcpu=cortex-m4 
+  -mfpu=fpv4-sp-d16 
+  -mfloat-abi=hard 
+  -mthumb
 )
 
 target_compile_definitions(${EXECUTABLE} PRIVATE
-  ${DEFINE_OPTIONS}
+  ${PROJECT_DEFINES}
 )
-
-add_compile_options(-include "${PROJECT_ROOT_DIR}/src/IncludeMcuLibConfig.h")
-
-# McuLib needs to find the SDK header files, plus local sources
-add_compile_options(-I${SDK_DIR}/device -I${SDK_DIR}/CMSIS -I${SDK_DIR}/board -I${SDK_DIR}/drivers -I${PROJECT_ROOT_DIR}/src) 
 
 # Linker options
 target_link_options(${EXECUTABLE} PRIVATE
-  -L "${PROJECT_ROOT_DIR}/sdk/LPC55S16/mcuxpresso/"
+  -L "${PROJECT_ROOT_DIR}/sdk/LPC55S16/mcuxpresso/" # needed to find libraries like libpower_hardabi.a
   -T "${LINKER_FILE}"
 )
 
-add_subdirectory(./src            build/src)
-add_subdirectory(./unity          build/unity) 
-add_subdirectory(./sdk            build/sdk) 
-add_subdirectory(./McuLib         build/McuLib)
+# McuLib to find our local header files
+add_compile_options(-include "${PROJECT_ROOT_DIR}/src/IncludeMcuLibConfig.h")
+add_compile_options(-I${PROJECT_ROOT_DIR}/src -I${PROJECT_ROOT_DIR}/sdk/drivers)
+add_compile_options(-I${SDK_DIR}/device -I${SDK_DIR}/CMSIS -I${SDK_DIR}/board) 
+
+add_subdirectory(./src                  src) 
+add_subdirectory(${SDK_DIR}             sdk)
+add_subdirectory(${MCULIB_DIR}          McuLib)
+add_subdirectory(${MCULIB_DIR}/rdimon   rdimon)
+add_subdirectory(./unity                unity) 
 
 target_link_libraries(
   ${EXECUTABLE}
   srcLib
   sdkLib
   McuLib
+  rdimonLib # file I/O with semihosting
   unityLib
 )
 
