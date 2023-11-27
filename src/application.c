@@ -30,6 +30,7 @@ void APP_Run(void) {
   McuLog_info("starting tests");
   LEDS_Test();
   McuLog_info("finished tests");
+  McuLog_info("*STOP*"); /* stop JRun */
   return;
 #endif
   if (xTaskCreate(
