@@ -14,9 +14,6 @@
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
       "toolchainFile": "${sourceDir}/arm-none-eabi-gcc.cmake",
-      "environment": {
-        "DUMMY_ENV": "JUST_FOR_TEST"
-      },
       "warnings": {
         "uninitialized": true,
         "dev": false,
@@ -24,35 +21,35 @@
       }
     },
     {
-        "name": "debug",
-        "displayName": "Config Debug",
-        "description": "Sets debug build type and cortex arch",
-        "inherits": "config-base",
-        "architecture": {
-            "value": "arm",
-            "strategy": "external"
-        },
-        "cacheVariables": {
-            "CMAKE_BUILD_TYPE": "Debug"
-        }
+      "name": "debug",
+      "displayName": "Config Debug",
+      "description": "Sets debug build type and cortex arch",
+      "inherits": "config-base",
+      "architecture": {
+          "value": "arm",
+          "strategy": "external"
       },
-      {
-        "name": "release",
-        "displayName": "Config Release",
-        "description": "Sets release build type",
-        "inherits": "debug",
-        "cacheVariables": {
-            "CMAKE_BUILD_TYPE": "Release"
-        }
+      "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Debug"
       }
+    },
+    {
+      "name": "release",
+      "displayName": "Config Release",
+      "description": "Sets release build type",
+      "inherits": "debug",
+      "cacheVariables": {
+          "CMAKE_BUILD_TYPE": "Release"
+      }
+    }
   ],
   "buildPresets": [
     {
-        "name": "build-base",
-        "hidden": true,
-        "configurePreset": "debug",
-        "nativeToolOptions": [
-        ]
+      "name": "build-base",
+      "hidden": true,
+      "configurePreset": "debug",
+      "nativeToolOptions": [
+      ]
     },
     {
       "name": "debug",
