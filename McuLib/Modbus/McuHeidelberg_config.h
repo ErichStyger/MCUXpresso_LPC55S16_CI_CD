@@ -23,8 +23,18 @@
 #endif
 
 #ifndef McuHeidelberg_CONFIG_SITE_BASE_POWER
-  #define McuHeidelberg_CONFIG_SITE_BASE_POWER    (500)
+  #define McuHeidelberg_CONFIG_SITE_BASE_POWER    (250)
     /*! If non-zero, use this value as the site base power */
+#endif
+
+#ifndef McuHeidelberg_CONFIG_DEFAULT_CHARGING_MODE
+  #define McuHeidelberg_CONFIG_DEFAULT_CHARGING_MODE    McuHeidelberg_User_ChargingMode_SlowPlusPV
+    /*!< one of McuHeidelberg_UserChargingMode_e, used at startup */
+#endif
+
+#ifndef McuHeidelberg_CONFIG_CHARGING_CALC_PERIOD_SEC
+  #define McuHeidelberg_CONFIG_CHARGING_CALC_PERIOD_SEC (10)
+    /*!< Period of time in secondes, at which the possible charging power gets evaluated */
 #endif
 
 #endif /* MODBUS_MCUHEIDELBERG_CONFIG_H_ */

@@ -54,7 +54,7 @@ int McuSemihost_SysHostClock(void);
 #define SYS_FILE_MODE_READ              0   /* Open the file for reading "r" */
 #define SYS_FILE_MODE_READBINARY        1   /* Open the file for reading "rb" */
 #define SYS_FILE_MODE_READWRITE         2   /* Open the file for reading and writing "r+" */
-#define SYS_FILE_MODE_READWRITEBINARY   3   /* Open the file for reading and writing "r+" */
+#define SYS_FILE_MODE_READWRITEBINARY   3   /* Open the file for reading and writing "r+b" */
 #define SYS_FILE_MODE_WRITE             4   /* Open and truncate or create the file for writing "w" */
 #define SYS_FILE_MODE_WRITEBINARY       5   /* Open and truncate or create the file for writing "wb" */
 #define SYS_FILE_MODE_WRITEREAD         6   /* Open and truncate or create the file for writing and reading "w+" */
@@ -202,7 +202,7 @@ int McuSemihost_SysHeapInfo(McuSemihost_HeapInfo_t *heapInfo);
 int McuSemihost_SysEnterSVC(void);
 
 typedef enum McuSemihost_Exception_e {
-  ADP_Stopped_ApplicationExit = 0x20026, /* exit target application */
+  McuSemihost_ADP_Stopped_ApplicationExit = 0x20026, /* exit target application */
 } McuSemihost_Exception_e;
 
 /*!

@@ -686,8 +686,7 @@ static void wallboxTask(void *pv) {
 
   McuHeidelbergInfo.isActive = false;
   McuHeidelbergInfo.state = Wallbox_TaskState_None;
-  //McuHeidelbergInfo.userChargingMode = McuHeidelberg_User_ChargingMode_Slow;
-  McuHeidelbergInfo.userChargingMode = McuHeidelberg_User_ChargingMode_OnlyPV;
+  McuHeidelbergInfo.userChargingMode = McuHeidelberg_CONFIG_DEFAULT_CHARGING_MODE;
 #if McuHeidelberg_CONFIG_USE_MOCK_WALLBOX
   mock.hwChargerState = McuHeidelberg_ChargerState_A1;
 #endif
@@ -884,7 +883,7 @@ static void wallboxTask(void *pv) {
         if (McuHeidelbergInfo.hw.chargerState==McuHeidelberg_ChargerState_C2) { /* in active charging state? */
           static TickType_t lastTicksCount = 0;
           TickType_t currTicksCount = xTaskGetTickCount();
-          if (currTicksCount >= lastTicksCount+30*pdMS_TO_TICKS(1000)) { /* only do new calculation every 30 seconds */
+          if (currTicksCount >= lastTicksCount+(McuHeidelberg_CONFIG_CHARGING_CALC_PERIOD_SEC*pdMS_TO_TICKS(1000))) { /* only do new calculation with given period */
             lastTicksCount = currTicksCount;
             /* calculate possible charging level */
             McuHeidelberg_UpdateCurrChargerPower(); /* update current charging power from hardware */
@@ -970,10 +969,14 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" W\r\n");
   McuShell_SendStatusStr((unsigned char*)"  site", buf, io->stdOut);
 
+  McuUtility_Num32uToStrFormatted(buf, sizeof(buf), McuHeidelberg_CONFIG_SITE_BASE_POWER, ' ', 6);
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" W\r\n");
+  McuShell_SendStatusStr((unsigned char*)"  SITE_BASE", buf, io->stdOut);
+
   uint32_t powerW = McuHeidelberg_GetMaxCarPower();
   uint16_t dA = calculatePowerToChargerDeciAmpere(powerW);
   McuUtility_Num32uToStrFormatted(buf, sizeof(buf), powerW, ' ', 6);
-  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" W, max ");
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" W, Imax ");
   McuUtility_strcatNum16uFormatted(buf, sizeof(buf), dA/10, ' ', 2);
   McuUtility_chcat(buf, sizeof(buf), '.');
   McuUtility_strcatNum16uFormatted(buf, sizeof(buf), dA%10, '0', 1);
@@ -981,7 +984,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuShell_SendStatusStr((unsigned char*)"  charge max", buf, io->stdOut);
 
   McuUtility_Num32sToStrFormatted(buf, sizeof(buf), McuHeidelberg_GetCurrChargerPower(), ' ', 6);
-  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" W\r\n");
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" W reported by charger\r\n");
   McuShell_SendStatusStr((unsigned char*)"  charge curr", buf, io->stdOut);
 
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"[  4] ");
