@@ -51,7 +51,7 @@ void SHELL_SendChar(unsigned char ch) {
   }
 }
 
-void SHELL_SendString(unsigned char *str) {
+void SHELL_SendString(const unsigned char *str) {
   for(int i=0;i<sizeof(ios)/sizeof(ios[0]);i++) {
     McuShell_SendStr(str, ios[i].stdio->stdOut);
   }
