@@ -4,7 +4,8 @@ Fixes:
  - Added extra license information
  - Restructured build for SDK
  - Added Unity test framework
- 
+ - Added CMake presets for tests
+
 Features:
  - Added UART shell and RTT
 
