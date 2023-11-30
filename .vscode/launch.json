@@ -1,22 +1,22 @@
 {
     "version": "0.2.0",
     "configurations": [
-        {
+        { // see https://github.com/Marus/cortex-debug/blob/master/debug_attributes.md
             "name": "LPC55S16 Blinky Debug J-Link cortex-debug",
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "jlink",
-            "serverpath": "${env:SEGGER_PATH}/JLinkGDBServerCL", // or set in global json: cortex-debug.JLinkGDBServerPath
+            "serverpath": "${env:SEGGER_PATH}/JLinkGDBServerCL", // or: set in global json: cortex-debug.JLinkGDBServerPath
             "cwd": "${workspaceFolder}",
             "executable": "${command:cmake.launchTargetPath}",
             "armToolchainPath": "${env:TOOLCHAIN_PATH}",  // needed for the gdb
             "device": "LPC55S16",
             "interface": "swd",
+            "runToEntryPoint": "main", // or "ResetISR"
             "postLaunchCommands": [
                 "monitor semihosting enable",
                 "monitor semihosting ioclient 1", // 1: telnet (port 2333); 2: gdb; 3: both telnet and gdbclient output
             ],
-            "runToEntryPoint": "main", // or "ResetISR"
             "rtos": "FreeRTOS",
             "svdFile": "./sdk/device/LPC55S16.svd",
             "rttConfig": {
@@ -29,7 +29,7 @@
                         "type": "console"
                     }
                 ]
-            }
+            },
         }        
     ]
 }
