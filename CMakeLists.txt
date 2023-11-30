@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.27)
+cmake_minimum_required(VERSION 3.1...3.27)
 
 option(BUILD_SHARED_LIBS "Build using object libraries" 0)
 
@@ -14,6 +14,7 @@ set(
 # set variables for directories
 set(PROJECT_ROOT_DIR  "${CMAKE_CURRENT_SOURCE_DIR}")
 set(MCULIB_DIR        "${PROJECT_ROOT_DIR}/McuLib")
+set(EXECUTABLE         ${PROJECT_NAME}.elf)
 set(SDK_DIR           "${PROJECT_ROOT_DIR}/sdk")
 set(BUILD_DIR         "${PROJECT_ROOT_DIR}/build")
 
@@ -115,16 +116,19 @@ add_custom_command(TARGET ${EXECUTABLE}
 )
 
 # Unit Test support
-enable_testing()
+if (ENABLE_UNIT_TESTING)
+  list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
+  list(APPEND CMAKE_CTEST_ARGUMENTS "--verbose")
 
-set (JRUN_CTEST_COMMAND cmd.exe & "$ENV{SEGGER_PATH}/JRun.exe" --rtt --nosemihost -if swd --device LPC55S16 ${CMAKE_PROJECT_NAME}.elf)
-set (passRegex "\\*\\* PASSED \\*\\*\\*")
-set (failRegex "\\*\\*\\* FAILED \\*\\*\\*")
+  # Include CTest support
+  include(CTest) # note: this adds a BUILD_TESTING which defaults to ON, which can be used in other CMakeLists.txt
 
-add_test(
-  NAME MyTest 
-  COMMAND ${JRUN_CTEST_COMMAND}
-)
+  # Just a check for the variable
+  if (BUILD_TESTING)
+    message(STATUS "BUILD_TESTING is ON")
+  endif()
 
-set_property (TEST MyTest PROPERTY PASS_REGULAR_EXPRESSION "${passRegex}")
-set_property (TEST MyTest PROPERTY FAIL_REGULAR_EXPRESSION "${failRegex}")
+  message(STATUS "Adding unity")
+  add_subdirectory(./unity                unity)
+
+endif()
