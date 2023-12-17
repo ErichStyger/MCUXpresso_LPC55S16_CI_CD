@@ -23,5 +23,5 @@ int main(void) {
   while(1) {
     __asm volatile ("nop");
   }
-  return 0 ;
+  return 0;
 }

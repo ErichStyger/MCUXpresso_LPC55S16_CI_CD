@@ -19,7 +19,7 @@
 
 static void AppTask(void *pv) {
   for(;;) {
-    LEDS_Neg(LEDS_BLUE);
+    Leds_Neg(LEDS_BLUE);
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }

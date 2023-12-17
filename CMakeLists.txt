@@ -17,6 +17,7 @@ set(MCULIB_DIR        "${PROJECT_ROOT_DIR}/McuLib")
 set(EXECUTABLE         ${PROJECT_NAME}.elf)
 set(SDK_DIR           "${PROJECT_ROOT_DIR}/sdk")
 set(BUILD_DIR         "${PROJECT_ROOT_DIR}/build")
+set(TEST_EXECUTABLE   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.elf")
 
 # Path to toolchain file. This one has to be before 'project()' below
 set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/arm-none-eabi-gcc.cmake)
@@ -24,7 +25,6 @@ set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/arm-none-eabi-gcc.cmake)
 # Setup project name
 project(LPC55S16_Blinky)
 
-set(EXECUTABLE ${PROJECT_NAME}.elf)
 set(EXECUTABLE_OUTPUT_PATH ${BUILD_DIR}/${CMAKE_BUILD_TYPE})
 set(LINKER_FILE "${SDK_DIR}/device/linker.ld")
 
@@ -35,6 +35,15 @@ set(CMAKE_C_EXTENSIONS OFF)
 
 # Build the executable based on the source files
 add_executable(${EXECUTABLE} ${SRC_FILES})
+
+# Check if ENABLE_UNIT_TESTING is set to ON in the CMake preset
+if (ENABLE_UNIT_TESTING)
+  message(STATUS "ENABLE_UNIT_TESTING is ON")
+  add_compile_options(-DENABLE_UNIT_TESTS=1) # used to enable tests in code
+else()
+  message(STATUS "ENABLE_UNIT_TESTING is OFF")
+  add_compile_options(-DENABLE_UNIT_TESTS=0) # used to disable tests in code
+endif()
 
 # Defines for the project
 set(PROJECT_DEFINES
@@ -85,20 +94,20 @@ target_link_options(${EXECUTABLE} PRIVATE
 add_compile_options(-include "${PROJECT_ROOT_DIR}/src/IncludeMcuLibConfig.h")
 add_compile_options(-I${PROJECT_ROOT_DIR}/src -I${PROJECT_ROOT_DIR}/sdk/drivers)
 add_compile_options(-I${SDK_DIR}/device -I${SDK_DIR}/CMSIS -I${SDK_DIR}/board) 
+if (ENABLE_UNIT_TESTING)
+  add_compile_options(-I${MCULIB_DIR}/src)
+endif()
 
-add_subdirectory(./src                  src) 
+add_subdirectory(./src                  src)
 add_subdirectory(${SDK_DIR}             sdk)
 add_subdirectory(${MCULIB_DIR}          McuLib)
 add_subdirectory(${MCULIB_DIR}/rdimon   rdimon)
-add_subdirectory(./unity                unity) 
 
 target_link_libraries(
   ${EXECUTABLE}
-  srcLib
-  sdkLib
-  McuLib
-  rdimonLib # file I/O with semihosting
-  unityLib
+  PUBLIC srcLib
+  PUBLIC sdkLib
+  PUBLIC rdimonLib # file I/O with semihosting
 )
 
 # Optional: Print executable size as part of the post build process
@@ -115,8 +124,10 @@ add_custom_command(TARGET ${EXECUTABLE}
   COMMAND ${CMAKE_OBJCOPY} -O binary "${EXECUTABLE_OUTPUT_PATH}/${EXECUTABLE}" "${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME}.bin" 
 )
 
+##################################################################################
 # Unit Test support
 if (ENABLE_UNIT_TESTING)
+  # Adding some options to make CTest more verbose, helpful in case of failures.
   list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
   list(APPEND CMAKE_CTEST_ARGUMENTS "--verbose")
 
@@ -129,6 +140,5 @@ if (ENABLE_UNIT_TESTING)
   endif()
 
   message(STATUS "Adding unity")
-  add_subdirectory(./unity                unity)
-
+  add_subdirectory(${MCULIB_DIR}/unity   unity)
 endif()

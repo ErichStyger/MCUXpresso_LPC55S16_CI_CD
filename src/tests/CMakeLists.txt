@@ -19,9 +19,9 @@ add_library(${THIS_LIBRARY_NAME} ${FILES})
 # target_link_libraries: If you link with other libraries, list them here
 target_link_libraries(
   ${THIS_LIBRARY_NAME}
-  McuLib
-  srcLib
-  unityLib
+  PRIVATE McuLib
+  PRIVATE srcLib
+  PRIVATE unityLib
 )
 
 # target_include_directories: Libraries need to publish their header files 
@@ -42,25 +42,15 @@ set_property(TEST PROPERTY PASS_REGULAR_EXPRESSION "${passRegex}")
 set_property(TEST PROPERTY FAIL_REGULAR_EXPRESSION "${failRegex}")
 
 add_test(
-  NAME Sensor_1 
-  COMMAND ${JRUN_CTEST_COMMAND} --jlinkscriptfile "${CMAKE_CURRENT_SOURCE_DIR}/test_1.JLinkScript" ${EXECUTABLE_OUTPUT_PATH}/${EXECUTABLE}
+  NAME Led_1
+  COMMAND ${JRUN_CTEST_COMMAND} --jlinkscriptfile "${CMAKE_CURRENT_SOURCE_DIR}/test_1.JLinkScript" ${TEST_EXECUTABLE}
 )
 
 add_test(
-  NAME Sensor_2 
-  COMMAND ${JRUN_CTEST_COMMAND} --jlinkscriptfile "${CMAKE_CURRENT_SOURCE_DIR}/test_2.JLinkScript" ${EXECUTABLE_OUTPUT_PATH}/${EXECUTABLE}
+  NAME Led_2
+  COMMAND ${JRUN_CTEST_COMMAND} --jlinkscriptfile "${CMAKE_CURRENT_SOURCE_DIR}/test_2.JLinkScript" ${TEST_EXECUTABLE}
 )
 
-add_test(
-  NAME Sensor_3
-  COMMAND ${JRUN_CTEST_COMMAND} --jlinkscriptfile "${CMAKE_CURRENT_SOURCE_DIR}/test_3.JLinkScript" ${EXECUTABLE_OUTPUT_PATH}/${EXECUTABLE}
-)
-
-add_test(
-  NAME Sensor_4
-  COMMAND ${JRUN_CTEST_COMMAND} --jlinkscriptfile ${PROJECT_ROOT_DIR}/test_1.JLinkScript ${EXECUTABLE_OUTPUT_PATH}/${EXECUTABLE}
-)
-
-set_tests_properties(Sensor_1 Sensor_2 Sensor_3 Sensor_4 PROPERTIES TIMEOUT 15) 
-set_tests_properties(Sensor_1 Sensor_2 Sensor_3 Sensor_4 PROPERTIES PASS_REGULAR_EXPRESSION "${passRegex}") 
-set_tests_properties(Sensor_1 Sensor_2 Sensor_3 Sensor_4 PROPERTIES FAIL_REGULAR_EXPRESSION "${failRegex}") 
+set_tests_properties(Led_1 Led_2 PROPERTIES TIMEOUT 15) 
+set_tests_properties(Led_1 Led_2 PROPERTIES PASS_REGULAR_EXPRESSION "${passRegex}") 
+set_tests_properties(Led_1 Led_2 PROPERTIES FAIL_REGULAR_EXPRESSION "${failRegex}") 

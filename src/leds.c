@@ -10,7 +10,7 @@
 
 static McuLED_Handle_t ledRed, ledGreen, ledBlue;
 
-void LEDS_On(LEDS_Leds_e led) {
+void Leds_On(LEDS_Leds_e led) {
   switch(led) {
     case LEDS_RED:        McuLED_On(ledRed); break;
     case LEDS_GREEN:      McuLED_On(ledGreen); break;
@@ -20,7 +20,7 @@ void LEDS_On(LEDS_Leds_e led) {
   }
 }
 
-void LEDS_Off(LEDS_Leds_e led) {
+void Leds_Off(LEDS_Leds_e led) {
   switch(led) {
     case LEDS_RED:        McuLED_Off(ledRed); break;
     case LEDS_GREEN:      McuLED_Off(ledGreen); break;
@@ -30,7 +30,7 @@ void LEDS_Off(LEDS_Leds_e led) {
   }
 }
 
-void LEDS_Neg(LEDS_Leds_e led) {
+void Leds_Neg(LEDS_Leds_e led) {
   switch(led) {
     case LEDS_RED:        McuLED_Toggle(ledRed); break;
     case LEDS_GREEN:      McuLED_Toggle(ledGreen); break;
@@ -40,10 +40,21 @@ void LEDS_Neg(LEDS_Leds_e led) {
   }
 }
 
+bool Leds_Get(LEDS_Leds_e led) {
+  switch(led) {
+    case LEDS_RED:        return McuLED_Get(ledRed);
+    case LEDS_GREEN:      return McuLED_Get(ledGreen);
+    case LEDS_BLUE:       return McuLED_Get(ledBlue);
+    default:
+      break; /* error */
+  }
+  return false;
+}
+
 #include "fsl_iocon.h"
 #include "pin_mux.h"
 
-void LEDS_Init(void) {
+void Leds_Init(void) {
   McuLED_Config_t config;
 
   McuLED_GetDefaultConfig(&config);
@@ -82,14 +93,4 @@ void LED_Deinit(void) {
   ledRed = McuLED_DeinitLed(ledRed);
   ledGreen = McuLED_DeinitLed(ledGreen);
   ledBlue = McuLED_DeinitLed(ledBlue);
-}
-
-#include "unity.h"
-
-void LEDS_Test(void) {
-  UNITY_BEGIN();
-  TEST_ASSERT_NOT_NULL(ledRed);
-  TEST_ASSERT_NOT_NULL(ledGreen);
-  TEST_ASSERT_NOT_NULL(ledBlue);
-  UNITY_END();
 }

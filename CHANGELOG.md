@@ -13,6 +13,6 @@ Features:
 
 Fixes:
  - None
- 
+
 Features:
  - Initial version of blinky

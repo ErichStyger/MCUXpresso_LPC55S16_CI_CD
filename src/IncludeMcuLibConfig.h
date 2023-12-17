@@ -5,6 +5,7 @@
  */
 
 /* header file is included with -include compiler option */
+
 #ifndef MCULIB_CONFIG_CONFIG_H_
 #define MCULIB_CONFIG_CONFIG_H_
 
@@ -59,12 +60,14 @@
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS       (5)
 /* -------------------------------------------------*/
 /* Unity */
+#if ENABLE_UNIT_TESTS
 #include "McuUnity.h"
 #define UNITY_OUTPUT_CHAR(a)                        McuUnity_putc(a)
 #define UNITY_OUTPUT_FLUSH()                        McuUnity_flush()
 #define UNITY_OUTPUT_START()                        McuUnity_start()
 #define UNITY_OUTPUT_COMPLETE()                     McuUnity_complete()
 #define UNITY_OUTPUT_COLOR                          /* use colored output */
+#endif
 /* ---------------------------------------------------------------------------------------*/
 /* McuRdimon */
 #define McuRdimon_CONFIG_IS_ENABLED                 (0)       /* 1: RdiMon is enabled; 0: RdiMon is disabled*/

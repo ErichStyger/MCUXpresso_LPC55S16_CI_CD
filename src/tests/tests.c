@@ -8,15 +8,15 @@
 #if PL_CONFIG_USE_UNIT_TESTS
 #include "tests.h"
 #include "unity.h"
+#include "McuUnity.h"
 #include "McuRTOS.h"
 #include "McuShell.h"
 #include "McuRTT.h"
 #include "McuLog.h"
-#include "test_sensor.h"
-#include "test_arg.h"
+#include "test_leds.h"
 
 static void TestArgFailed(void) {
-  TEST_ASSERT_MESSAGE(false, "wrong test_arg value, check JLinkScript");
+  TEST_ASSERT_MESSAGE(false, "wrong test_arg value, check JLinkScript file");
 }
 
 static void TestTask(void *pv) {
@@ -24,23 +24,18 @@ static void TestTask(void *pv) {
   uint32_t test_arg;
 
   McuLog_info("starting test task");
-  test_arg = TestArg_GetArgument();
-  vTaskDelay(pdMS_TO_TICKS(100)); /* give sensor reading some time */
+  test_arg = McuUnity_GetArgument(); /* get test arguments */
   UNITY_BEGIN();
   switch(test_arg) {
-    case 1: RUN_TEST(TestTemperature); break;
-    case 2: RUN_TEST(TestHumidity);    break;
-    case 3: RUN_TEST(TestSensor);      break;
-    default:
-      RUN_TEST(TestArgFailed); break;
+    case 1:   RUN_TEST(TestLeds_OnOff); break;
+    case 2:   RUN_TEST(TestLeds_Toggle); break;
+    default:  RUN_TEST(TestArgFailed); break;
   }
   nofFailures = UNITY_END();
-
+  /* report failed or pass */
   if (nofFailures==0) {
-    McuLog_info("*** PASSED ***\n");
     McuShell_SendStr("*** PASSED ***\n", McuRTT_stdio.stdOut);
   } else {
-    McuLog_info("*** FAILED ***\n");
     McuShell_SendStr("*** FAILED ***\n", McuRTT_stdio.stdOut);
   }
   McuShell_SendStr("*STOP*\n", McuRTT_stdio.stdOut); /* stop JRun */
