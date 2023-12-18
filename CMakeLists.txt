@@ -88,6 +88,9 @@ target_link_options(${EXECUTABLE} PRIVATE
   -T "${LINKER_FILE}"
 )
 
+# add linker flags to print cross-reference table in map file and memory usage on console
+add_link_options(-Wl,--cref,--print-memory-usage)
+
 # McuLib to find our local header files
 add_compile_options(-include "${PROJECT_ROOT_DIR}/src/IncludeMcuLibConfig.h")
 add_compile_options(-I${PROJECT_ROOT_DIR}/src -I${PROJECT_ROOT_DIR}/sdk/drivers)

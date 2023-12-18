@@ -80,10 +80,9 @@ add_test(NAME ${CMAKE_PROJECT_NAME} COMMAND JRun.exe)
 ```
 Manual test run:
 ```
-ctest --test-dir build --timeout 120
+ctest --test-dir build/debug-test --timeout 120
 ```
-https://coderefinery.github.io/cmake-workshop/testing/
-ctest -v (verbose)
+
 
 ## Links
 - How to create a GitHub action: https://github.blog/2021-11-04-10-github-actions-resources-basics-ci-cd/

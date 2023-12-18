@@ -15,22 +15,29 @@
 #include "McuLog.h"
 #include "test_leds.h"
 
+#define USE_TEST_ARGUMENTS  (0)
+
 static void TestArgFailed(void) {
   TEST_ASSERT_MESSAGE(false, "wrong test_arg value, check JLinkScript file");
 }
 
 static void TestTask(void *pv) {
   int nofFailures;
-  uint32_t test_arg;
 
   McuLog_info("starting test task");
-  test_arg = McuUnity_GetArgument(); /* get test arguments */
   UNITY_BEGIN();
-  switch(test_arg) {
-    case 1:   RUN_TEST(TestLeds_OnOff); break;
-    case 2:   RUN_TEST(TestLeds_Toggle); break;
-    default:  RUN_TEST(TestArgFailed); break;
-  }
+  #if USE_TEST_ARGUMENTS
+    uint32_t test_arg;
+    test_arg = McuUnity_GetArgument(); /* get test arguments */
+    switch(test_arg) {
+      case 1:   RUN_TEST(TestLeds_OnOff); break;
+      case 2:   RUN_TEST(TestLeds_Toggle); break;
+      default:  RUN_TEST(TestArgFailed); break;
+    }
+  #else
+    RUN_TEST(TestLeds_OnOff);
+    RUN_TEST(TestLeds_Toggle);
+  #endif
   nofFailures = UNITY_END();
   /* report failed or pass */
   if (nofFailures==0) {

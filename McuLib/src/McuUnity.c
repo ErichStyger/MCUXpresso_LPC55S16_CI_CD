@@ -17,10 +17,9 @@
 #if McuLib_CONFIG_CPU_IS_RPxxxx
   static uint32_t __uninitialized_ram(program_arg);
 #else /* put variable into a no-init section */
-  static uint32_t program_arg __attribute__((section (".uninit_RESERVED")));
+  uint32_t program_arg __attribute__((section (".uninit_RESERVED")));
 #endif
-
-uint32_t McuUnity_GetArgument(void) {
+ uint32_t McuUnity_GetArgument(void) {
   McuLog_info("program_arg: value 0x%x @0x%x", program_arg, &program_arg);
   return program_arg;
 }

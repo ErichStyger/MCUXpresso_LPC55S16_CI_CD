@@ -34,7 +34,7 @@ target_include_directories(
 )
 #################################################################################
 
-set (JRUN_CTEST_COMMAND "$ENV{SEGGER_PATH}/JRun" --silent --device RP2040_M0_0 --rtt -if SWD)
+set (JRUN_CTEST_COMMAND "$ENV{SEGGER_PATH}/JRun" --device LPC55S16 --silent --rtt -if SWD)
 
 set (passRegex "\\*\\* PASSED \\*\\*\\*")
 set (failRegex "\\*\\*\\* FAILED \\*\\*\\*")
