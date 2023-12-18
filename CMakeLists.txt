@@ -24,7 +24,6 @@ set(SDK_DIR           "${PROJECT_ROOT_DIR}/sdk")
 set(BUILD_DIR         "${PROJECT_ROOT_DIR}/build")
 set(TEST_EXECUTABLE   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.elf")
 
-#set(EXECUTABLE_OUTPUT_PATH ${BUILD_DIR}/${CMAKE_BUILD_TYPE})
 set(LINKER_FILE "${SDK_DIR}/device/linker.ld")
 
 enable_language(C ASM)
@@ -112,15 +111,15 @@ target_link_libraries(
 # Optional: Print executable size as part of the post build process
 add_custom_command(TARGET ${EXECUTABLE}
   POST_BUILD
-  COMMAND ${CMAKE_SIZE_UTIL} ${EXECUTABLE_OUTPUT_PATH}/${EXECUTABLE}
+  COMMAND ${CMAKE_SIZE_UTIL} ${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE}
 )
 
 # Optional: Create hex, bin and S-Record files after the build
 add_custom_command(TARGET ${EXECUTABLE}
   POST_BUILD
-  COMMAND ${CMAKE_OBJCOPY} -O srec --srec-len=64 "${EXECUTABLE_OUTPUT_PATH}/${EXECUTABLE}" "${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME}.s19"
-  COMMAND ${CMAKE_OBJCOPY} -O ihex "${EXECUTABLE_OUTPUT_PATH}/${EXECUTABLE}" "${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME}.hex"
-  COMMAND ${CMAKE_OBJCOPY} -O binary "${EXECUTABLE_OUTPUT_PATH}/${EXECUTABLE}" "${EXECUTABLE_OUTPUT_PATH}/${PROJECT_NAME}.bin" 
+  COMMAND ${CMAKE_OBJCOPY} -O srec --srec-len=64 "${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.s19"
+  COMMAND ${CMAKE_OBJCOPY} -O ihex "${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.hex"
+  COMMAND ${CMAKE_OBJCOPY} -O binary "${CMAKE_CURRENT_BINARY_DIR}/${EXECUTABLE}" "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.bin" 
 )
 
 ##################################################################################

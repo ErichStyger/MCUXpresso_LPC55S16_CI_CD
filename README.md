@@ -71,7 +71,7 @@ Enable 'PL_CONFIG_USE_UNIT_TESTS' in platform.h
 
 Run JRun manually:
 ```
-"c:\Program Files\SEGGER\JLink\JRun.exe" --device LPC55S16 build/debug-test/LPC55S16_Blinky.elf
+JRun --device LPC55S16 build/debug-test/LPC55S16_Blinky.elf
 ```
 CTest: add the following in the main CMakeLists.txt:
 ```
