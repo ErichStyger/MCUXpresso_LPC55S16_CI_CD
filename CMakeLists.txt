@@ -10,6 +10,11 @@ set(
 
 # turn variable on for verbose output, useful for build debugging. Or run 'ninja --verbose' in the build folder
 #set(CMAKE_VERBOSE_MAKEFILE ON CACHE BOOL "ON")
+# Path to toolchain file. This one has to be before 'project()' below
+set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/arm-none-eabi-gcc.cmake)
+
+# Setup project name
+project(LPC55S16_Blinky)
 
 # set variables for directories
 set(PROJECT_ROOT_DIR  "${CMAKE_CURRENT_SOURCE_DIR}")
@@ -19,13 +24,7 @@ set(SDK_DIR           "${PROJECT_ROOT_DIR}/sdk")
 set(BUILD_DIR         "${PROJECT_ROOT_DIR}/build")
 set(TEST_EXECUTABLE   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.elf")
 
-# Path to toolchain file. This one has to be before 'project()' below
-set(CMAKE_TOOLCHAIN_FILE ${CMAKE_SOURCE_DIR}/arm-none-eabi-gcc.cmake)
-
-# Setup project name
-project(LPC55S16_Blinky)
-
-set(EXECUTABLE_OUTPUT_PATH ${BUILD_DIR}/${CMAKE_BUILD_TYPE})
+#set(EXECUTABLE_OUTPUT_PATH ${BUILD_DIR}/${CMAKE_BUILD_TYPE})
 set(LINKER_FILE "${SDK_DIR}/device/linker.ld")
 
 enable_language(C ASM)

@@ -34,11 +34,11 @@ static void TestTask(void *pv) {
   nofFailures = UNITY_END();
   /* report failed or pass */
   if (nofFailures==0) {
-    McuShell_SendStr("*** PASSED ***\n", McuRTT_stdio.stdOut);
+    McuShell_SendStr((unsigned char*)"*** PASSED ***\n", McuRTT_stdio.stdOut);
   } else {
-    McuShell_SendStr("*** FAILED ***\n", McuRTT_stdio.stdOut);
+    McuShell_SendStr((unsigned char*)"*** FAILED ***\n", McuRTT_stdio.stdOut);
   }
-  McuShell_SendStr("*STOP*\n", McuRTT_stdio.stdOut); /* stop JRun */
+  McuShell_SendStr((unsigned char*)"*STOP*\n", McuRTT_stdio.stdOut); /* stop JRun */
   vTaskDelete(NULL); /* terminate task */
 }
 

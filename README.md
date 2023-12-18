@@ -71,7 +71,7 @@ Enable 'PL_CONFIG_USE_UNIT_TESTS' in platform.h
 
 Run JRun manually:
 ```
-"c:\Program Files\SEGGER\JLink\JRun.exe" --device RP2040_M0_0 build/TSM_PicoW_Sensor.elf
+"c:\Program Files\SEGGER\JLink\JRun.exe" --device LPC55S16 build/debug-test/LPC55S16_Blinky.elf
 ```
 CTest: add the following in the main CMakeLists.txt:
 ```
