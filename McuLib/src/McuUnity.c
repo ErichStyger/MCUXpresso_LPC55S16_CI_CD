@@ -19,7 +19,8 @@
 #else /* put variable into a no-init section */
   uint32_t program_arg __attribute__((section (".uninit_RESERVED")));
 #endif
- uint32_t McuUnity_GetArgument(void) {
+
+uint32_t McuUnity_GetArgument(void) {
   McuLog_info("program_arg: value 0x%x @0x%x", program_arg, &program_arg);
   return program_arg;
 }
