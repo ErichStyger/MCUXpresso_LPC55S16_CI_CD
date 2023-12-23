@@ -58,14 +58,6 @@ exit
 ## J-Run
 See https://www.segger.com/products/debug-probes/j-link/tools/j-run/
 
-
-## UART
-For UART over the (J-Link or LinkServer) Debug virtual COM port:
-JP9 (lower left corner, near PMod connector) has to be *open*, and JP12 (left of JP3/UART Header) needs to be *closed*.
-```
-"c:\Program Files\SEGGER\JLink\JRun.exe" -device LPC55S16 -if SWD build\LPC55S16_Blinky.elf
-```
-
 ## Unit Tests
 Enable 'PL_CONFIG_USE_UNIT_TESTS' in platform.h
 
@@ -82,7 +74,6 @@ Manual test run:
 ```
 ctest --test-dir build/debug-test --timeout 120
 ```
-
 
 ## Links
 - How to create a GitHub action: https://github.blog/2021-11-04-10-github-actions-resources-basics-ci-cd/

@@ -15,7 +15,7 @@
 #include "McuLog.h"
 #include "test_leds.h"
 
-#define USE_TEST_ARGUMENTS  (0)
+#define USE_TEST_ARGUMENTS  (1)
 
 static void TestArgFailed(void) {
   TEST_ASSERT_MESSAGE(false, "wrong test_arg value, check JLinkScript file");
