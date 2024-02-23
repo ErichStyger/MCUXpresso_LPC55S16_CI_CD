@@ -1,6 +1,8 @@
 /*
- * FreeRTOS Kernel V10.4.1
- * Copyright (C) 2020 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+ * FreeRTOS Kernel V11.0.0
+ * Copyright (C) 2021 Amazon.com, Inc. or its affiliates.  All Rights Reserved.
+ *
+ * SPDX-License-Identifier: MIT
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of
  * this software and associated documentation files (the "Software"), to deal in
@@ -122,6 +124,10 @@
 #define configSYSTICK_CLOCK_HZ                    ((configCPU_CLOCK_HZ)/configSYSTICK_CLOCK_DIVIDER) /* frequency of system tick counter */
 #ifndef configMINIMAL_STACK_SIZE
   #define configMINIMAL_STACK_SIZE                (200) /* stack size in addressable stack units */
+#endif
+
+#ifndef configNUMBER_OF_CORES
+  #define configNUMBER_OF_CORES                   (1) /* number of cores for the kernel */
 #endif
 
 #ifndef configUSE_MINI_LIST_ITEM
@@ -352,6 +358,9 @@ point support. */
 
 /* Normal assert() semantics without relying on the provision of an assert.h header file. */
 #ifndef configASSERT
+  #ifndef taskDISABLE_INTERRUPTS
+    #define taskDISABLE_INTERRUPTS()    portDISABLE_INTERRUPTS()
+  #endif
   #define configASSERT(x) if((x)==0) { taskDISABLE_INTERRUPTS(); for( ;; ); }
   #if 0 /* version for RISC-V with a debug break: */
     #define configASSERT( x ) if( ( x ) == 0 ) { taskDISABLE_INTERRUPTS(); __asm volatile( "ebreak" ); for( ;; ); }

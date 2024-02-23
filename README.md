@@ -8,11 +8,21 @@ In order to have compiler and J-Link not hardcoded in the project itself, rund t
 
 setenv example for Windows:
 ```
-set TOOLCHAIN_PREFIX=C:/Raspy/arm-none-eabi-gcc-12.2.1-1.2
+set TOOLCHAIN_PREFIX=C:/Raspy/arm-none-eabi-gcc-13.2.1-1.1
 set SEGGER_PATH=C:/Program Files/SEGGER/JLink
 ```
 Note that the commands have to be set up *before* starting VS Code, to have the environment set.
 Alternatively, these variables can be set on user level.
+
+## Build
+To initialize the build files, use
+```
+cmake --preset debug
+```
+To build it:
+```
+cmake --build --preset debug
+```
 
 ## Docker Quick-Steps
 - Installed Docker Desktop on Windows

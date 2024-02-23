@@ -34,6 +34,7 @@ file(GLOB MCULIBFILES
   src/McuGenericSWI2C.c
   src/SDA1.c
   src/SCL1.c
+  src/McuINA260.c
   src/McuFXOS8700.c
   src/McuGFont.c
   src/McuGPIO.c
@@ -98,7 +99,8 @@ file(GLOB MCULIBFILES
   FreeRTOS/Source/portable/MemMang/heap_5.c
   FreeRTOS/Source/portable/MemMang/heap_useNewlib.c
   FreeRTOS/Source/portable/GCC/ARM_CM4F/port.c
-  
+  FreeRTOS/Source/portable/GCC/ARM_CM4F/portTicks.c
+
   # littleFS
   littleFS/lfs_util.c
   littleFS/lfs.c
@@ -128,11 +130,15 @@ target_link_libraries(
   # lvglLib   # see note above
   PUBLIC pico_stdlib
   PUBLIC pico_unique_id
+  PUBLIC pico_multicore
   PUBLIC hardware_pio 
   PUBLIC hardware_flash
   PUBLIC hardware_spi
   PUBLIC hardware_sync
   PUBLIC hardware_i2c
+  PUBLIC hardware_exception
+  PUBLIC hardware_clocks
+  PUBLIC hardware_sync
 )
 
 # target_include_directories: Libraries need to publish their header files 
