@@ -11,6 +11,20 @@
 #include "McuLog.h"
 #include "leds.h"
 
+#if PL_CONFIG_USE_UNIT_TESTS
+void _exit(int code) {
+  for(;;){}
+}
+
+void _kill(int code) {
+  for(;;) {}
+}
+
+void _getpid(void) {
+  for(;;) {}
+}
+#endif
+
  void __assertion_failed(char *_Expr) {
   for(;;) {
     __asm("nop");
