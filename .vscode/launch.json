@@ -2,7 +2,7 @@
     "version": "0.2.0",
     "configurations": [
         { // see https://github.com/Marus/cortex-debug/blob/master/debug_attributes.md
-            "name": "LPC55S16 Blinky Debug J-Link cortex-debug",
+            "name": "LPC55S16 Blinky J-Link cortex-debug",
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "jlink",
@@ -31,6 +31,23 @@
                     }
                 ]
             },
-        }        
+        },
+        {
+            "name": "LPC55S16 Blinky LinkServer cortex-debug",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "external",
+            "gdbTarget": "localhost:3333",
+            //"preLaunchTask": "start LinkServer", // ${LINKSERVER_PATH}/LinkServer gdbserver --keep-alive LPC55S16:LPCXpresso55S16
+            "cwd": "${workspaceFolder}",
+            "executable": "${command:cmake.launchTargetPath}",
+            "armToolchainPath": "${env:TOOLCHAIN_PATH}",  // needed for the gdb
+            "postLaunchCommands": [
+                "monitor semihosting enable"
+            ],
+            "runToEntryPoint": "main", // or "ResetISR"
+            "rtos": "FreeRTOS",
+            "svdFile": "./sdk/device/LPC55S16.svd",
+        },        
     ]
 }
