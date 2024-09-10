@@ -2,6 +2,7 @@
 Project for the LPC55S16-EVK, using VS Code with CMake and Ninja, blinking the blue onboard LED.
 This repository is used as an example how to do CI/CD with GitHub actions.
 The setup is described in details in my blog article: https://mcuoneclipse.com/2023/10/02/ci-cd-for-embedded-with-vs-code-docker-and-github-actions/
+See as well https://mcuoneclipse.com/2023/12/18/modern-on-target-embedded-system-testing-with-cmake-and-ctest/
 
 ## Environment
 In order to have compiler and J-Link not hardcoded in the project itself, rund the setenv script file.
@@ -90,4 +91,5 @@ ctest --test-dir build/debug-test --timeout 120
 - Solving 'permission denied' on config file: https://dev.to/aileenr/github-actions-fixing-the-permission-denied-error-for-shell-scripts-4gbl
 - Unity testing framework: https://github.com/ThrowTheSwitch/Unity/blob/master/docs/UnityGettingStartedGuide.md
 - Getting started with Docker: https://www.digikey.ch/en/maker/projects/getting-started-with-docker/aa0d4c708c274ffd975f3b427e5c0ce6
-
+- Blog: https://mcuoneclipse.com/2023/12/18/modern-on-target-embedded-system-testing-with-cmake-and-ctest/
+- Blog: https://mcuoneclipse.com/2023/10/02/ci-cd-for-embedded-with-vs-code-docker-and-github-actions/
