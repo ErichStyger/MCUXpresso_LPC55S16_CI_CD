@@ -15,11 +15,13 @@
 #include "McuLog.h"
 #include "test_leds.h"
 
-#define USE_TEST_ARGUMENTS  (1)
+#define USE_TEST_ARGUMENTS  (0)  /* if using test arguments */
 
+#if USE_TEST_ARGUMENTS
 static void TestArgFailed(void) {
   TEST_ASSERT_MESSAGE(false, "wrong test_arg value, check JLinkScript file");
 }
+#endif
 
 static void TestTask(void *pv) {
   int nofFailures;
@@ -41,11 +43,11 @@ static void TestTask(void *pv) {
   nofFailures = UNITY_END();
   /* report failed or pass */
   if (nofFailures==0) {
-    McuShell_SendStr((unsigned char*)"*** PASSED ***\n", McuRTT_stdio.stdOut);
+    McuLog_info("*** PASSED ***");
   } else {
-    McuShell_SendStr((unsigned char*)"*** FAILED ***\n", McuRTT_stdio.stdOut);
+    McuLog_error("*** FAILED ***");
   }
-  McuShell_SendStr((unsigned char*)"*STOP*\n", McuRTT_stdio.stdOut); /* stop JRun */
+  McuLog_info("*STOP*"); /* stop test runner */
   vTaskDelete(NULL); /* terminate task */
 }
 

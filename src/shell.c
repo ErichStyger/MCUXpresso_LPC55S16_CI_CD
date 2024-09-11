@@ -15,6 +15,7 @@
 #include "McuTimeDate.h"
 #include "McuShellUart.h"
 #include "McuFlash.h"
+#include "McuSemihost.h"
 
 static const McuShell_ParseCommandCallback CmdParserTable[] =
 {
@@ -42,6 +43,9 @@ static const SHELL_IODesc ios[] =
 #endif
 #if PL_CONFIG_USE_RTT
   {&McuRTT_stdio,  McuRTT_DefaultShellBuffer,  sizeof(McuRTT_DefaultShellBuffer)},
+#endif
+#if McuSemihost_CONFIG_IS_ENABLED
+  {&McuSemihost_stdio,  McuSemihost_DefaultShellBuffer,  sizeof(McuSemihost_DefaultShellBuffer)},
 #endif
 };
 

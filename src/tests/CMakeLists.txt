@@ -34,7 +34,8 @@ target_include_directories(
 )
 #################################################################################
 
-set (JRUN_CTEST_COMMAND "$ENV{SEGGER_PATH}/JRun" --device LPC55S16 --silent --rtt -if SWD)
+#set (RUNNER_CTEST_COMMAND "$ENV{SEGGER_PATH}/JRun" --device LPC55S16 --silent --rtt -if SWD)
+set (RUNNER_CTEST_COMMAND "$ENV{LINKSERVER_PATH}/LinkServer" --log-level 5 run --mode semihost lpc55s16)
 
 set (passRegex "\\*\\* PASSED \\*\\*\\*")
 set (failRegex "\\*\\*\\* FAILED \\*\\*\\*")
@@ -43,12 +44,14 @@ set_property(TEST PROPERTY FAIL_REGULAR_EXPRESSION "${failRegex}")
 
 add_test(
   NAME Led_1
-  COMMAND ${JRUN_CTEST_COMMAND} --jlinkscriptfile "${CMAKE_CURRENT_SOURCE_DIR}/test_1.JLinkScript" ${TEST_EXECUTABLE}
+  #COMMAND ${RUNNER_CTEST_COMMAND} --jlinkscriptfile "${CMAKE_CURRENT_SOURCE_DIR}/test_1.JLinkScript" ${TEST_EXECUTABLE}
+  COMMAND ${RUNNER_CTEST_COMMAND} ${TEST_EXECUTABLE}
 )
 
 add_test(
   NAME Led_2
-  COMMAND ${JRUN_CTEST_COMMAND} --jlinkscriptfile "${CMAKE_CURRENT_SOURCE_DIR}/test_2.JLinkScript" ${TEST_EXECUTABLE}
+  #COMMAND ${RUNNER_CTEST_COMMAND} --jlinkscriptfile "${CMAKE_CURRENT_SOURCE_DIR}/test_2.JLinkScript" ${TEST_EXECUTABLE}
+  COMMAND ${RUNNER_CTEST_COMMAND} ${TEST_EXECUTABLE}
 )
 
 set_tests_properties(Led_1 Led_2 PROPERTIES TIMEOUT 15) 

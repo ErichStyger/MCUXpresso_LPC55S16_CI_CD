@@ -48,7 +48,7 @@
 #define McuLog_CONFIG_USE_COLOR                 (0)
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE        (0)
 #define McuLog_CONFIG_LOG_TIMESTAMP_TIME        (0)
-#define McuLog_CONFIG_NOF_CONSOLE_LOGGER        (2) /* UART and RTT */
+#define McuLog_CONFIG_NOF_CONSOLE_LOGGER        (3) /* UART, RTT or semihosting */
 /* ---------------------------------------------------------------------------------------*/
 /* McuShellUart */
 #define McuShellUart_CONFIG_UART                         McuShellUart_CONFIG_UART_LPC55S16_USART0

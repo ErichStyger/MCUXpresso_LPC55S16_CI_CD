@@ -9,6 +9,7 @@
 #include "McuRTOS.h"
 #include "McuRTT.h"
 #include "McuLog.h"
+#include "McuSemihost.h"
 #include "leds.h"
 
 #if PL_CONFIG_USE_UNIT_TESTS
@@ -40,13 +41,30 @@ static void AppTask(void *pv) {
 
 void APP_Run(void) {
   PL_Init(); /* init modules */
-#if PL_RUN_UNIT_TEST
-  McuLog_info("starting tests");
-  LEDS_Test();
-  McuLog_info("finished tests");
-  McuLog_info("*STOP*"); /* stop JRun */
-  return;
+
+  McuLog_info("Hello from the Log module");
+  #if McuSemihost_CONFIG_IS_ENABLED
+  #if McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER
+    McuSemihost_printf("Hello from semihosting with NXP LinkServer!\n");
+  #elif McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_SEGGER
+    McuSemihost_printf("Hello from semihosting with SEGGER J-Link!\n");
+  #else
+    #error
+  #endif
 #endif
+
+#if PL_CONFIG_USE_UNIT_TESTS
+  McuLog_info("Running Unit Tests.");
+  /* test stopping the runner */
+  #if McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER
+  //McuSemihost_printf("*STOP*\n"); /* stop LinkServer */
+  #endif
+#else
+  McuSemihost_printf("NOT running tests.\n");
+#endif
+  //McuSemihost_printf("*** FAILED ***\n");
+  //McuSemihost_printf("*STOP*\n"); /* stop runner */
+
   if (xTaskCreate(
       AppTask,  /* pointer to the task */
       "App", /* task name for kernel awareness debugging */

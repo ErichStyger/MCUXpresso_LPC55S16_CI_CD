@@ -9,7 +9,9 @@
 #include "clock_config.h"
 #include "peripherals.h"
 #include "fsl_power.h"
+#include "platform.h"
 #include "application.h"
+
 
 int main(void) {
   BOARD_InitBootPins();
