@@ -12,10 +12,12 @@
 #include "McuRTOS.h"
 #include "McuShell.h"
 #include "McuRTT.h"
+#include "McuUnity.h"
+#include "McuUtility.h"
 #include "McuLog.h"
 #include "test_leds.h"
 
-#define USE_TEST_ARGUMENTS  (0)  /* if using test arguments */
+#define USE_TEST_ARGUMENTS  (1)  /* if using test arguments */
 
 #if USE_TEST_ARGUMENTS
 static void TestArgFailed(void) {
@@ -25,12 +27,32 @@ static void TestArgFailed(void) {
 
 static void TestTask(void *pv) {
   int nofFailures;
+#if USE_TEST_ARGUMENTS
+  uint32_t test_arg = -1;
+#endif
 
   McuLog_info("starting test task");
+
+#if 1 && USE_TEST_ARGUMENTS /* new JRun */  
+  int nofBytes;
+  unsigned char buf[32];
+
+  nofBytes = McuUnity_RTT_GetArgs((const char*)buf, sizeof(buf));
+  SEGGER_RTT_printf(0, "args = %s, nofBytes = %d\n", buf);
+  if (nofBytes>0) {
+     if (McuUtility_strcmp((char*)buf, "Led_1")==0) {
+      test_arg = 1;
+     } else if (McuUtility_strcmp((char*)buf, "Led_2")==0) {
+      test_arg = 2;
+     }
+  } else {
+    test_arg = -1;
+  }
+#elif USE_TEST_ARGUMENTS
+  test_arg = McuUnity_GetArgument(); /* get test arguments */
+#endif
   UNITY_BEGIN();
   #if USE_TEST_ARGUMENTS
-    uint32_t test_arg;
-    test_arg = McuUnity_GetArgument(); /* get test arguments */
     switch(test_arg) {
       case 1:   RUN_TEST(TestLeds_OnOff); break;
       case 2:   RUN_TEST(TestLeds_Toggle); break;

@@ -4,9 +4,9 @@
 **     Project     : FRDM-K64F_Generator
 **     Processor   : MK64FN1M0VLL12
 **     Component   : Wait
-**     Version     : Component 01.091, Driver 01.00, CPU db: 3.00.000
+**     Version     : Component 01.093, Driver 01.00, CPU db: 3.00.000
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2021-11-25, 06:25, # CodeGen: 749
+**     Date/Time   : 2024-07-09, 11:02, # CodeGen: 834
 **     Abstract    :
 **          Implements busy waiting routines.
 **     Settings    :
@@ -28,7 +28,7 @@
 **         Init           - void McuWait_Init(void);
 **         Deinit         - void McuWait_Deinit(void);
 **
-** * Copyright (c) 2013-2021, Erich Styger
+** * Copyright (c) 2013-2024, Erich Styger
 **  * Web:         https://mcuoneclipse.com
 **  * SourceForge: https://sourceforge.net/projects/mcuoneclipse
 **  * Git:         https://github.com/ErichStyger/McuOnEclipse_PEx
@@ -70,7 +70,7 @@
 
 #include "McuWait.h"
 #if McuLib_CONFIG_SDK_VERSION_USED==McuLib_CONFIG_SDK_LINUX
-  #include <unistd.h> /* for sleep */
+  #include <unistd.h> /* for sleep() */
 #endif
 
 
@@ -84,6 +84,7 @@
 **     Returns     : Nothing
 ** ===================================================================
 */
+#if McuLib_CONFIG_SDK_VERSION_USED!=McuLib_CONFIG_SDK_LINUX
 #ifdef __GNUC__
 #if McuLib_CONFIG_CPU_IS_RISC_V || McuLib_CONFIG_CPU_IS_ESP32 /* naked is ignored for RISC-V or ESP32 gcc */
   #ifdef __cplusplus  /* gcc 4.7.3 in C++ mode does not like no_instrument_function: error: can't set 'no_instrument_function' attribute after definition */
@@ -144,6 +145,7 @@ void McuWait_Wait10Cycles(void)
 #endif
   /*lint -restore */
 }
+#endif /* McuLib_CONFIG_SDK_VERSION_USED!=McuLib_CONFIG_SDK_LINUX */
 
 /*
 ** ===================================================================
@@ -155,6 +157,7 @@ void McuWait_Wait10Cycles(void)
 **     Returns     : Nothing
 ** ===================================================================
 */
+#if McuLib_CONFIG_SDK_VERSION_USED!=McuLib_CONFIG_SDK_LINUX
 #if McuLib_CONFIG_COMPILER==McuLib_CONFIG_COMPILER_IAR
   /* Implemented in assembly file, as IAR does not support labels in HLI */
 #else
@@ -244,6 +247,7 @@ loop
   /*lint -restore */
 }
 #endif  /* McuLib_CONFIG_COMPILER==McuLib_CONFIG_COMPILER_IAR */
+#endif /* McuLib_CONFIG_SDK_VERSION_USED!=McuLib_CONFIG_SDK_LINUX */
 
 /*
 ** ===================================================================
@@ -257,6 +261,7 @@ loop
 **     Returns     : Nothing
 ** ===================================================================
 */
+#if McuLib_CONFIG_SDK_VERSION_USED!=McuLib_CONFIG_SDK_LINUX
 void McuWait_WaitCycles(uint32_t cycles)
 {
   /*lint -save -e522 function lacks side effect. */
@@ -268,17 +273,19 @@ void McuWait_WaitCycles(uint32_t cycles)
     /* wait */
   }
 #else
-  while(cycles >= 100u) {
+  volatile uint32_t c = cycles; /* fix for wrong optimization in ARM gcc 13.2.1 */
+  while(c >= 100u) {
     McuWait_Wait100Cycles();
-    cycles -= 100u;
+    c -= 100u;
   }
-  while(cycles >= 10u) {
+  while(c >= 10u) {
     McuWait_Wait10Cycles();
-    cycles -= 10u;
+    c -= 10u;
   }
 #endif
   /*lint -restore */
 }
+#endif /* McuLib_CONFIG_SDK_VERSION_USED!=McuLib_CONFIG_SDK_LINUX */
 
 /*
 ** ===================================================================
@@ -292,6 +299,7 @@ void McuWait_WaitCycles(uint32_t cycles)
 **     Returns     : Nothing
 ** ===================================================================
 */
+#if McuLib_CONFIG_SDK_VERSION_USED!=McuLib_CONFIG_SDK_LINUX
 void McuWait_WaitLongCycles(uint32_t cycles)
 {
 #if McuWait_CONFIG_USE_CYCLE_COUNTER
@@ -311,6 +319,7 @@ void McuWait_WaitLongCycles(uint32_t cycles)
   /*lint -restore */
 #endif
 }
+#endif /* McuLib_CONFIG_SDK_VERSION_USED!=McuLib_CONFIG_SDK_LINUX */
 
 /*
 ** ===================================================================

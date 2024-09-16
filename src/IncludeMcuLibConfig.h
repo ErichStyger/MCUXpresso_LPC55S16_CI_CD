@@ -33,8 +33,9 @@
 /* ---------------------------------------------------------------------------------------*/
 /* McuSemihost */
 #define McuSemihost_CONFIG_IS_ENABLED               (1)
-//#define McuSemihost_CONFIG_DEBUG_CONNECTION         McuSemihost_DEBUG_CONNECTION_SEGGER
-#define McuSemihost_CONFIG_DEBUG_CONNECTION         McuSemihost_DEBUG_CONNECTION_LINKSERVER
+#define McuSemihost_CONFIG_DEBUG_CONNECTION         McuSemihost_DEBUG_CONNECTION_SEGGER
+//#define McuSemihost_CONFIG_DEBUG_CONNECTION         McuSemihost_DEBUG_CONNECTION_LINKSERVER
+#define McuSemihost_CONFIG_RETARGET_STDLIB          (1) /* _kill, _getpid, _exit, ... */
 #define McuSemihost_CONFIG_LOG_ENABLED              (0)
 /* -----------------------------------------------------*/
 /* McuShell */
