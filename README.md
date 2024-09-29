@@ -69,6 +69,15 @@ exit
 ## J-Run
 See https://www.segger.com/products/debug-probes/j-link/tools/j-run/
 
+# NXP LinkServer Runner
+Set Semihosting to LinkServer in IncludeMcuLibConfig.h:
+```
+#define McuSemihost_CONFIG_DEBUG_CONNECTION         McuSemihost_DEBUG_CONNECTION_LINKSERVER
+```
+```
+c:\nxp\LinkServer_24.9.75\LinkServer --log-level 5 run --mode semihost lpc55s16 build\debug-test\LPC55S16_Blinky.elf
+```
+
 ## Unit Tests
 Enable 'PL_CONFIG_USE_UNIT_TESTS' in platform.h
 

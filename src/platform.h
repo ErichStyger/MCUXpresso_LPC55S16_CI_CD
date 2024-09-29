@@ -17,7 +17,8 @@
 #endif
 
 //#define PL_CONFIG_USE_RTT               (1 || PL_CONFIG_USE_UNIT_TESTS) /* if using SEGGER RTT, needed for unit testing */
-#define PL_CONFIG_USE_RTT (0)
+#define PL_CONFIG_USE_RTT           (0)
+#define PL_CONFIG_USE_SEMIHOSTING   (1)   /* used for NXP LinkServer runner */
 
 /*!
  * \brief Module initialization

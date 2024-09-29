@@ -13,7 +13,6 @@
 #include "McuLog.h"
 #include "McuRTOS.h"
 #include "McuUtility.h"
-#include "McuLog.h"
 #include "McuShellUart.h"
 #include "McuShell.h"
 #include "McuRTT.h"
@@ -26,6 +25,7 @@
   #include "McuRTT.h"
 #endif
 #include "McuHardFault.h"
+#include "McuSemihost.h"
 
 void PL_Init(void) {
   CLOCK_EnableClock(kCLOCK_Iocon); /* ungate clock for IOCON */
@@ -42,15 +42,25 @@ void PL_Init(void) {
   McuRTT_Init();
 #endif
   McuLog_Init();
+#if PL_CONFIG_USE_SEMIHOSTING && !PL_CONFIG_USE_RTT
+  McuLog_set_console(McuSemihost_GetStdio(), 0);
+#elif !PL_CONFIG_USE_SEMIHOSTING && PL_CONFIG_USE_RTT
+  McuLog_set_console(McuRTT_GetStdio(), 0);
+#elif McuLog_CONFIG_NOF_CONSOLE_LOGGER>=2 && PL_CONFIG_USE_SEMIHOSTING && PL_CONFIG_USE_RTT
+  McuLog_set_console(McuRTT_GetStdio(), 0);
+  McuLog_set_console(McuSemihost_GetStdio(), 1);
+#endif
   McuGPIO_Init();
   McuLED_Init();
 #if PL_CONFIG_USE_SHELL_UART
   McuShellUart_Init();
 #endif
   McuShell_Init();
-
   Leds_Init();
   SHELL_Init();
+#if PL_CONFIG_USE_SEMIHOSTING
+  McuSemiHost_Init();
+#endif
 #if PL_CONFIG_USE_UNIT_TESTS
   Tests_Init();
 #endif

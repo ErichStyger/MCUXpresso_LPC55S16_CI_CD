@@ -33,8 +33,8 @@
 /* ---------------------------------------------------------------------------------------*/
 /* McuSemihost */
 #define McuSemihost_CONFIG_IS_ENABLED               (1)
-#define McuSemihost_CONFIG_DEBUG_CONNECTION         McuSemihost_DEBUG_CONNECTION_SEGGER
-//#define McuSemihost_CONFIG_DEBUG_CONNECTION         McuSemihost_DEBUG_CONNECTION_LINKSERVER
+//#define McuSemihost_CONFIG_DEBUG_CONNECTION         McuSemihost_DEBUG_CONNECTION_SEGGER
+#define McuSemihost_CONFIG_DEBUG_CONNECTION         McuSemihost_DEBUG_CONNECTION_LINKSERVER
 #define McuSemihost_CONFIG_RETARGET_STDLIB          (1) /* _kill, _getpid, _exit, ... */
 #define McuSemihost_CONFIG_LOG_ENABLED              (0)
 /* -----------------------------------------------------*/
@@ -46,10 +46,10 @@
 /* McuLog */
 #define McuLog_CONFIG_IS_ENABLED                (1)
 #define McuLog_CONFIG_USE_FILE                  (0)
-#define McuLog_CONFIG_USE_COLOR                 (0)
+#define McuLog_CONFIG_USE_COLOR                 (1)
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE        (0)
 #define McuLog_CONFIG_LOG_TIMESTAMP_TIME        (0)
-#define McuLog_CONFIG_NOF_CONSOLE_LOGGER        (3) /* UART, RTT or semihosting */
+#define McuLog_CONFIG_NOF_CONSOLE_LOGGER        (3) /* UART, RTT and semihosting */
 /* ---------------------------------------------------------------------------------------*/
 /* McuShellUart */
 #define McuShellUart_CONFIG_UART                         McuShellUart_CONFIG_UART_LPC55S16_USART0

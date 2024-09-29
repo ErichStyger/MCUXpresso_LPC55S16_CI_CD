@@ -32,6 +32,9 @@ static void TestTask(void *pv) {
 #endif
 
   McuLog_info("starting test task");
+#if McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER
+  test_arg = 1;
+#else /* J-Link */
 
 #if 1 && USE_TEST_ARGUMENTS /* new JRun */  
   int nofBytes;
@@ -50,6 +53,8 @@ static void TestTask(void *pv) {
   }
 #elif USE_TEST_ARGUMENTS
   test_arg = McuUnity_GetArgument(); /* get test arguments */
+#endif
+
 #endif
   UNITY_BEGIN();
   #if USE_TEST_ARGUMENTS

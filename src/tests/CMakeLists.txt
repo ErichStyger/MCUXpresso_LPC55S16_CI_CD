@@ -33,9 +33,33 @@ target_include_directories(
   .
 )
 #################################################################################
+# using SEGGER J-Run
+#################################################################################
+# set (RUNNER_CTEST_COMMAND "$ENV{SEGGER_PATH}/JRun" --verbose --device LPC55S16 --silent --rtt -if SWD)
 
-set (RUNNER_CTEST_COMMAND "$ENV{SEGGER_PATH}/JRun" --verbose --device LPC55S16 --silent --rtt -if SWD)
-#set (RUNNER_CTEST_COMMAND "$ENV{LINKSERVER_PATH}/LinkServer" --log-level 5 run --mode semihost lpc55s16)
+# set (passRegex "\\*\\* PASSED \\*\\*\\*")
+# set (failRegex "\\*\\*\\* FAILED \\*\\*\\*")
+# set_property(TEST PROPERTY PASS_REGULAR_EXPRESSION "${passRegex}")
+# set_property(TEST PROPERTY FAIL_REGULAR_EXPRESSION "${failRegex}")
+
+# add_test(
+#   NAME Led_1
+#   COMMAND ${RUNNER_CTEST_COMMAND} --args "Led_1" ${TEST_EXECUTABLE}
+# )
+
+# add_test(
+#   NAME Led_2
+#   COMMAND ${RUNNER_CTEST_COMMAND} --args "Led_1" ${TEST_EXECUTABLE}
+# )
+
+# set_tests_properties(Led_1 Led_2 PROPERTIES TIMEOUT 15)
+# set_tests_properties(Led_1 Led_2 PROPERTIES PASS_REGULAR_EXPRESSION "${passRegex}")
+# set_tests_properties(Led_1 Led_2 PROPERTIES FAIL_REGULAR_EXPRESSION "${failRegex}")
+
+#################################################################################
+# using NXP LinkServer Run
+#################################################################################
+set (RUNNER_CTEST_COMMAND "$ENV{LINKSERVER_PATH}/LinkServer" --log-level 5 run --mode semihost lpc55s16)
 
 set (passRegex "\\*\\* PASSED \\*\\*\\*")
 set (failRegex "\\*\\*\\* FAILED \\*\\*\\*")
@@ -44,18 +68,14 @@ set_property(TEST PROPERTY FAIL_REGULAR_EXPRESSION "${failRegex}")
 
 add_test(
   NAME Led_1
-  #COMMAND ${RUNNER_CTEST_COMMAND} --jlinkscriptfile "${CMAKE_CURRENT_SOURCE_DIR}/test_1.JLinkScript" ${TEST_EXECUTABLE}
-  COMMAND ${RUNNER_CTEST_COMMAND} --args "Led_1" ${TEST_EXECUTABLE}
-  #COMMAND ${RUNNER_CTEST_COMMAND} ${TEST_EXECUTABLE}
+  COMMAND ${RUNNER_CTEST_COMMAND} ${TEST_EXECUTABLE}
 )
 
 add_test(
   NAME Led_2
-  #COMMAND ${RUNNER_CTEST_COMMAND} --jlinkscriptfile "${CMAKE_CURRENT_SOURCE_DIR}/test_2.JLinkScript" ${TEST_EXECUTABLE}
-  COMMAND ${RUNNER_CTEST_COMMAND} --args "Led_1" ${TEST_EXECUTABLE}
-  #COMMAND ${RUNNER_CTEST_COMMAND} ${TEST_EXECUTABLE}
+  COMMAND ${RUNNER_CTEST_COMMAND} ${TEST_EXECUTABLE}
 )
 
-set_tests_properties(Led_1 Led_2 PROPERTIES TIMEOUT 15) 
-set_tests_properties(Led_1 Led_2 PROPERTIES PASS_REGULAR_EXPRESSION "${passRegex}") 
-set_tests_properties(Led_1 Led_2 PROPERTIES FAIL_REGULAR_EXPRESSION "${failRegex}") 
+set_tests_properties(Led_1 Led_2 PROPERTIES TIMEOUT 15)
+set_tests_properties(Led_1 Led_2 PROPERTIES PASS_REGULAR_EXPRESSION "${passRegex}")
+set_tests_properties(Led_1 Led_2 PROPERTIES FAIL_REGULAR_EXPRESSION "${failRegex}")
