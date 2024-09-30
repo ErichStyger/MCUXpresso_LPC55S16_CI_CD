@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, Erich Styger
+ * Copyright (c) 2023-2024, Erich Styger
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -7,6 +7,7 @@
 #include "McuLib.h"
 #include "McuRTT.h"
 #include "McuLog.h"
+#include "McuSemihost.h"
 #if McuLib_CONFIG_CPU_IS_RPxxxx
   #include "pico/platform.h"
 #endif
@@ -25,7 +26,28 @@ uint32_t McuUnity_GetArgument(void) {
   return program_arg;
 }
 
-int McuUnity_RTT_GetArgs(const char* buffer, size_t bufSize) {
+int McuUnity_Semihost_GetArgs(unsigned char *buffer, size_t bufSize) {
+  int c, nof;
+
+  McuLog_info("getting semihosting arguments...");
+  buffer[0] = '\0';
+  nof = 0;
+  for(;;) { /* breaks */
+    c = McuSemihost_SysReadC();
+    if (c!=EOF && c!='\n' && nof<bufSize-1) { /* -1 for the zero byte */
+      //McuLog_trace("c: %d %c", c, c);
+      *buffer = c;
+      buffer++;
+      nof++;
+    } else {
+      *buffer = '\0'; /* terminate buffer */
+      break;
+    }
+  }
+  return nof;
+}
+
+int McuUnity_RTT_GetArgs(unsigned char *buffer, size_t bufSize) {
   /* from https://wiki.segger.com/Passing_Command-line_arguments_in_C_for_Embedded_Targets */
   int NumBytes;
 

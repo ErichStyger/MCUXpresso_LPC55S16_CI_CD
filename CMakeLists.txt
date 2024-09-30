@@ -129,8 +129,8 @@ add_custom_command(TARGET ${EXECUTABLE}
 # Unit Test support
 if (ENABLE_UNIT_TESTING)
   # Adding some options to make CTest more verbose, helpful in case of failures.
-  list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
-  list(APPEND CMAKE_CTEST_ARGUMENTS "--verbose")
+  #list(APPEND CMAKE_CTEST_ARGUMENTS "--output-on-failure")
+  #list(APPEND CMAKE_CTEST_ARGUMENTS "--verbose")
 
   # Include CTest support
   include(CTest) # note: this adds a BUILD_TESTING which defaults to ON, which can be used in other CMakeLists.txt

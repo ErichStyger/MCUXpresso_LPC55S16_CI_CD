@@ -27,20 +27,27 @@ static void TestArgFailed(void) {
 
 static void TestTask(void *pv) {
   int nofFailures;
+  int nofBytes;
+  unsigned char buf[32];
 #if USE_TEST_ARGUMENTS
   uint32_t test_arg = -1;
 #endif
 
   McuLog_info("starting test task");
-#if McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER
-  test_arg = 1;
-#else /* J-Link */
-
-#if 1 && USE_TEST_ARGUMENTS /* new JRun */  
-  int nofBytes;
-  unsigned char buf[32];
-
-  nofBytes = McuUnity_RTT_GetArgs((const char*)buf, sizeof(buf));
+#if USE_TEST_ARGUMENTS && McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER
+  nofBytes = McuUnity_Semihost_GetArgs(buf, sizeof(buf));
+  //McuLog_info("nof: %d, buf: %s", nofBytes, buf);
+  if (nofBytes>0) {
+     if (McuUtility_strcmp((char*)buf, "Led_1")==0) {
+      test_arg = 1;
+     } else if (McuUtility_strcmp((char*)buf, "Led_2")==0) {
+      test_arg = 2;
+     }
+  } else {
+    test_arg = 1; /*! \TODO */
+  }
+#elif 1 && USE_TEST_ARGUMENTS /* new JRun */  
+  nofBytes = McuUnity_RTT_GetArgs(buf, sizeof(buf));
   SEGGER_RTT_printf(0, "args = %s, nofBytes = %d\n", buf);
   if (nofBytes>0) {
      if (McuUtility_strcmp((char*)buf, "Led_1")==0) {
@@ -55,7 +62,7 @@ static void TestTask(void *pv) {
   test_arg = McuUnity_GetArgument(); /* get test arguments */
 #endif
 
-#endif
+  McuLog_info("Test arg: %d", test_arg);
   UNITY_BEGIN();
   #if USE_TEST_ARGUMENTS
     switch(test_arg) {

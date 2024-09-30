@@ -57,25 +57,21 @@ target_include_directories(
 # set_tests_properties(Led_1 Led_2 PROPERTIES FAIL_REGULAR_EXPRESSION "${failRegex}")
 
 #################################################################################
-# using NXP LinkServer Run
+# using NXP LinkServer Runner
 #################################################################################
-set (RUNNER_CTEST_COMMAND "$ENV{LINKSERVER_PATH}/LinkServer" --log-level 5 run --mode semihost lpc55s16)
-
-set (passRegex "\\*\\* PASSED \\*\\*\\*")
-set (failRegex "\\*\\*\\* FAILED \\*\\*\\*")
-set_property(TEST PROPERTY PASS_REGULAR_EXPRESSION "${passRegex}")
-set_property(TEST PROPERTY FAIL_REGULAR_EXPRESSION "${failRegex}")
+set (RUNNER_CTEST_COMMAND $ENV{LINKSERVER_PATH}/LinkServer --log-level 1 run --mode semihost --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***")
+set (RUNNER_CTEST_EXECUTABLE lpc55s16 ${TEST_EXECUTABLE})
 
 add_test(
   NAME Led_1
-  COMMAND ${RUNNER_CTEST_COMMAND} ${TEST_EXECUTABLE}
+  COMMAND ${RUNNER_CTEST_COMMAND} --send "Led_1" ${RUNNER_CTEST_EXECUTABLE}
 )
 
 add_test(
   NAME Led_2
-  COMMAND ${RUNNER_CTEST_COMMAND} ${TEST_EXECUTABLE}
+  COMMAND ${RUNNER_CTEST_COMMAND} --send "Led_2" ${RUNNER_CTEST_EXECUTABLE}
 )
 
-set_tests_properties(Led_1 Led_2 PROPERTIES TIMEOUT 15)
-set_tests_properties(Led_1 Led_2 PROPERTIES PASS_REGULAR_EXPRESSION "${passRegex}")
-set_tests_properties(Led_1 Led_2 PROPERTIES FAIL_REGULAR_EXPRESSION "${failRegex}")
+set_tests_properties(Led_1 Led_2 
+  PROPERTIES TIMEOUT 15
+)

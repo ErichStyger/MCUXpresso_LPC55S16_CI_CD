@@ -69,14 +69,33 @@ exit
 ## J-Run
 See https://www.segger.com/products/debug-probes/j-link/tools/j-run/
 
+# NXP LinkServer Debug
+Prior launching, run LinkServer GDB Server:
+```
+c:\nxp\LinkServer_24.9.75\LinkServer gdbserver --keep-alive LPC55S16:LPCXpresso55S16
+```
+
 # NXP LinkServer Runner
 Set Semihosting to LinkServer in IncludeMcuLibConfig.h:
 ```
 #define McuSemihost_CONFIG_DEBUG_CONNECTION         McuSemihost_DEBUG_CONNECTION_LINKSERVER
 ```
 ```
-c:\nxp\LinkServer_24.9.75\LinkServer --log-level 5 run --mode semihost lpc55s16 build\debug-test\LPC55S16_Blinky.elf
+c:\nxp\LinkServer_24.9.75\LinkServer --log-level 1 run --mode semihost lpc55s16 build\debug-test\LPC55S16_Blinky.elf
+
+
+C:\NXP\LinkServer_24.9.75\LinkServer.exe "--log-level" "2" "run" "--mode" "semihost" "--exit-mark" "** PASSED **" "lpc55s16" "C:/Users/Erich Styger.N0007139/Data/GitRepos/MCUXpresso_LPC55S16_CI_CD/C:\NXP\LinkServer_24.9.75\LinkServer.exe --log-level 2 run --mode semihost --exit-mark "** PASSED **" lpc55s16 C:/Users/Erich Styger.N0007139/Data/GitRepos/MCUXpresso_LPC55S16_CI_CD/build/debug-test/LPC55S16_Blinky.elfbuild/debug-test/LPC55S16_Blinky.elf"
 ```
+
+C:\NXP\LinkServer_24.9.75\LinkServer.exe "--log-level" "2" "run" "--mode" "semihost" "--exit-mark" "*STOP*" "--pass-mark" "*** PASSED ***" "--fail-mark" "*** FAILED ***" "--send" "Led_1" "lpc55s16" "C:/Users/Erich Styger.N0007139/Data/GitRepos/MCUXpresso_LPC55S16_CI_CD/build/debug-test/LPC55S16_Blinky.elf"
+
+Works:
+C:\NXP\LinkServer_24.9.75\LinkServer.exe "--log-level" "2" "run" "--mode" "semihost" "--send" "Led_2" "lpc55s16" "C:/Users/Erich Styger.N0007139/Data/GitRepos/MCUXpresso_LPC55S16_CI_CD/build/debug-test/LPC55S16_Blinky.elf"
+
+
+C:\NXP\LinkServer_24.9.75\LinkServer.exe --log-level 2 run --mode semihost --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --send "Led_x" lpc55s16 "build/debug-test/LPC55S16_Blinky.elf"
+
+echo %errorlevel%  
 
 ## Unit Tests
 Enable 'PL_CONFIG_USE_UNIT_TESTS' in platform.h
@@ -92,7 +111,9 @@ add_test(NAME ${CMAKE_PROJECT_NAME} COMMAND JRun.exe)
 ```
 Manual test run:
 ```
-ctest --test-dir build/debug-test --timeout 120
+ctest --verbose --output-on-failure --test-dir build/debug-test --timeout 15
+
+ctest -T test --verbose --output-on-failure -R ^Led_1$
 ```
 
 ## Links

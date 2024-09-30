@@ -19,9 +19,26 @@ void McuUnity_flush(void);
 void McuUnity_start(void);
 void McuUnity_complete(void);
 
+/*!
+  \brief Get memory mapped argument number.
+*/
 uint32_t McuUnity_GetArgument(void);
 
-int McuUnity_RTT_GetArgs(const char *buffer, size_t bufSize);
+/*!
+  \brief Get J-Run arguments passed with RTT and --args
+  \param buffer Pointer to memory where to store the argument string
+  \param bufSize Size of buffer in bytes
+  \return Number of bytes in buffer
+*/
+int McuUnity_RTT_GetArgs(unsigned char *buffer, size_t bufSize);
+
+/*!
+  \brief Get Semihosting arguments passed to application
+  \param buffer Pointer to memory where to store the argument string
+  \param bufSize Size of buffer in bytes
+  \return Number of bytes in buffer
+*/
+int McuUnity_Semihost_GetArgs(unsigned char *buffer, size_t bufSize);
 
 #ifdef __cplusplus
 }  /* extern "C" */
