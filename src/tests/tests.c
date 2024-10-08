@@ -23,7 +23,7 @@
 
 #if USE_TEST_ARGUMENTS
 static void TestArgFailed(void) {
-  TEST_ASSERT_MESSAGE(false, "wrong test_arg value, check JLinkScript file");
+  TEST_ASSERT_MESSAGE(false, "wrong test arg value");
 }
 #endif
 
@@ -63,7 +63,7 @@ static void TestTask(void *pv) {
       test_arg = 1; /*! \TODO */
     }
   #endif
-#elif 1 && USE_TEST_ARGUMENTS /* new JRun */  
+#elif PL_CONFIG_USE_RTT && USE_TEST_ARGUMENTS /* new JRun */  
   nofBytes = McuUnity_RTT_GetArgs(buf, sizeof(buf));
   SEGGER_RTT_printf(0, "RTT args = %s, nofBytes = %d\n", buf, nofBytes);
   if (nofBytes>0) {
@@ -100,7 +100,17 @@ static void TestTask(void *pv) {
   } else {
     McuLog_error("*** FAILED ***");
   }
+#if PL_CONFIG_USE_RTT
+  if (nofFailures==0) {
+    McuLog_info("Success: sending stop with 0");
+    McuLog_info("*STOP*0"); /* stop test runner with exit code 0 (ok) */
+  } else {
+    McuLog_info("Failed: sending stop with 1");
+    McuLog_info("*STOP*1"); /* stop test runner with exit code 1 (failed), negative error codes are J-Run error codes */
+  }
+#else /* LinkServer */
   McuLog_info("*STOP*"); /* stop test runner */
+#endif
   vTaskDelete(NULL); /* terminate task */
 }
 

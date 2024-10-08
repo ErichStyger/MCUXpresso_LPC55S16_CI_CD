@@ -15,7 +15,7 @@
    #error "Unity hooks need to be defined in IncludeMcuLibConfig.h!"
 #endif
 
-#define PL_CONFIG_USE_RTT           (1)   /* using SEGGER RTT for log and test output */
+#define PL_CONFIG_USE_RTT           (1)   /* using J-Run and SEGGER RTT for log and test output */
 #define PL_CONFIG_USE_SEMIHOSTING   (0)   /* using semihosting for log and test output */
 #define PL_CONFIG_USE_SHELL_UART    (0)   /* using UART for log and test output */
 

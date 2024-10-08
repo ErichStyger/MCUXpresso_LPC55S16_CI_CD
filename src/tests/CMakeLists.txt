@@ -37,10 +37,10 @@ target_include_directories(
 #################################################################################
 set (RUNNER_CTEST_COMMAND "$ENV{SEGGER_PATH}/JRun" --verbose --device LPC55S16 --silent --rtt -if SWD)
 
-set (passRegex "\\*\\* PASSED \\*\\*\\*")
-set (failRegex "\\*\\*\\* FAILED \\*\\*\\*")
-set_property(TEST PROPERTY PASS_REGULAR_EXPRESSION "${passRegex}")
-set_property(TEST PROPERTY FAIL_REGULAR_EXPRESSION "${failRegex}")
+#set (passRegex "\\*\\* PASSED \\*\\*\\*")
+#set (failRegex "\\*\\*\\* FAILED \\*\\*\\*")
+#set_property(TEST PROPERTY PASS_REGULAR_EXPRESSION "${passRegex}")
+#set_property(TEST PROPERTY FAIL_REGULAR_EXPRESSION "${failRegex}")
 
 add_test(
   NAME Led_1
@@ -49,14 +49,14 @@ add_test(
 
 add_test(
   NAME Led_2
-  COMMAND ${RUNNER_CTEST_COMMAND} --args "1" ${TEST_EXECUTABLE}
+  COMMAND ${RUNNER_CTEST_COMMAND} --args "3" ${TEST_EXECUTABLE}
 )
 
 set_tests_properties(
   Led_1 Led_2
   PROPERTIES
-  PASS_REGULAR_EXPRESSION "${passRegex}"
-  FAIL_REGULAR_EXPRESSION "${failRegex}"
+  #PASS_REGULAR_EXPRESSION "${passRegex}"
+  #FAIL_REGULAR_EXPRESSION "${failRegex}"
   TIMEOUT 15
 )
 
