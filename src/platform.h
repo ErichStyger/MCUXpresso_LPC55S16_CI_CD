@@ -15,9 +15,21 @@
    #error "Unity hooks need to be defined in IncludeMcuLibConfig.h!"
 #endif
 
-#define PL_CONFIG_USE_RTT           (1)   /* using J-Run and SEGGER RTT for log and test output */
-#define PL_CONFIG_USE_SEMIHOSTING   (0)   /* using semihosting for log and test output */
-#define PL_CONFIG_USE_SHELL_UART    (0)   /* using UART for log and test output */
+/* enable on or the other runner: update the tests/CMakeLists.txt as well! */
+#define PL_CONFIG_USE_RUNNER_JLINK       (1)
+#define PL_CONFIG_USE_RUNNER_LINKSERVER  (0)
+
+#define PL_CONFIG_USE_RTT                 (1 && PL_CONFIG_USE_RUNNER_JLINK)        /* J-Link only: using J-Run and SEGGER RTT for log and test output */
+#define PL_CONFIG_USE_SEMIHOSTING         (1 && PL_CONFIG_USE_RUNNER_LINKSERVER)   /* LinkServer only: using semihosting for log and test output */
+#define PL_CONFIG_USE_SHELL_UART          (0 && PL_CONFIG_USE_RUNNER_LINKSERVER)   /* LinkServer only: using UART for log and test output */
+
+#define PL_CONFIG_USE_EXPERIMENTAL        (1 && PL_CONFIG_USE_RUNNER_LINKSERVER)    /* experimental feature with arguments */
+
+#if PL_CONFIG_USE_RUNNER_LINKSERVER && PL_CONFIG_USE_SEMIHOSTING && McuSemihost_CONFIG_DEBUG_CONNECTION!=McuSemihost_DEBUG_CONNECTION_LINKSERVER
+  #error "check LinkServer settings in IncludeMcuLibConfig.h"
+#elif PL_CONFIG_USE_RUNNER_JLINK && PL_CONFIG_USE_SEMIHOSTING && McuSemihost_CONFIG_DEBUG_CONNECTION!=McuSemihost_DEBUG_CONNECTION_SEGGER
+  #error "check SEGGER settings in IncludeMcuLibConfig.h"
+#endif
 
 /*!
  * \brief Module initialization

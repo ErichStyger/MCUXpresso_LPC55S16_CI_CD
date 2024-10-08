@@ -29,7 +29,7 @@ void APP_Run(void) {
   PL_Init(); /* init modules */
 
   McuLog_info("Hello from the Log module");
-#if McuSemihost_CONFIG_IS_ENABLED
+#if PL_CONFIG_USE_SEMIHOSTING && McuSemihost_CONFIG_IS_ENABLED
   #if McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER
     McuSemihost_printf("Hello from semihosting with NXP LinkServer!\n");
   #elif McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_SEGGER
@@ -44,6 +44,10 @@ void APP_Run(void) {
   /* tests stopping the runner */
   #if McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER
     //McuSemihost_printf("*STOP*\n"); /* stop LinkServer */
+  #endif
+  #if 0 && PL_CONFIG_USE_RUNNER_JLINK && PL_CONFIG_USE_RTT
+    SEGGER_RTT_printf(0, "sending stop:\r\n");
+    SEGGER_RTT_printf(0, "*STOP*1\r\n"); /* \r\n does not work, \n works */
   #endif
   //McuSemihost_printf("*** FAILED ***\n");
   //McuSemihost_printf("*STOP*\n"); /* stop runner */
