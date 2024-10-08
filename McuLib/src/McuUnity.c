@@ -8,6 +8,7 @@
 #include "McuRTT.h"
 #include "McuLog.h"
 #include "McuSemihost.h"
+#include "McuShellUart.h"
 #if McuLib_CONFIG_CPU_IS_RPxxxx
   #include "pico/platform.h"
 #endif
@@ -26,14 +27,59 @@ uint32_t McuUnity_GetArgument(void) {
   return program_arg;
 }
 
+int McuUnity_UART_GetArgs(unsigned char *buffer, size_t bufSize, McuShell_ConstStdIOTypePtr io) {
+  int nof = 0;
+
+  McuLog_info("getting UART arguments...");
+  buffer[0] = '\0';
+
+#if 0
+  unsigned char ch;
+  for(;;) { /* breaks */
+    io->stdIn(&ch);
+    if (ch!='\0' && ch!='\n' && nof<bufSize-1) { /* -1 for the zero byte */
+      McuLog_trace("c: %c", ch);
+      *buffer = ch;
+      buffer++;
+      nof++;
+    } else {
+      *buffer = '\0'; /* terminate buffer */
+      break;
+    }
+  }
+#else
+  int i = McuShellUart_PollChar();
+  McuLog_info("i: %d", i);
+  if (i!=EOF) {
+    *buffer = i;
+    nof++;
+    buffer++;
+    *buffer = '\0'; /* terminate buffer */
+    i = McuShellUart_PollChar();
+    McuLog_info("i1: %d", i);
+  } else {
+    *buffer = '\0'; /* terminate buffer */
+  }
+#endif
+  return nof;
+}
+
 int McuUnity_Semihost_GetArgs(unsigned char *buffer, size_t bufSize) {
   int c, nof;
 
   McuLog_info("getting semihosting arguments...");
   buffer[0] = '\0';
+#if 0
+  McuLog_info("reading first char");
+  if (McuSemihost_Read(McuSemihost_STDIN, buffer, 1)!=0) { /* blocking! */
+    McuLog_error("Failed reading from stdin!");
+  } else {
+    McuLog_info("have read: %c", buffer[0]);
+  }
+#endif
   nof = 0;
   for(;;) { /* breaks */
-    c = McuSemihost_SysReadC();
+    c = McuSemihost_SysReadC(); /* blocking! */
     if (c!=EOF && c!='\n' && nof<bufSize-1) { /* -1 for the zero byte */
       //McuLog_trace("c: %d %c", c, c);
       *buffer = c;

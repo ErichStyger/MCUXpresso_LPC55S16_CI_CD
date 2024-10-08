@@ -11,6 +11,8 @@
 #include "McuUnity.h"
 #include "McuRTOS.h"
 #include "McuShell.h"
+#include "McuShellUart.h"
+#include "McuSemihost.h"
 #include "McuRTT.h"
 #include "McuUnity.h"
 #include "McuUtility.h"
@@ -27,32 +29,47 @@ static void TestArgFailed(void) {
 
 static void TestTask(void *pv) {
   int nofFailures;
-  int nofBytes;
-  unsigned char buf[32];
 #if USE_TEST_ARGUMENTS
   uint32_t test_arg = -1;
+  int nofBytes;
+  unsigned char buf[32];
 #endif
 
   McuLog_info("starting test task");
 #if USE_TEST_ARGUMENTS && McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER
-  nofBytes = McuUnity_Semihost_GetArgs(buf, sizeof(buf));
-  //McuLog_info("nof: %d, buf: %s", nofBytes, buf);
-  if (nofBytes>0) {
-     if (McuUtility_strcmp((char*)buf, "Led_1")==0) {
-      test_arg = 1;
-     } else if (McuUtility_strcmp((char*)buf, "Led_2")==0) {
-      test_arg = 2;
-     }
-  } else {
-    test_arg = 1; /*! \TODO */
-  }
+  #if PL_CONFIG_USE_SHELL_UART
+    extern int McuUnity_UART_GetArgs(unsigned char *buffer, size_t bufSize, McuShell_ConstStdIOTypePtr io);
+    nofBytes = McuUnity_UART_GetArgs(buf, sizeof(buf), McuShellUart_GetStdio());
+    McuLog_info("uart nof: %d, buf: %s", nofBytes, buf);
+    if (nofBytes>0) {
+      if (buf[0]=='1') {
+        test_arg = 1;
+      } else if (buf[0]=='2') {
+        test_arg = 2;
+      }
+    } else {
+      test_arg = 1; /*! \TODO */
+    }
+  #else
+    nofBytes = McuUnity_Semihost_GetArgs(buf, sizeof(buf));
+    McuLog_info("semihost nof: %d, buf: %s", nofBytes, buf);
+    if (nofBytes>0) {
+      if (buf[0]=='1') {
+        test_arg = 1;
+      } else if (buf[0]=='2') {
+        test_arg = 2;
+      }
+    } else {
+      test_arg = 1; /*! \TODO */
+    }
+  #endif
 #elif 1 && USE_TEST_ARGUMENTS /* new JRun */  
   nofBytes = McuUnity_RTT_GetArgs(buf, sizeof(buf));
   SEGGER_RTT_printf(0, "args = %s, nofBytes = %d\n", buf);
   if (nofBytes>0) {
-     if (McuUtility_strcmp((char*)buf, "Led_1")==0) {
+     if (McuUtility_strcmp((char*)buf, "1")==0) {
       test_arg = 1;
-     } else if (McuUtility_strcmp((char*)buf, "Led_2")==0) {
+     } else if (McuUtility_strcmp((char*)buf, "2")==0) {
       test_arg = 2;
      }
   } else {
@@ -62,7 +79,9 @@ static void TestTask(void *pv) {
   test_arg = McuUnity_GetArgument(); /* get test arguments */
 #endif
 
+#if USE_TEST_ARGUMENTS
   McuLog_info("Test arg: %d", test_arg);
+#endif
   UNITY_BEGIN();
   #if USE_TEST_ARGUMENTS
     switch(test_arg) {

@@ -24,6 +24,17 @@ void McuUnity_complete(void);
 */
 uint32_t McuUnity_GetArgument(void);
 
+
+//#include "McuShell.h"
+/*!
+  \brief Get UART arguments passed
+  \param buffer Pointer to memory where to store the argument string
+  \param bufSize Size of buffer in bytes
+  \param io Standard I/O descriptor
+  \return Number of bytes in buffer
+*/
+//int McuUnity_UART_GetArgs(unsigned char *buffer, size_t bufSize, McuShell_ConstStdIOTypePtr io);
+
 /*!
   \brief Get J-Run arguments passed with RTT and --args
   \param buffer Pointer to memory where to store the argument string

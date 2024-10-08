@@ -41,15 +41,6 @@ void PL_Init(void) {
 #if PL_CONFIG_USE_RTT
   McuRTT_Init();
 #endif
-  McuLog_Init();
-#if PL_CONFIG_USE_SEMIHOSTING && !PL_CONFIG_USE_RTT
-  McuLog_set_console(McuSemihost_GetStdio(), 0);
-#elif !PL_CONFIG_USE_SEMIHOSTING && PL_CONFIG_USE_RTT
-  McuLog_set_console(McuRTT_GetStdio(), 0);
-#elif McuLog_CONFIG_NOF_CONSOLE_LOGGER>=2 && PL_CONFIG_USE_SEMIHOSTING && PL_CONFIG_USE_RTT
-  McuLog_set_console(McuRTT_GetStdio(), 0);
-  McuLog_set_console(McuSemihost_GetStdio(), 1);
-#endif
   McuGPIO_Init();
   McuLED_Init();
 #if PL_CONFIG_USE_SHELL_UART
@@ -63,5 +54,19 @@ void PL_Init(void) {
 #endif
 #if PL_CONFIG_USE_UNIT_TESTS
   Tests_Init();
+#endif
+  McuLog_Init();
+#if McuLog_CONFIG_NOF_CONSOLE_LOGGER>=2 && PL_CONFIG_USE_SEMIHOSTING && PL_CONFIG_USE_SHELL_UART
+  McuLog_set_console(McuShellUart_GetStdio(), 0);
+  //McuLog_set_console(McuSemihost_GetStdio(), 1);
+#else
+#if PL_CONFIG_USE_SEMIHOSTING && !PL_CONFIG_USE_RTT
+  McuLog_set_console(McuSemihost_GetStdio(), 0);
+#elif !PL_CONFIG_USE_SEMIHOSTING && PL_CONFIG_USE_RTT
+  McuLog_set_console(McuRTT_GetStdio(), 0);
+#elif McuLog_CONFIG_NOF_CONSOLE_LOGGER>=2 && PL_CONFIG_USE_SEMIHOSTING && PL_CONFIG_USE_RTT
+  McuLog_set_console(McuRTT_GetStdio(), 0);
+  McuLog_set_console(McuSemihost_GetStdio(), 1);
+#endif
 #endif
 }

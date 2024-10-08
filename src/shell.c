@@ -47,6 +47,9 @@ static const SHELL_IODesc ios[] =
 #if McuSemihost_CONFIG_IS_ENABLED
   {&McuSemihost_stdio,  McuSemihost_DefaultShellBuffer,  sizeof(McuSemihost_DefaultShellBuffer)},
 #endif
+#if PL_CONFIG_USE_SHELL_UART
+  {&McuShellUart_stdio,  McuShellUart_DefaultShellBuffer,  sizeof(McuShellUart_DefaultShellBuffer)},
+#endif
 };
 
 void SHELL_SendChar(unsigned char ch) {

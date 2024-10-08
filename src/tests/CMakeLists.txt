@@ -35,43 +35,51 @@ target_include_directories(
 #################################################################################
 # using SEGGER J-Run
 #################################################################################
-# set (RUNNER_CTEST_COMMAND "$ENV{SEGGER_PATH}/JRun" --verbose --device LPC55S16 --silent --rtt -if SWD)
+set (RUNNER_CTEST_COMMAND "$ENV{SEGGER_PATH}/JRun" --verbose --device LPC55S16 --silent --rtt -if SWD)
 
-# set (passRegex "\\*\\* PASSED \\*\\*\\*")
-# set (failRegex "\\*\\*\\* FAILED \\*\\*\\*")
-# set_property(TEST PROPERTY PASS_REGULAR_EXPRESSION "${passRegex}")
-# set_property(TEST PROPERTY FAIL_REGULAR_EXPRESSION "${failRegex}")
-
-# add_test(
-#   NAME Led_1
-#   COMMAND ${RUNNER_CTEST_COMMAND} --args "Led_1" ${TEST_EXECUTABLE}
-# )
-
-# add_test(
-#   NAME Led_2
-#   COMMAND ${RUNNER_CTEST_COMMAND} --args "Led_1" ${TEST_EXECUTABLE}
-# )
-
-# set_tests_properties(Led_1 Led_2 PROPERTIES TIMEOUT 15)
-# set_tests_properties(Led_1 Led_2 PROPERTIES PASS_REGULAR_EXPRESSION "${passRegex}")
-# set_tests_properties(Led_1 Led_2 PROPERTIES FAIL_REGULAR_EXPRESSION "${failRegex}")
-
-#################################################################################
-# using NXP LinkServer Runner
-#################################################################################
-set (RUNNER_CTEST_COMMAND $ENV{LINKSERVER_PATH}/LinkServer --log-level 1 run --mode semihost --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***")
-set (RUNNER_CTEST_EXECUTABLE lpc55s16 ${TEST_EXECUTABLE})
+set (passRegex "\\*\\* PASSED \\*\\*\\*")
+set (failRegex "\\*\\*\\* FAILED \\*\\*\\*")
+set_property(TEST PROPERTY PASS_REGULAR_EXPRESSION "${passRegex}")
+set_property(TEST PROPERTY FAIL_REGULAR_EXPRESSION "${failRegex}")
 
 add_test(
   NAME Led_1
-  COMMAND ${RUNNER_CTEST_COMMAND} --send "Led_1" ${RUNNER_CTEST_EXECUTABLE}
+  COMMAND ${RUNNER_CTEST_COMMAND} --args "1" ${TEST_EXECUTABLE}
 )
 
 add_test(
   NAME Led_2
-  COMMAND ${RUNNER_CTEST_COMMAND} --send "Led_2" ${RUNNER_CTEST_EXECUTABLE}
+  COMMAND ${RUNNER_CTEST_COMMAND} --args "1" ${TEST_EXECUTABLE}
 )
 
-set_tests_properties(Led_1 Led_2 
-  PROPERTIES TIMEOUT 15
+set_tests_properties(
+  Led_1 Led_2
+  PROPERTIES
+  PASS_REGULAR_EXPRESSION "${passRegex}"
+  FAIL_REGULAR_EXPRESSION "${failRegex}"
+  TIMEOUT 15
 )
+
+# #################################################################################
+# # using NXP LinkServer Runner
+# #################################################################################
+# #set (RUNNER_CTEST_MODE  --mode semihost)
+# set (RUNNER_CTEST_MODE  --mode serial:COM70:115200)
+# set (RUNNER_CTEST_CONTROL  --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***")
+# set (RUNNER_CTEST_COMMAND $ENV{LINKSERVER_PATH}/LinkServer --log-level 1 run  ${RUNNER_CTEST_MODE} ${RUNNER_CTEST_CONTROL})
+# set (RUNNER_CTEST_EXECUTABLE lpc55s16 ${TEST_EXECUTABLE})
+
+# add_test(
+#   NAME Led_1
+#   COMMAND ${RUNNER_CTEST_COMMAND} --send "1" ${RUNNER_CTEST_EXECUTABLE}
+# )
+
+# add_test(
+#   NAME Led_2
+#   COMMAND ${RUNNER_CTEST_COMMAND} --send "2" ${RUNNER_CTEST_EXECUTABLE}
+# )
+
+# set_tests_properties(
+#   Led_1 Led_2 
+#   PROPERTIES TIMEOUT 15
+# )

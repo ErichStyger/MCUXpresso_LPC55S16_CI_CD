@@ -5,5 +5,10 @@
     "cmake.options.statusBarVisibility": "visible",
     "cmake.buildBeforeRun": true,
     "cmake.configureOnOpen": false,
-    "cmake.useCMakePresets": "always"
+    "cmake.useCMakePresets": "always",
+    "files.associations": {
+        "mcurtos.h": "c",
+        "tests.h": "c",
+        "platform.h": "c"
+    }
 }
