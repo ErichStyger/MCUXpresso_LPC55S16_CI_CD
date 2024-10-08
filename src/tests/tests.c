@@ -65,7 +65,7 @@ static void TestTask(void *pv) {
   #endif
 #elif 1 && USE_TEST_ARGUMENTS /* new JRun */  
   nofBytes = McuUnity_RTT_GetArgs(buf, sizeof(buf));
-  SEGGER_RTT_printf(0, "args = %s, nofBytes = %d\n", buf);
+  SEGGER_RTT_printf(0, "RTT args = %s, nofBytes = %d\n", buf, nofBytes);
   if (nofBytes>0) {
      if (McuUtility_strcmp((char*)buf, "1")==0) {
       test_arg = 1;

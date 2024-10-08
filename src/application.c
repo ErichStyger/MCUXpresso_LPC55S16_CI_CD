@@ -29,7 +29,7 @@ void APP_Run(void) {
   PL_Init(); /* init modules */
 
   McuLog_info("Hello from the Log module");
-  #if McuSemihost_CONFIG_IS_ENABLED
+#if McuSemihost_CONFIG_IS_ENABLED
   #if McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER
     McuSemihost_printf("Hello from semihosting with NXP LinkServer!\n");
   #elif McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_SEGGER
@@ -41,15 +41,15 @@ void APP_Run(void) {
 
 #if PL_CONFIG_USE_UNIT_TESTS
   McuLog_info("Running Unit Tests.");
-  /* test stopping the runner */
+  /* tests stopping the runner */
   #if McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER
-  //McuSemihost_printf("*STOP*\n"); /* stop LinkServer */
+    //McuSemihost_printf("*STOP*\n"); /* stop LinkServer */
   #endif
+  //McuSemihost_printf("*** FAILED ***\n");
+  //McuSemihost_printf("*STOP*\n"); /* stop runner */
 #else
   McuSemihost_printf("NOT running tests.\n");
 #endif
-  //McuSemihost_printf("*** FAILED ***\n");
-  //McuSemihost_printf("*STOP*\n"); /* stop runner */
 
   if (xTaskCreate(
       AppTask,  /* pointer to the task */
