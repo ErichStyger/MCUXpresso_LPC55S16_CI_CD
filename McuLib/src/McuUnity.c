@@ -29,16 +29,14 @@ uint32_t McuUnity_GetArgument(void) {
 
 int McuUnity_UART_GetArgs(unsigned char *buffer, size_t bufSize, McuShell_ConstStdIOTypePtr io) {
   int nof = 0;
+  unsigned char ch;
 
   McuLog_info("getting UART arguments...");
   buffer[0] = '\0';
-
-#if 0
-  unsigned char ch;
   for(;;) { /* breaks */
     io->stdIn(&ch);
     if (ch!='\0' && ch!='\n' && nof<bufSize-1) { /* -1 for the zero byte */
-      McuLog_trace("c: %c", ch);
+      //McuLog_trace("c: %c", ch);
       *buffer = ch;
       buffer++;
       nof++;
@@ -47,20 +45,6 @@ int McuUnity_UART_GetArgs(unsigned char *buffer, size_t bufSize, McuShell_ConstS
       break;
     }
   }
-#else
-  int i = McuShellUart_PollChar();
-  McuLog_info("i: %d", i);
-  if (i!=EOF) {
-    *buffer = i;
-    nof++;
-    buffer++;
-    *buffer = '\0'; /* terminate buffer */
-    i = McuShellUart_PollChar();
-    McuLog_info("i1: %d", i);
-  } else {
-    *buffer = '\0'; /* terminate buffer */
-  }
-#endif
   return nof;
 }
 

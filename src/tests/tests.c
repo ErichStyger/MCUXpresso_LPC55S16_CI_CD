@@ -18,6 +18,7 @@
 #include "McuUtility.h"
 #include "McuLog.h"
 #include "test_leds.h"
+#include "shell.h"
 
 #define USE_TEST_ARGUMENTS  (1)  /* if using test arguments */
 
@@ -38,25 +39,49 @@ static void TestTask(void *pv) {
   McuLog_info("starting test task");
 #if USE_TEST_ARGUMENTS && McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER
   #if PL_CONFIG_USE_SHELL_UART
-    extern int McuUnity_UART_GetArgs(unsigned char *buffer, size_t bufSize, McuShell_ConstStdIOTypePtr io);
+    #if PL_CONFIG_USE_EXPERIMENTAL
+
+    vTaskDelay(pdMS_TO_TICKS(3000)); /* give UART time to receive */
+
+    McuLog_info("Shell suspend");
+    SHELL_Suspend();
+
+    McuShell_printfIO(McuShellUart_GetStdio(), "*ARGS*\r\n");
+    vTaskDelay(pdMS_TO_TICKS(500)); /* give UART time to receive */
+    #if 0
+    for(int i=0; i<20; i++) {
+      McuShell_printfIO(McuShellUart_GetStdio(), ".");
+      vTaskDelay(pdMS_TO_TICKS(100));
+    }
+    McuShell_printfIO(McuShellUart_GetStdio(), "\r\n");
+    #endif
+    extern int McuUnity_UART_GetArgs(unsigned char *buffer, size_t bufSize, McuShell_ConstStdIOTypePtr io); /* \todo */
     nofBytes = McuUnity_UART_GetArgs(buf, sizeof(buf), McuShellUart_GetStdio());
+
+    McuLog_info("Shell to be resumed");
+    SHELL_Resume();
+
+    #endif
     McuLog_info("uart nof: %d, buf: %s", nofBytes, buf);
     if (nofBytes>0) {
-      if (buf[0]=='1') {
+      if (McuUtility_strcmp((char*)buf, "led1")==0) {
         test_arg = 1;
-      } else if (buf[0]=='2') {
+      } else if (McuUtility_strcmp((char*)buf, "led2")==0) {
         test_arg = 2;
       }
     } else {
       test_arg = 1; /*! \TODO */
     }
   #else
+    #if PL_CONFIG_USE_EXPERIMENTAL
+    McuSemihost_printf("*ARGS*"); /* somehow, this will block the following semihosting SYS_READC? */
+    #endif
     nofBytes = McuUnity_Semihost_GetArgs(buf, sizeof(buf));
     McuLog_info("semihost nof: %d, buf: %s", nofBytes, buf);
     if (nofBytes>0) {
-      if (buf[0]=='1') {
+      if (McuUtility_strcmp((char*)buf, "led1")==0) {
         test_arg = 1;
-      } else if (buf[0]=='2') {
+      } else if (McuUtility_strcmp((char*)buf, "led2")==0) {
         test_arg = 2;
       }
     } else {
@@ -67,9 +92,9 @@ static void TestTask(void *pv) {
   nofBytes = McuUnity_RTT_GetArgs(buf, sizeof(buf));
   SEGGER_RTT_printf(0, "RTT args = %s, nofBytes = %d\n", buf, nofBytes);
   if (nofBytes>0) {
-     if (McuUtility_strcmp((char*)buf, "1")==0) {
+     if (McuUtility_strcmp((char*)buf, "led1")==0) {
       test_arg = 1;
-     } else if (McuUtility_strcmp((char*)buf, "2")==0) {
+     } else if (McuUtility_strcmp((char*)buf, "led2")==0) {
       test_arg = 2;
      }
   } else {

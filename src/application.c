@@ -9,6 +9,8 @@
 #include "McuRTOS.h"
 #include "McuRTT.h"
 #include "McuLog.h"
+#include "McuShell.h"
+#include "McuShellUart.h"
 #include "McuSemihost.h"
 #include "leds.h"
 
@@ -37,6 +39,8 @@ void APP_Run(void) {
   #else
     #error
   #endif
+#elif PL_CONFIG_USE_SHELL_UART
+  McuShell_printfIO(McuShellUart_GetStdio(), "Hello from the UART!\r\n");
 #endif
 
 #if PL_CONFIG_USE_UNIT_TESTS

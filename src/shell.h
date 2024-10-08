@@ -13,6 +13,9 @@
 extern "C" {
 #endif
 
+void SHELL_Suspend(void);
+void SHELL_Resume(void);
+
 /*!
  * \brief Send a string to all supported I/Os
  * \param str String to send

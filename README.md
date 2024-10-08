@@ -6,6 +6,16 @@ The setup is described in details in my blog article: https://mcuoneclipse.com/2
 
 See as well https://mcuoneclipse.com/2023/12/18/modern-on-target-embedded-system-testing-with-cmake-and-ctest/
 
+## UART to on-board Debug Probe (VCOM)
+VCOM through debug probe
+- JP9 (lower left corner, near PMod connector) has to be open
+- JP12 (left of JP3/UART Header) needs to be closed
+https://mcuoneclipse.com/2021/05/15/using-fatfs-and-minini-with-the-nxp-lpc55s16-evk/
+
+J3 UART header:
+- JP9 installed
+- JP12 open
+
 ## Environment
 In order to have compiler and J-Link not hardcoded in the project itself, rund the setenv script file.
 
@@ -106,6 +116,7 @@ Set Semihosting to LinkServer in IncludeMcuLibConfig.h:
 ```
 c:\nxp\LinkServer_24.9.75\LinkServer --log-level 1 run --mode semihost lpc55s16 build\debug-test\LPC55S16_Blinky.elf
 ```
+
 ```
 C:\NXP\LinkServer_24.9.75\LinkServer.exe "--log-level" "2" "run" "--mode" "semihost" "--exit-mark" "** PASSED **" "lpc55s16" "C:/Users/Erich Styger.N0007139/Data/GitRepos/MCUXpresso_LPC55S16_CI_CD/C:\NXP\LinkServer_24.9.75\LinkServer.exe --log-level 2 run --mode semihost --exit-mark "** PASSED **" lpc55s16 C:/Users/Erich Styger.N0007139/Data/GitRepos/MCUXpresso_LPC55S16_CI_CD/build/debug-test/LPC55S16_Blinky.elfbuild/debug-test/LPC55S16_Blinky.elf"
 ```
@@ -116,6 +127,10 @@ Semihosting example:
 ```
 LinkServer.exe --log-level 2 run --mode semihost --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --send "1" lpc55s16 "build/debug-test/LPC55S16_Blinky.elf"
 ```
+
+UART:
+C:\NXP\LinkServer_24.9.75\LinkServer.exe --log-level "2" run --mode serial:COM57:115200 --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --args-mark "*ARGS*" --send "Led_1" lpc55s16 "C:/Users/Erich Styger.N0007139/Data/GitRepos/MCUXpresso_LPC55S16_CI_CD/build/debug-test/LPC55S16_Blinky.elf"
+
 
 ## Unit Tests
 Enable 'PL_CONFIG_USE_UNIT_TESTS' in platform.h

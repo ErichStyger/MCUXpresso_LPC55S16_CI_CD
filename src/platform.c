@@ -27,6 +27,23 @@
 #include "McuHardFault.h"
 #include "McuSemihost.h"
 
+static void SetLoggers(void) {
+  int idx = 0;
+
+  if (idx<McuLog_CONFIG_NOF_CONSOLE_LOGGER && PL_CONFIG_USE_RTT) {
+    McuLog_set_console(McuRTT_GetStdio(), idx);
+    idx++;
+  }
+  if (idx<McuLog_CONFIG_NOF_CONSOLE_LOGGER && PL_CONFIG_USE_SEMIHOSTING) {
+    McuLog_set_console(McuSemihost_GetStdio(), idx);
+    idx++;
+  }
+  if (idx<McuLog_CONFIG_NOF_CONSOLE_LOGGER && PL_CONFIG_USE_SHELL_UART) {
+    McuLog_set_console(McuShellUart_GetStdio(), idx);
+    idx++;
+  }
+}
+
 void PL_Init(void) {
   CLOCK_EnableClock(kCLOCK_Iocon); /* ungate clock for IOCON */
   CLOCK_EnableClock(kCLOCK_Gpio0); /* for button on P0_7 */
@@ -56,17 +73,5 @@ void PL_Init(void) {
   Tests_Init();
 #endif
   McuLog_Init();
-#if McuLog_CONFIG_NOF_CONSOLE_LOGGER>=2 && PL_CONFIG_USE_SEMIHOSTING && PL_CONFIG_USE_SHELL_UART
-  McuLog_set_console(McuShellUart_GetStdio(), 0);
-  //McuLog_set_console(McuSemihost_GetStdio(), 1);
-#else
-#if PL_CONFIG_USE_SEMIHOSTING && !PL_CONFIG_USE_RTT
-  McuLog_set_console(McuSemihost_GetStdio(), 0);
-#elif !PL_CONFIG_USE_SEMIHOSTING && PL_CONFIG_USE_RTT
-  McuLog_set_console(McuRTT_GetStdio(), 0);
-#elif McuLog_CONFIG_NOF_CONSOLE_LOGGER>=2 && PL_CONFIG_USE_SEMIHOSTING && PL_CONFIG_USE_RTT
-  McuLog_set_console(McuRTT_GetStdio(), 0);
-  McuLog_set_console(McuSemihost_GetStdio(), 1);
-#endif
-#endif
+  SetLoggers();
 }

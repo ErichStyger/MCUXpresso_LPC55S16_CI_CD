@@ -47,9 +47,6 @@ static const SHELL_IODesc ios[] =
 #if McuSemihost_CONFIG_IS_ENABLED
   {&McuSemihost_stdio,  McuSemihost_DefaultShellBuffer,  sizeof(McuSemihost_DefaultShellBuffer)},
 #endif
-#if PL_CONFIG_USE_SHELL_UART
-  {&McuShellUart_stdio,  McuShellUart_DefaultShellBuffer,  sizeof(McuShellUart_DefaultShellBuffer)},
-#endif
 };
 
 void SHELL_SendChar(unsigned char ch) {
@@ -80,23 +77,39 @@ static void ShellTask(void *pv) {
   }
 }
 
+static TaskHandle_t shellHandle = NULL;
+
+void SHELL_Suspend(void) {
+  if (shellHandle!=NULL) {
+    vTaskSuspend(shellHandle);
+  }
+}
+
+void SHELL_Resume(void) {
+  if (shellHandle!=NULL) {
+    vTaskResume(shellHandle);
+  }
+}
+
 void SHELL_Init(void) {
+  #if 1
   if (xTaskCreate(
       ShellTask,  /* pointer to the task */
       "Shell", /* task name for kernel awareness debugging */
       4000/sizeof(StackType_t), /* task stack size */
       (void*)NULL, /* optional task startup argument */
       tskIDLE_PRIORITY+2,  /* initial priority */
-      (TaskHandle_t*)NULL /* optional task handle to create */
+      &shellHandle /* optional task handle to create */
     ) != pdPASS) {
      for(;;){} /* error! probably out of memory */
   }
   McuShell_SetStdio(ios[0].stdio);
-#if McuLog_CONFIG_IS_ENABLED
+#if 0 && McuLog_CONFIG_IS_ENABLED
   for(int i=0; i<sizeof(ios)/sizeof(ios[0]) && i<McuLog_CONFIG_NOF_CONSOLE_LOGGER; i++) {
     McuLog_set_console(ios[i].stdio, i);
   }
 #endif /* McuLog_CONFIG_IS_ENABLED */
+#endif
 }
 
 void SHELL_Deinit(void) {}

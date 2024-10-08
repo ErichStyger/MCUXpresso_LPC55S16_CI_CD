@@ -463,7 +463,6 @@ static void InitUart(void) {
 
 int McuShellUart_PollChar(void) {
   uint8_t ch = McuShellUart_CONFIG_UART_READ_BYTE(McuShellUart_CONFIG_UART_DEVICE);
-  //return '1';
   return ch;
 }
 
