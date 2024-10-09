@@ -27,16 +27,15 @@ uint32_t McuUnity_GetArgument(void) {
   return program_arg;
 }
 
-int McuUnity_UART_GetArgs(unsigned char *buffer, size_t bufSize, McuShell_ConstStdIOTypePtr io) {
+int McuUnity_UART_GetArgs(unsigned char *buffer, size_t bufSize, McuUnity_ReadCharFct readFct) {
   int nof = 0;
   unsigned char ch;
 
   McuLog_info("getting UART arguments...");
   buffer[0] = '\0';
   for(;;) { /* breaks */
-    io->stdIn(&ch);
+    readFct(&ch);
     if (ch!='\0' && ch!='\n' && nof<bufSize-1) { /* -1 for the zero byte */
-      //McuLog_trace("c: %c", ch);
       *buffer = ch;
       buffer++;
       nof++;
@@ -53,14 +52,6 @@ int McuUnity_Semihost_GetArgs(unsigned char *buffer, size_t bufSize) {
 
   McuLog_info("getting semihosting arguments...");
   buffer[0] = '\0';
-#if 0
-  McuLog_info("reading first char");
-  if (McuSemihost_Read(McuSemihost_STDIN, buffer, 1)!=0) { /* blocking! */
-    McuLog_error("Failed reading from stdin!");
-  } else {
-    McuLog_info("have read: %c", buffer[0]);
-  }
-#endif
   nof = 0;
   for(;;) { /* breaks */
     c = McuSemihost_SysReadC(); /* blocking! */

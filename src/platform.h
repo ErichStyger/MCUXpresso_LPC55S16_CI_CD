@@ -15,13 +15,14 @@
    #error "Unity hooks need to be defined in IncludeMcuLibConfig.h!"
 #endif
 
-/* enable on or the other runner: update the tests/CMakeLists.txt as well! */
+/* select only one runner: update the tests/CMakeLists.txt as well! */
 #define PL_CONFIG_USE_RUNNER_JLINK        (0)
 #define PL_CONFIG_USE_RUNNER_LINKSERVER   (1)
 
+/* select only one way to report: */
 #define PL_CONFIG_USE_RTT                 (1 && PL_CONFIG_USE_RUNNER_JLINK)        /* J-Link only: using J-Run and SEGGER RTT for log and test output */
-#define PL_CONFIG_USE_SEMIHOSTING         (1 && PL_CONFIG_USE_RUNNER_LINKSERVER)   /* LinkServer only: using semihosting for log and test output */
-#define PL_CONFIG_USE_SHELL_UART          (0 && PL_CONFIG_USE_RUNNER_LINKSERVER)   /* LinkServer only: using UART for log and test output */
+#define PL_CONFIG_USE_SEMIHOSTING         (0 && PL_CONFIG_USE_RUNNER_LINKSERVER)   /* LinkServer only: using semihosting for log and test output */
+#define PL_CONFIG_USE_SHELL_UART          (1 && PL_CONFIG_USE_RUNNER_LINKSERVER)   /* LinkServer only: using UART for log and test output */
 
 #define PL_CONFIG_USE_EXPERIMENTAL        (1 && PL_CONFIG_USE_RUNNER_LINKSERVER)    /* experimental feature with arguments */
 

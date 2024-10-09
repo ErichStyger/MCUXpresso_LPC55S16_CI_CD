@@ -41,22 +41,14 @@ static void TestTask(void *pv) {
   #if PL_CONFIG_USE_SHELL_UART
     #if PL_CONFIG_USE_EXPERIMENTAL
 
-    vTaskDelay(pdMS_TO_TICKS(3000)); /* give UART time to receive */
+    vTaskDelay(pdMS_TO_TICKS(1000)); /* give UART time to receive */
 
     McuLog_info("Shell suspend");
     SHELL_Suspend();
 
     McuShell_printfIO(McuShellUart_GetStdio(), "*ARGS*\r\n");
-    vTaskDelay(pdMS_TO_TICKS(500)); /* give UART time to receive */
-    #if 0
-    for(int i=0; i<20; i++) {
-      McuShell_printfIO(McuShellUart_GetStdio(), ".");
-      vTaskDelay(pdMS_TO_TICKS(100));
-    }
-    McuShell_printfIO(McuShellUart_GetStdio(), "\r\n");
-    #endif
-    extern int McuUnity_UART_GetArgs(unsigned char *buffer, size_t bufSize, McuShell_ConstStdIOTypePtr io); /* \todo */
-    nofBytes = McuUnity_UART_GetArgs(buf, sizeof(buf), McuShellUart_GetStdio());
+    vTaskDelay(pdMS_TO_TICKS(500)); /* \todo give UART time to receive */
+    nofBytes = McuUnity_UART_GetArgs(buf, sizeof(buf), McuShellUart_GetStdio()->stdIn);
 
     McuLog_info("Shell to be resumed");
     SHELL_Resume();

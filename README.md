@@ -16,6 +16,8 @@ J3 UART header:
 - JP9 installed
 - JP12 open
 
+C:\NXP\LinkServer_24.9.75\LinkServer.exe --log-level "5" run --mode semihost --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --args-mark "*ARGS*" --send "led1" lpc55s16 "build/debug-test/LPC55S16_Blinky.elf"
+
 ## Environment
 In order to have compiler and J-Link not hardcoded in the project itself, rund the setenv script file.
 
