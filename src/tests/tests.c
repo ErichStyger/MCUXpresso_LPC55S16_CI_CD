@@ -74,7 +74,7 @@ static void TestTask(void *pv) {
     }
   #else
     #if PL_CONFIG_USE_EXPERIMENTAL
-    McuSemihost_printf("*ARGS*"); /* somehow, this will block the following semihosting SYS_READC? */
+    McuSemihost_printf("*ARGS*");
     #endif
     nofBytes = McuUnity_Semihost_GetArgs(buf, sizeof(buf));
     McuLog_info("semihost nof: %d, buf: %s", nofBytes, buf);
