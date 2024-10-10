@@ -96,7 +96,11 @@ src/platform.h:
 #define PL_CONFIG_USE_SHELL_UART    (0)   /* using UART for log and test output */
 ```
 src/tests/CMakeLists.txt:
-switch test runners with comments
+switch test runners with comments.
+
+```
+"C:\Program Files\SEGGER\JLink\JRun.exe" --verbose --device LPC55S16 --rtt -if SWD --args "led3" "build/debug-test/LPC55S16_Blinky.elf"
+```
 
 # NXP LinkServer Debug
 Prior launching, run LinkServer GDB Server:

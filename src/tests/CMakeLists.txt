@@ -32,6 +32,7 @@ target_include_directories(
   PUBLIC
   .
 )
+
 #################################################################################
 # Using SEGGER J-Run
 #################################################################################
@@ -49,7 +50,7 @@ add_test(
 
 add_test(
   NAME Led_2
-  COMMAND ${RUNNER_CTEST_COMMAND} --args "led3" ${TEST_EXECUTABLE}
+  COMMAND ${RUNNER_CTEST_COMMAND} --args "led2" ${TEST_EXECUTABLE}
 )
 
 set_tests_properties(
