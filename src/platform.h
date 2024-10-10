@@ -16,8 +16,8 @@
 #endif
 
 /* select only one runner: update the tests/CMakeLists.txt as well! */
-#define PL_CONFIG_USE_RUNNER_JLINK        (0)
-#define PL_CONFIG_USE_RUNNER_LINKSERVER   (1)
+#define PL_CONFIG_USE_RUNNER_JLINK        (1)
+#define PL_CONFIG_USE_RUNNER_LINKSERVER   (0)
 
 /* select only one way to report: */
 #define PL_CONFIG_USE_RTT                 (1 && PL_CONFIG_USE_RUNNER_JLINK)        /* J-Link only: using J-Run and SEGGER RTT for log and test output */

@@ -37,7 +37,7 @@ static void TestTask(void *pv) {
 #endif
 
   McuLog_info("starting test task");
-#if USE_TEST_ARGUMENTS && McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER
+#if USE_TEST_ARGUMENTS && PL_CONFIG_USE_RUNNER_LINKSERVER
   #if PL_CONFIG_USE_SHELL_UART
     #if PL_CONFIG_USE_EXPERIMENTAL
 
@@ -80,7 +80,7 @@ static void TestTask(void *pv) {
       test_arg = 1; /*! \TODO */
     }
   #endif
-#elif PL_CONFIG_USE_RTT && USE_TEST_ARGUMENTS /* new JRun */  
+#elif USE_TEST_ARGUMENTS && PL_CONFIG_USE_RUNNER_JLINK /* use JRun */  
   nofBytes = McuUnity_RTT_GetArgs(buf, sizeof(buf));
   SEGGER_RTT_printf(0, "RTT args = %s, nofBytes = %d\n", buf, nofBytes);
   if (nofBytes>0) {
