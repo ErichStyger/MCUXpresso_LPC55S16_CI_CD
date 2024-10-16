@@ -24,6 +24,10 @@ extern McuShell_ConstStdIOType McuShellUart_stdio;
 
 McuShell_ConstStdIOTypePtr McuShellUart_GetStdio(void);
 
+/*!
+ * \brief Polls for an UART character, might be blocking
+ * \return The character or EOF
+ */
 int McuShellUart_PollChar(void);
 
 /*!
