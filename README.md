@@ -16,7 +16,6 @@ J3 UART header:
 - JP9 installed
 - JP12 open
 
-C:\NXP\LinkServer_24.9.75\LinkServer.exe --log-level "5" run --mode semihost --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --args-mark "*ARGS*" --send "led1" lpc55s16 "build/debug-test/LPC55S16_Blinky.elf"
 
 ## Environment
 In order to have compiler and J-Link not hardcoded in the project itself, rund the setenv script file.
@@ -77,87 +76,86 @@ docker cp <file> <container>:<pathInContainer>
 ```
 docker start -i lpc55s16-container
 ```
-- To exit the container
+- To exit the container:
 ```
 exit
 ```
-## J-Run
-See https://www.segger.com/products/debug-probes/j-link/tools/j-run/
 
-To run the tests with J-Run:
-src/IncludeMcuLibConfig.h:
-```
-#define McuSemihost_CONFIG_DEBUG_CONNECTION         McuSemihost_DEBUG_CONNECTION_SEGGER 
-```
-src/platform.h:
-```
-#define PL_CONFIG_USE_RTT           (1)   /* using SEGGER RTT for log and test output */
-#define PL_CONFIG_USE_SEMIHOSTING   (0)   /* using semihosting for log and test output */
-#define PL_CONFIG_USE_SHELL_UART    (0)   /* using UART for log and test output */
-```
-src/tests/CMakeLists.txt:
-switch test runners with comments.
-
-```
-"C:\Program Files\SEGGER\JLink\JRun.exe" --verbose --device LPC55S16 --rtt -if SWD --args "led3" "build/debug-test/LPC55S16_Blinky.elf"
-```
-
-# NXP LinkServer Debug
+## Debugging with NXP LinkServer
 Prior launching, run LinkServer GDB Server:
 ```
-c:\nxp\LinkServer_24.9.75\LinkServer gdbserver --keep-alive LPC55S16:LPCXpresso55S16
+C:\NXP\LinkServer\LinkServer.exe gdbserver --keep-alive LPC55S16:LPCXpresso55S16
 ```
 
-# NXP LinkServer Runner
-From LinkServer release v24.9.75 on, the tools include a LinkServer Runner, supporting both UART and semihosting. Get help with
+## J-Run Test runner
+See https://www.segger.com/products/debug-probes/j-link/tools/j-run/
+
+To run the tests with J-Run, set runner in src/platform.h:
+```
+#define PL_CONFIG_USE_RUNNER_JLINK        (1)
+#define PL_CONFIG_USE_RUNNER_LINKSERVER   (0)
+```
+in src/tests/CMakeLists.txt, at the end, switch the runner part and enable the J-Link runner part.
+
+Example to run a test directly with JRun:
+```
+"C:\Program Files\SEGGER\JLink\JRun.exe" --verbose --device LPC55S16 --rtt -if SWD --args "led1" "build/debug-test/LPC55S16_Blinky.elf"
+```
+
+## NXP LinkServer Runner
+From LinkServer release v24.9.75 on, the tools include a LinkServer Runner, supporting both UART and semihosting.
+Get help with
 ```
 LinkServer run -h
 ```
 
-Set Semihosting to LinkServer in IncludeMcuLibConfig.h:
+Set LinkServer runner in src/platform.h:
 ```
-#define McuSemihost_CONFIG_DEBUG_CONNECTION         McuSemihost_DEBUG_CONNECTION_LINKSERVER
+#define PL_CONFIG_USE_RUNNER_JLINK        (0)
+#define PL_CONFIG_USE_RUNNER_LINKSERVER   (1)
+```
+Inside the test CMakeLists.txt, select either semihosting or UART/VCOM connection:
+```
+set (RUNNER_CTEST_MODE  --mode semihost)
+#set (RUNNER_CTEST_MODE  --mode serial:COM57:115200)
+```
+Additionally, configure it in src\platform.h:
+```
+#define PL_CONFIG_USE_SEMIHOSTING         (1 && PL_CONFIG_USE_RUNNER_LINKSERVER)   /* LinkServer only: using semihosting for log and test output */
+#define PL_CONFIG_USE_SHELL_UART          (0 && PL_CONFIG_USE_RUNNER_LINKSERVER)   /* LinkServer only: using UART for log and test output */
 ```
 
+To run the Linkserver runner manually (semihost mode):
 ```
-c:\nxp\LinkServer_24.9.75\LinkServer --log-level 1 run --mode semihost lpc55s16 build\debug-test\LPC55S16_Blinky.elf
+C:\NXP\LinkServer\LinkServer --log-level 1 run --mode semihost lpc55s16 build\debug-test\LPC55S16_Blinky.elf
 ```
-
-```
-C:\NXP\LinkServer_24.9.75\LinkServer.exe "--log-level" "2" "run" "--mode" "semihost" "--exit-mark" "** PASSED **" "lpc55s16" "C:/Users/Erich Styger.N0007139/Data/GitRepos/MCUXpresso_LPC55S16_CI_CD/C:\NXP\LinkServer_24.9.75\LinkServer.exe --log-level 2 run --mode semihost --exit-mark "** PASSED **" lpc55s16 C:/Users/Erich Styger.N0007139/Data/GitRepos/MCUXpresso_LPC55S16_CI_CD/build/debug-test/LPC55S16_Blinky.elfbuild/debug-test/LPC55S16_Blinky.elf"
-```
-
-C:\NXP\LinkServer_24.9.75\LinkServer.exe "--log-level" "2" "run" "--mode" "semihost" "--exit-mark" "*STOP*" "--pass-mark" "*** PASSED ***" "--fail-mark" "*** FAILED ***" "--send" "Led_1" "lpc55s16" "C:/Users/Erich Styger.N0007139/Data/GitRepos/MCUXpresso_LPC55S16_CI_CD/build/debug-test/LPC55S16_Blinky.elf"
 
 Semihosting example:
 ```
-LinkServer.exe --log-level 2 run --mode semihost --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --send "1" lpc55s16 "build/debug-test/LPC55S16_Blinky.elf"
+C:\NXP\LinkServer\LinkServer.exe --log-level 2 run --mode semihost --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --send "1" lpc55s16 "build/debug-test/LPC55S16_Blinky.elf"
 ```
 
-UART:
-C:\NXP\LinkServer_24.9.75\LinkServer.exe --log-level "2" run --mode serial:COM57:115200 --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --args-mark "*ARGS*" --send "Led_1" lpc55s16 "C:/Users/Erich Styger.N0007139/Data/GitRepos/MCUXpresso_LPC55S16_CI_CD/build/debug-test/LPC55S16_Blinky.elf"
-
+UART example:
+```
+C:\NXP\LinkServer\LinkServer.exe --log-level "2" run --mode serial:COM57:115200 --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --args-mark "*ARGS*" --send "Led_1" lpc55s16 "build/debug-test/LPC55S16_Blinky.elf"
+```
 
 ## Unit Tests
 Enable 'PL_CONFIG_USE_UNIT_TESTS' in platform.h
 
-Run JRun manually:
-```
-"c:\Program Files\SEGGER\JLink\JRun.exe" --device LPC55S16 build/debug-test/LPC55S16_Blinky.elf
-```
 CTest: add the following in the main CMakeLists.txt:
 ```
 enable_testing()
 add_test(NAME ${CMAKE_PROJECT_NAME} COMMAND JRun.exe)
 ```
-Manual test run:
+Manual test runs:
 ```
 ctest --verbose --output-on-failure --test-dir build/debug-test --timeout 15
-
 ctest -T test --verbose --output-on-failure -R ^Led_1$
 ```
 
 ## Links
+- NXP LinkServer: https://www.nxp.com/design/design-center/software/development-software/mcuxpresso-software-and-tools-/linkserver-for-microcontrollers:LINKERSERVER
 - How to create a GitHub action: https://github.blog/2021-11-04-10-github-actions-resources-basics-ci-cd/
 - Solving 'permission denied' on config file: https://dev.to/aileenr/github-actions-fixing-the-permission-denied-error-for-shell-scripts-4gbl
 - Unity testing framework: https://github.com/ThrowTheSwitch/Unity/blob/master/docs/UnityGettingStartedGuide.md
