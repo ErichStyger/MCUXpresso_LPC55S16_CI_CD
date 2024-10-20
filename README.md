@@ -7,14 +7,15 @@ The setup is described in details in my blog article: https://mcuoneclipse.com/2
 See as well https://mcuoneclipse.com/2023/12/18/modern-on-target-embedded-system-testing-with-cmake-and-ctest/
 
 ## UART to on-board Debug Probe (VCOM)
-VCOM through debug probe
-- JP9 (lower left corner, near PMod connector) has to be open
-- JP12 (left of JP3/UART Header) needs to be closed
-https://mcuoneclipse.com/2021/05/15/using-fatfs-and-minini-with-the-nxp-lpc55s16-evk/
+VCOM through debug probe (e.g. with on-board LinkServer probe):
+- JP9 (lower left corner, near PMod connector): *open*
+- JP12 (left of JP3/UART Header): *closed*
 
-J3 UART header:
-- JP9 installed
-- JP12 open
+VOM through J3 UART header (e.g. with external MCU-Link debug probe):
+- JP9 *closed*
+- JP12 *open*
+
+See https://mcuoneclipse.com/2021/05/15/using-fatfs-and-minini-with-the-nxp-lpc55s16-evk/
 
 
 ## Environment
@@ -24,7 +25,7 @@ setenv example for Windows:
 ```
 set TOOLCHAIN_PREFIX=C:/Raspy/arm-none-eabi-gcc-13.2.1-1.1
 set SEGGER_PATH=C:/Program Files/SEGGER/JLink
-set LINKSERVER_PATH=C:/NXP/LinkServer_24.9.75
+set LINKSERVER_PATH=C:/NXP/LinkServer
 ```
 Note that the commands have to be set up *before* starting VS Code, to have the environment set.
 Alternatively, these variables can be set on user or system level.
@@ -130,7 +131,7 @@ To run the Linkserver runner manually (semihost mode):
 C:\NXP\LinkServer\LinkServer --log-level 1 run --mode semihost lpc55s16 build\debug-test\LPC55S16_Blinky.elf
 ```
 
-Semihosting example:
+Semihosting example with more options:
 ```
 C:\NXP\LinkServer\LinkServer.exe --log-level 2 run --mode semihost --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --send "1" lpc55s16 "build/debug-test/LPC55S16_Blinky.elf"
 ```
