@@ -122,13 +122,12 @@ static void TestTask(void *pv) {
 #if PL_CONFIG_USE_RTT
   /* Note: \r\n does not work, need to use \n in v8.10! */
   if (nofFailures==0) {
-    McuLog_info("Success: sending stop with 0");
     McuLog_info("*STOP*0"); /* stop test runner with exit code 0 (ok) */
   } else {
-    McuLog_info("Failed: sending stop with 1");
     McuLog_info("*STOP*1"); /* stop test runner with exit code 1 (failed), negative error codes are J-Run error codes */
   }
 #else /* LinkServer */
+  /* send stop command. LinkServer is configured with --exit-mark "*STOP*" */
   McuLog_info("*STOP*"); /* stop Linkserver test runner */
 #endif
   vTaskDelete(NULL); /* terminate task */

@@ -58,11 +58,9 @@ target_include_directories(
 # Using NXP LinkServer Runner
 #################################################################################
 # set (RUNNER_CTEST_MODE --mode semihost)
-set (RUNNER_CTEST_MODE --mode serial:COM57:115200)
+set (RUNNER_CTEST_MODE --mode serial:COM51:115200)
 
-# PL_CONFIG_USE_EXPERIMENTAL: --args-mark
 set (RUNNER_CTEST_CONTROL  --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --args-mark "*ARGS*")
-#set (RUNNER_CTEST_CONTROL  --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***")
 
 set (RUNNER_CTEST_COMMAND $ENV{LINKSERVER_PATH}/LinkServer --log-level 1 run  ${RUNNER_CTEST_MODE} ${RUNNER_CTEST_CONTROL})
 set (RUNNER_CTEST_EXECUTABLE lpc55s16 ${TEST_EXECUTABLE})
