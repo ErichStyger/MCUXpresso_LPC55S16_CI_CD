@@ -45,7 +45,7 @@
 **         SetRxAddress               - uint8_t McuNRF24L01_SetRxAddress(uint8_t pipe, uint8_t *address, uint8_t...
 **         GetRxAddress               - uint8_t McuNRF24L01_GetRxAddress(uint8_t pipe, uint8_t *address, uint8_t...
 **         GetFifoStatus              - uint8_t McuNRF24L01_GetFifoStatus(uint8_t *status);
-**         PollInterrupt              - void McuNRF24L01_PollInterrupt(void);
+**         PollInterrupt              - bool McuNRF24L01_PollInterrupt(void);
 **         Deinit                     - void McuNRF24L01_Deinit(void);
 **         Init                       - void McuNRF24L01_Init(void);
 **
@@ -105,7 +105,9 @@ void McuNRF24L01_OnActivate(void);
 void McuNRF24L01_OnDeactivate(void);
 
 /* if having multiple users on the SPI bus, enable bus sharing/switching */
+#ifndef McuNRF24L01_SWITCH_BUS
   #define McuNRF24L01_SWITCH_BUS       (0)
+#endif
   //#define McuNRF24L01_BAUD_RATE_MODE   2 /* Index of baud rate mode */
 
 /* Memory Map - register address defines */
@@ -545,6 +547,23 @@ void McuNRF24L01_TxPayload(uint8_t *payload, uint8_t payloadSize);
 ** ===================================================================
 */
 
+void McuNRF24L01_TxPayloadNoAck(uint8_t *payload, uint8_t payloadSize);
+/*
+** ===================================================================
+**     Method      :  McuNRF24L01_TxPayloadNoAck (component nRF24L01)
+**
+**     Description :
+**         Send the payload to the Tx FIFO and send it,
+**         but does not request an acknowledge.
+**     Parameters  :
+**         NAME            - DESCRIPTION
+**       * payload         - Pointer to buffer with payload to
+**                           send
+**         payloadSize     - Size of payload buffer
+**     Returns     : Nothing
+** ===================================================================
+*/
+
 void McuNRF24L01_RxPayload(uint8_t *payload, uint8_t payloadSize);
 /*
 ** ===================================================================
@@ -817,7 +836,7 @@ uint8_t McuNRF24L01_GetStatusClrIRQ(void);
 ** ===================================================================
 */
 
-void McuNRF24L01_PollInterrupt(void);
+bool McuNRF24L01_PollInterrupt(void);
 /*
 ** ===================================================================
 **     Method      :  PollInterrupt (component nRF24L01)

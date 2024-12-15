@@ -138,7 +138,7 @@ C:\NXP\LinkServer\LinkServer.exe --log-level 2 run --mode semihost --exit-mark "
 
 UART example:
 ```
-C:\NXP\LinkServer\LinkServer.exe --log-level 1 run --mode serial:COM57:115200 --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --args-mark "*ARGS*" --send "Led_1" lpc55s16 "build/debug-test/LPC55S16_Blinky.elf"
+LinkServer --log-level 1 run --mode serial:COM57:115200 --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --args-mark "*ARGS*" --send "Led_1" lpc55s16 "build/debug-test/LPC55S16_Blinky.elf"
 ```
 
 ## Unit Tests

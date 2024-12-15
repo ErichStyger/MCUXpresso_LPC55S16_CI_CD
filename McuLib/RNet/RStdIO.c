@@ -26,7 +26,7 @@ static QueueHandle_t RSTDIO_TxStdInQ, RSTDIO_TxStdOutQ, RSTDIO_TxStdErrQ;
 
 #define RSTDIO_PAYLOAD_SIZE       (RNWK_PAYLOAD_SIZE-1/*type*/-1/*size*/) /* data size we can transmit in one message. stdout string will be added */
 
-#define RSTDIO_QUEUE_LENGTH        48 /* items in queue, that's my buffer size */
+#define RSTDIO_QUEUE_LENGTH        RSTDIO_CONFIG_QUEUE_LENGTH /* items in queue, that's my buffer size */
 #define RSTDIO_QUEUE_ITEM_SIZE     1 /* each item is a single character */
 
 #define RSTDIO_QUEUE_TIMEOUT_MS   500 /* timeout for stdio queues */
@@ -65,7 +65,7 @@ QueueHandle_t RSTDIO_GetQueueForType(RSTDIO_QueueType queueType) {
  */
 static uint8_t AddToQueue(QueueHandle_t queue, const unsigned char *data, size_t dataSize) {
   while(dataSize!=0) {
-    if (McuRTOS_xQueueSendToBack(queue, data, RSTDIO_QUEUE_TIMEOUT_MS/portTICK_PERIOD_MS)!=pdPASS) {
+    if (McuRTOS_xQueueSendToBack(queue, data, pdMS_TO_TICKS(RSTDIO_QUEUE_TIMEOUT_MS))!=pdPASS) {
       return ERR_FAULT;
     }
     data++;

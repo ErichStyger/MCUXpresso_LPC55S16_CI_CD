@@ -20,7 +20,6 @@
 #endif
 
 #include "McuLib.h"
-//#include McuRNet_CONFIG_APPLICATION_HEADER_FILE /* User application configuration file */
 #include "McuRNet.h"  /* component main header file */
 
 #ifndef McuRNET_CONFIG_IS_ENABLED
@@ -30,6 +29,11 @@
 /* remote standard I/O destination address */
 #ifndef RSTDIO_CONFIG_SETTING_RSTDIO_DEFAULT_DESTINATION_ADDRESS
   #define RSTDIO_CONFIG_SETTING_RSTDIO_DEFAULT_DESTINATION_ADDRESS   255
+#endif
+
+#ifndef RSTDIO_CONFIG_QUEUE_LENGTH
+  #define RSTDIO_CONFIG_QUEUE_LENGTH    (48)
+    /*!< Size in bytes for the different RStdIO queues: RxStdOut, RxStdIn, RxStdErr, TxStdIn, TxStdErr */
 #endif
 
 /* Default configuration items, can be overwritten by the application configuration header file: */
@@ -78,6 +82,11 @@
     /*!< Number of retries if message sending failed. Set to zero to disable retry. */
 #endif
 
+#ifndef RNET_CONFIG_RX_MULTIPLE_MESSAGE_COUNT
+  #define RNET_CONFIG_RX_MULTIPLE_MESSAGE_COUNT     (10)
+    /*!< How many incomming messages should be handled togther. */
+#endif
+
 /* Configuration for Rx and Tx queues */
 #ifndef RNET_CONFIG_MSG_QUEUE_NOF_RX_ITEMS
   #define RNET_CONFIG_MSG_QUEUE_NOF_RX_ITEMS        (15)
@@ -89,9 +98,9 @@
     /*!< Number items in the Tx message queue. The higher, the more items can be buffered. */
 #endif
 
-#ifndef RNET_CONFIG_MSG_QUEUE_PUT_BLOCK_TIME_MS
-  #define RNET_CONFIG_MSG_QUEUE_PUT_BLOCK_TIME_MS   (200/portTICK_PERIOD_MS)
-    /*!< Blocking time for putting items into the message queue before timeout. Use portMAX_DELAY for blocking. */
+#ifndef RNET_CONFIG_MSG_QUEUE_PUT_BLOCK_TIME_TICKS
+  #define RNET_CONFIG_MSG_QUEUE_PUT_BLOCK_TIME_TICKS   (pdMS_TO_TICKS(200))
+    /*!< Blocking number of RTOS ticks for putting items into the message queue before timeout. Use portMAX_DELAY for blocking. */
 #endif
 
 #ifndef RNET_CONFIG_REMOTE_STDIO

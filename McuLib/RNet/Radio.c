@@ -1,7 +1,7 @@
 /**
  * \file
  * \brief This is the implementation of the Nordic Semiconductor nRF24L01+ low level driver.
- * \author (c) 2013-2019 Erich Styger, http://mcuoneclipse.com/
+ * \author (c) 2013-2024 Erich Styger, http://mcuoneclipse.com/
  * \note MIT License (http://opensource.org/licenses/mit-license.html), see 'RNet_License.txt'
  *
  * This module deals with the low level functions of the transceiver.
@@ -18,12 +18,18 @@
 #include "McuUtility.h"
 #include "McuRNet.h"
 #include "McuLog.h"
+#if configUSE_SEGGER_SYSTEM_VIEWER_HOOKS
+  #include "McuSystemView.h"
+#endif
 
-extern void McuRNet_OnRadioEvent(McuRNet_RadioEvent event);
+#if McuRNet_CREATE_EVENTS /* optional application user events */
+  extern void McuRNet_OnRadioEvent(McuRNet_RadioEvent event);
+#endif
 
 #define NRF24_DYNAMIC_PAYLOAD     1 /* if set to one, use dynamic payload size */
 #define NRF24_AUTO_ACKNOWLEDGE    1 /* if set to one, the transceiver is configured to use auto acknowledge */
 #define RADIO_CHANNEL_DEFAULT     RNET_CONFIG_TRANSCEIVER_CHANNEL  /* default communication channel */
+#define RADIO_USE_DTN             (1 && McuLib_CONFIG_SDK_USE_FREERTOS) /* use direct task notification for interrupt */
 
 /* macros to configure device either for RX or TX operation */
 #define McuNRF24L01_CONFIG_SETTINGS  (McuNRF24L01_EN_CRC|McuNRF24L01_CRCO)
@@ -45,6 +51,8 @@ static const uint8_t RADIO_TADDR_P5[1] = {0xF5}; /* device address for pipe 5 */
   static uint8_t TxDataBuffer[RPHY_BUFFER_SIZE]; /*!< global buffer if using retries */
 #endif
 
+static TaskHandle_t radioTaskHandle; /* used for direct task notification */
+
 /* Radio state definitions */
 typedef enum RADIO_AppStatusKind {
   RADIO_INITIAL_STATE, /* initial state of the state machine */
@@ -62,13 +70,75 @@ static RPHY_PacketDesc radioRx;
 static uint8_t radioRxBuf[RPHY_BUFFER_SIZE];
 static uint8_t RADIO_CurrChannel = RADIO_CHANNEL_DEFAULT;
 
-/* need to have this in case RF device is still added to project */
-static volatile bool RADIO_isrFlag; /* flag set by ISR */
+typedef enum RADIO_State {
+  RADIO_NONE,
+  RADIO_POWERUP, /* powering up */
+  RADIO_TX_RX,
+} RADIO_State;
+
+static RADIO_State appState = RADIO_NONE;
+
+void RADIO_Notify(uint32_t flags) {
+  if (flags!=0) {
+    (void)xTaskNotify(radioTaskHandle, flags, eSetBits);
+  }
+}
+
+void RADIO_NotifyFromInterrupt(uint32_t flags, BaseType_t *pxHigherPriorityTaskWoken) {
+  if (flags!=0) {
+    (void)xTaskNotifyFromISR(radioTaskHandle, flags, eSetBits, pxHigherPriorityTaskWoken);
+  }
+}
 
 /* callback called from radio driver */
 void RADIO_OnInterrupt(void) {
-  RADIO_isrFlag = TRUE;
+#if McuNRF24L01_CONFIG_IRQ_PIN_ENABLED
+  /* called from interrupt context */
+  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+  RADIO_NotifyFromInterrupt(RADIO_FLAG_INTERRUPT, &xHigherPriorityTaskWoken);
+  portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+#else
+  RADIO_Notify(RADIO_FLAG_INTERRUPT);
+#endif
 }
+
+bool RADIO_PollInterruptFlag(void) {
+  uint8_t status = McuNRF24L01_GetStatus();
+  if (status&(McuNRF24L01_STATUS_RX_DR|McuNRF24L01_STATUS_TX_DS|McuNRF24L01_STATUS_MAX_RT)) {
+    McuLog_trace("IRQ in status");
+    return true; /* interrupt */
+  }
+  return false; /* no interrupt */
+}
+
+static bool CheckAndClearFlag(uint32_t *flags, uint32_t flag) {
+  if ((*flags)&flag) {
+    *flags &= ~flag; /* clear flag */
+    return true;
+  }
+  return false; /* flag not set */
+}
+
+#if 0
+static bool RADIO_GetInterruptFlag(uint32_t timeoutTicks) {
+  bool hasInterrupt = false;
+
+#if 1
+  uint8_t status = McuNRF24L01_GetStatus();
+  if (status&(McuNRF24L01_STATUS_RX_DR|McuNRF24L01_STATUS_TX_DS|McuNRF24L01_STATUS_MAX_RT)) {
+    hasInterrupt = true;
+    McuLog_trace("No Radio IRQ, but set in status?");
+  }
+#else
+  (void)timeoutTicks; /* not used */
+  hasInterrupt = RADIO_isrFlag;
+  if (!hasInterrupt) {
+    hasInterrupt = McuNRF24L01_PollInterrupt();
+  }
+#endif
+  return hasInterrupt;
+}
+#endif
 
 uint8_t RADIO_FlushQueues(void) {
   uint8_t res = ERR_OK;
@@ -88,8 +158,8 @@ static uint8_t RADIO_Flush(void) {
   return ERR_OK;
 }
 
-bool RADIO_CanDoPowerDown(void) {
-  if (RADIO_isrFlag) {
+bool RADIO_CanDoPowerDown(uint32_t notifcationValue) {
+  if (notifcationValue&RADIO_FLAG_INTERRUPT) {
     return FALSE; /* interrupt pending */
   }
   switch(RADIO_AppStatus) {
@@ -153,7 +223,11 @@ static uint8_t CheckTx(void) {
       RPHY_SniffPacket(&packet, TRUE); /* sniff outgoing packet */
     }
 #if NRF24_DYNAMIC_PAYLOAD
-    McuNRF24L01_TxPayload(packet.rxtx, RPHY_BUF_SIZE(packet.phyData)); /* send data, using dynamic payload size */
+    if (flags&RPHY_PACKET_FLAGS_NO_ACK) {
+      McuNRF24L01_TxPayloadNoAck(packet.rxtx, RPHY_BUF_SIZE(packet.phyData)); /* send data, using dynamic payload size, without ack request */
+    } else {
+      McuNRF24L01_TxPayload(packet.rxtx, RPHY_BUF_SIZE(packet.phyData)); /* send data, using dynamic payload size, with ack request */
+    }
 #else
     McuNRF24L01_TxPayload(packet.rxtx, RPHY_PAYLOAD_SIZE); /* send data, using fixed payload size */
 #endif
@@ -162,8 +236,8 @@ static uint8_t CheckTx(void) {
   return ERR_NOTAVAIL; /* no data to send? */
 }
 
-/* called to check if we have something in the RX queue. If so, we queue it */
-static uint8_t CheckRx(void) {
+/* called to check if we have something in the RX payload FIFO. If so, we queue it to the RX queue. */
+static uint8_t ReadRxPayload(void) {
 #if NRF24_DYNAMIC_PAYLOAD
   uint8_t payloadSize;
 #endif
@@ -184,16 +258,6 @@ static uint8_t CheckRx(void) {
 #endif
   status = McuNRF24L01_GetStatusClrIRQ();
   hasRx = (status&McuNRF24L01_STATUS_RX_DR)!=0;
-#if !McuNRF24L01_CONFIG_IRQ_PIN_ENABLED
-#if 1 /* experimental */
-  if (!hasRx) { /* interrupt flag not set, check if we have otherwise data */
-    (void)McuNRF24L01_GetFifoStatus(&status);
-    if (!(status&McuNRF24L01_FIFO_STATUS_RX_EMPTY) || (status&McuNRF24L01_FIFO_STATUS_RX_FULL)) { /* Rx not empty? */
-      hasRx = TRUE;
-    }
-  }
-#endif
-#endif
   if (hasRx) { /* data received interrupt */
     hasRxData = TRUE;
 #if NRF24_DYNAMIC_PAYLOAD
@@ -202,12 +266,15 @@ static uint8_t CheckRx(void) {
       McuNRF24L01_Write(McuNRF24L01_FLUSH_RX); /* flush old data */
       return ERR_FAILED;
     } else {
+      memset(packet.rxtx, 0xab, payloadSize); /* have defined data for the SPI transfer */
       McuNRF24L01_RxPayload(packet.rxtx, payloadSize); /* get payload: note that we transmit <size> as payload! */
       RPHY_BUF_SIZE(packet.phyData) = payloadSize;
     }
 #else
     McuNRF24L01_RxPayload(packet.rxtx, RPHY_PAYLOAD_SIZE); /* get payload: note that we transmit <size> as payload! */
 #endif
+  } else {
+    McuNRF24L01_Write(McuNRF24L01_FLUSH_RX); /* flush old data */
   }
   if (hasRxData) {
     /* put message into Rx queue */
@@ -238,11 +305,12 @@ static void WaitRandomTime(void) {
   }
 }
 
-static void RADIO_HandleStateMachine(void) {
+static void RADIO_HandleStateMachine(uint32_t notifcationValue) {
 #if RNET_RADIO_WAITNG_TIMEOUT_MS>0
   static TickType_t sentTimeTickCntr = 0; /* used for timeout */
 #endif
   uint8_t status, res;
+  bool interrupt;
   
   for(;;) { /* will break/return */
     switch (RADIO_AppStatus) {
@@ -258,55 +326,50 @@ static void RADIO_HandleStateMachine(void) {
         break; /* process switch again */
   
       case RADIO_READY_FOR_TX_RX_DATA: /* we are ready to receive/send data data */
-#if !McuNRF24L01_CONFIG_IRQ_PIN_ENABLED
-        McuNRF24L01_PollInterrupt();
-#if 1 /* experimental */
-        if (!RADIO_isrFlag) { /* interrupt flag not set, check if we have otherwise data */
-          (void)McuNRF24L01_GetFifoStatus(&status);
-          if (!(status&McuNRF24L01_FIFO_STATUS_RX_EMPTY) || (status&McuNRF24L01_FIFO_STATUS_RX_FULL)) { /* Rx not empty? */
-            RADIO_isrFlag = TRUE;
+        /* check first if we have incoming data: */
+        interrupt = CheckAndClearFlag(&notifcationValue, RADIO_FLAG_INTERRUPT);
+        if (interrupt) { /* Rx data? */
+          int cntr = 0;
+          while(ReadRxPayload()==ERR_OK) {
+            /* continoue reading messages from transceiver */
+            cntr++;
+            if (cntr>2) {
+              McuLog_trace("cntr: %d", cntr);
+            }
           }
-        }
-#endif
-#endif
-        if (RADIO_isrFlag) { /* Rx interrupt? */
-          RADIO_isrFlag = FALSE; /* reset interrupt flag */
-          res = CheckRx(); /* get message */
-#if 1 /* experimental */
-          if (res==ERR_FAILED) { /* failed reading from device */
-            RADIO_AppStatus = RADIO_RECEIVER_ALWAYS_ON; /* continue listening */
-            return; /* get out of loop */
-          }
-          (void)McuNRF24L01_GetFifoStatus(&status);
-          if (res==ERR_RXEMPTY && !(status&McuNRF24L01_FIFO_STATUS_RX_EMPTY)) { /* no data, but still flag set? */
-            McuNRF24L01_Write(McuNRF24L01_FLUSH_RX); /* flush old data */
-            RADIO_AppStatus = RADIO_RECEIVER_ALWAYS_ON; /* continue listening */
-          } else if (!(status&McuNRF24L01_FIFO_STATUS_RX_EMPTY) || (status&McuNRF24L01_FIFO_STATUS_RX_FULL)) { /* Rx not empty? */
-            RADIO_isrFlag = TRUE; /* stay in current state */
-          } else {
-            RADIO_AppStatus = RADIO_RECEIVER_ALWAYS_ON; /* continue listening */
-          }
-#else
           RADIO_AppStatus = RADIO_RECEIVER_ALWAYS_ON; /* continue listening */
-#endif
           break; /* process switch again */
+          #if 1
+        } else {
+          uint8_t val;
+          (void)McuNRF24L01_GetFifoStatus(&val);
+          if (!(val&McuNRF24L01_FIFO_STATUS_RX_EMPTY)) { /* */
+            McuLog_fatal("rx fifo not empty");
+          }
+          #endif
         }
-#if RNET_CONFIG_SEND_RETRY_CNT>0
-        RADIO_RetryCnt=0;
-#endif
+      #if RNET_CONFIG_SEND_RETRY_CNT>0
+        RADIO_RetryCnt = 0;
+      #endif
         RADIO_AppStatus = RADIO_CHECK_TX; /* check if we can send something */
-        break;
+        break; /* process switch again */
         
       case RADIO_CHECK_TX:
-        res = CheckTx();
-        if (res==ERR_OK) { /* there was data and it has been sent */
-          #if RNET_RADIO_WAITNG_TIMEOUT_MS>0
-          sentTimeTickCntr = xTaskGetTickCount(); /* remember time when it was sent, used for timeout */
-          #endif
-          RADIO_AppStatus = RADIO_WAITING_DATA_SENT;
-          break; /* process switch again */
-        } else if (res==ERR_DISABLED) { /* powered down transceiver */
-          RADIO_AppStatus = RADIO_POWER_DOWN;
+        if (CheckAndClearFlag(&notifcationValue, RADIO_FLAG_TX_REQUEST)) {
+          res = CheckTx();
+          if (res==ERR_OK) { /* there was data and it has been sent */
+            #if RNET_RADIO_WAITNG_TIMEOUT_MS>0
+            sentTimeTickCntr = xTaskGetTickCount(); /* remember time when it was sent, used for timeout */
+            #endif
+            RADIO_AppStatus = RADIO_WAITING_DATA_SENT;
+            break; /* process switch again */
+          } else if (res==ERR_DISABLED) { /* special message to power down transceiver */
+            RADIO_AppStatus = RADIO_POWER_DOWN;
+          } else if (res==ERR_NOTAVAIL) { /* no data available to be sent */
+            RADIO_AppStatus = RADIO_READY_FOR_TX_RX_DATA;
+          } else {
+            McuLog_fatal("wrong return code %d", res);
+          }
         } else {
           RADIO_AppStatus = RADIO_READY_FOR_TX_RX_DATA;
         }
@@ -316,26 +379,19 @@ static void RADIO_HandleStateMachine(void) {
         return;
   
       case RADIO_WAITING_DATA_SENT:
-#if !McuNRF24L01_CONFIG_IRQ_PIN_ENABLED
-        McuNRF24L01_PollInterrupt();
-#else /* experimental */
-        if (!RADIO_isrFlag) { /* check if we missed an interrupt? */
-          McuNRF24L01_PollInterrupt();
-        }
-#endif
-        if (RADIO_isrFlag) { /* check if we have received an interrupt: this is either timeout or low level ack */
-          RADIO_isrFlag = FALSE; /* reset interrupt flag */
+        interrupt = CheckAndClearFlag(&notifcationValue, RADIO_FLAG_INTERRUPT);
+        if (interrupt) { /* check if we have received an interrupt: this is either timeout or low level ack */
           status = McuNRF24L01_GetStatusClrIRQ();
           if (status&McuNRF24L01_STATUS_MAX_RT) { /* retry timeout interrupt */
             McuNRF24L01_Write(McuNRF24L01_FLUSH_TX); /* flush old data */
             RADIO_AppStatus = RADIO_TIMEOUT; /* timeout */
             WaitRandomTime();
           } else {
-    #if McuRNet_CREATE_EVENTS
+          #if McuRNet_CREATE_EVENTS
             /*lint -save -e522 function lacks side effect  */
             McuRNet_OnRadioEvent(McuRNet_RADIO_MSG_SENT);
             /*lint -restore */
-    #endif
+          #endif
             RADIO_AppStatus = RADIO_RECEIVER_ALWAYS_ON; /* turn receive on */
           }
           break; /* process switch again */
@@ -348,34 +404,34 @@ static void RADIO_HandleStateMachine(void) {
         return;
         
       case RADIO_TIMEOUT:
-#if RNET_CONFIG_SEND_RETRY_CNT>0
+      #if RNET_CONFIG_SEND_RETRY_CNT>0
         if (RADIO_RetryCnt<RNET_CONFIG_SEND_RETRY_CNT) {
           McuLog_error("Retry");
-  #if McuRNet_CREATE_EVENTS
+        #if McuRNet_CREATE_EVENTS
           /*lint -save -e522 function lacks side effect  */
           McuRNet_OnRadioEvent(McuRNet_RADIO_RETRY);
           /*lint -restore */
-  #endif
+        #endif
           RADIO_RetryCnt++;
           if (RMSG_PutRetryTxMsg(TxDataBuffer, sizeof(TxDataBuffer))==ERR_OK) {
             RADIO_AppStatus = RADIO_CHECK_TX; /* resend packet */
             return; /* iterate state machine next time */
           } else {
             McuLog_error("PutRetryTxMsg failed!");
-  #if McuRNet_CREATE_EVENTS
+          #if McuRNet_CREATE_EVENTS
             /*lint -save -e522 function lacks side effect  */
             McuRNet_OnRadioEvent(McuRNet_RADIO_RETRY_MSG_FAILED);
             /*lint -restore */
-  #endif
+          #endif
           }
         }
-#endif
+      #endif
         McuLog_error("Timeout");
-#if McuRNet_CREATE_EVENTS
+      #if McuRNet_CREATE_EVENTS
         /*lint -save -e522 function lacks side effect  */
         McuRNet_OnRadioEvent(McuRNet_RADIO_TIMEOUT);
         /*lint -restore */
-#endif
+      #endif
         RADIO_AppStatus = RADIO_RECEIVER_ALWAYS_ON; /* turn receive on */
         break; /* process switch again */
   
@@ -476,12 +532,20 @@ uint8_t RADIO_PowerUp(void) {
   return ERR_OK;
 }
 
-uint8_t RADIO_Process(void) {
+static uint8_t radio_process(uint32_t notifcationValue) {
   uint8_t res;
   int i;
   
-  RADIO_HandleStateMachine(); /* process state machine */
-  for(i=0;i<10;i++) { /* breaks, tries to handle multiple incoming messages */
+  RADIO_HandleStateMachine(notifcationValue); /* process state machine */
+  if (notifcationValue&RADIO_FLAG_TX_REQUEST) {
+     /* might be multiple requests to send data with one notification: process them. */
+    int nof = RMSG_TxQueueNofItems();
+    if (nof>0) {
+      //McuLog_trace("Tx again: nof: %d", nof);
+      RADIO_Notify(RADIO_FLAG_TX_REQUEST); /* trigger again */
+    }
+  }
+  for(i=0;i<RNET_CONFIG_RX_MULTIPLE_MESSAGE_COUNT;i++) { /* breaks, tries to handle multiple incoming messages */
     /* process received packets */
     res = RPHY_GetPayload(&radioRx); /* get message */
     if (res==ERR_OK) { /* packet received */
@@ -504,6 +568,102 @@ uint8_t RADIO_Process(void) {
   return ERR_OK;
 }
 
+static uint8_t RadioPowerUp(void) {
+  /* need to ensure that we wait 100 ms after power-on of the transceiver */
+  TickType_t xTime;
+  
+  xTime = xTaskGetTickCount();
+  if (xTime<pdMS_TO_TICKS(100)) {
+    /* not powered for 100 ms: wait until we can access the radio transceiver */
+    xTime = pdMS_TO_TICKS(100)-xTime; /* remaining ticks to wait */
+    vTaskDelay(xTime);
+  }
+  return RADIO_PowerUp();
+}
+
+static void Process(uint32_t notifcationValue) {
+  for(;;) {
+    switch(appState) {
+    case RADIO_NONE:
+      appState = RADIO_POWERUP;
+      continue;
+      
+    case RADIO_POWERUP:
+      if (RadioPowerUp()!=ERR_OK) {
+        McuLog_error("failed to power-up radio");
+      }
+      appState = RADIO_TX_RX;
+      break;
+      
+    case RADIO_TX_RX:
+      (void)radio_process(notifcationValue);
+      break;
+  
+    default:
+      break;
+    } /* switch */
+    break; /* break for loop */
+  } /* for */
+}
+
+static void RadioTask(void *pvParameters) {
+#if RNet_App_CONFIG_DO_SANITY_CHECK
+  uint32_t checkCntr = 0;
+  int nofRadioInit = 0;
+#endif
+  uint32_t notifcationValue; /* value from direct task notifcation */
+  BaseType_t res;
+
+  (void)pvParameters; /* not used */
+  appState = RADIO_NONE;
+  Process(0); /* initial processing to power up the radio */
+  for(;;) {
+    #if RNet_App_CONFIG_DO_SANITY_CHECK
+      if (checkCntr>10) { /* limit frequency of checks */
+        if (RADIO_IsSane()!=ERR_OK) {
+          McuLog_error("Radio not ready, going to re-initialize");
+          RADIO_Notify(RADIO_FLAG_REQUEST_INIT);
+          nofRadioInit++;
+        }
+        checkCntr = 0;
+      }
+      if (nofRadioInit>5) { /* limit number of retry */
+        for(;;) {
+          McuLog_fatal("Radio not ready, to many attempts");
+          vTaskDelay(pdMS_TO_TICKS(30*1000));
+        }
+      }
+    #endif
+    notifcationValue = 0;
+    res = xTaskNotifyWait(0UL, RADIO_FLAG_INTERRUPT|RADIO_FLAG_TX_REQUEST|RADIO_FLAG_REQUEST_INIT, &notifcationValue, portMAX_DELAY); /* check flags */
+    #if RNet_App_CONFIG_DO_SANITY_CHECK
+      checkCntr++;
+    #endif
+    if (res==pdPASS) {
+      if (notifcationValue&RADIO_FLAG_INTERRUPT) {
+        //McuLog_trace("DTN: ISR");
+        #if configUSE_SEGGER_SYSTEM_VIEWER_HOOKS
+        McuSystemView_Print("DTN: ISR");
+        #endif
+      }
+      if (notifcationValue&RADIO_FLAG_TX_REQUEST) {
+        //McuLog_trace("DTN: Tx");
+        #if configUSE_SEGGER_SYSTEM_VIEWER_HOOKS
+        McuSystemView_Print("DTN: Tx");
+        #endif
+      }
+      if (notifcationValue&RADIO_FLAG_REQUEST_INIT) {
+        //McuLog_trace("DTN: Init");
+        #if configUSE_SEGGER_SYSTEM_VIEWER_HOOKS
+        McuSystemView_Print("DTN: Init");
+        #endif
+        appState = RADIO_NONE; /* re-initialize and power up transceiver */
+      }
+      Process(notifcationValue); /* process radio in/out queues */
+    }
+  }
+}
+
 static const unsigned char *RadioStateStr(RADIO_AppStatusKind state) {
   switch(state) {
     case RADIO_INITIAL_STATE:         return (const unsigned char*)"INITIAL";
@@ -521,6 +681,7 @@ static const unsigned char *RadioStateStr(RADIO_AppStatusKind state) {
 static void RADIO_PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"radio", (unsigned char*)"Group of radio commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Shows radio help or status\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  init", (unsigned char*)"Initialize radio\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  channel <number>", (unsigned char*)"Switches to the given channel (0..127)\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  datarate <rate>", (unsigned char*)"Changes the data rate (250, 1000, 2000)\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  txaddr <addr>", (unsigned char*)"Set TX address, <addr> of up to 5 hex bytes, separated by space\r\n", io->stdOut);
@@ -700,6 +861,24 @@ static void RADIO_PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_Num16uToStr(buf, sizeof(buf), RNET_CONFIG_SEND_RETRY_CNT);
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  Max Retries", buf, io->stdOut);
+
+  if (McuNRF24L01_ReadFeature(&val0)==ERR_OK) {
+    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"0x");
+    McuUtility_strcatNum8Hex(buf, sizeof(buf), val0);
+    if (val0&McuNRF24L01_FEATURE_EN_DPL) {
+      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" EN_DPL");
+    }
+    if (val0&McuNRF24L01_FEATURE_EN_ACK_PAY) {
+      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" EN_ACK_PAY");
+    }
+    if (val0&McuNRF24L01_FEATURE_EN_DYN_PAY) {
+      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" EN_DYN_ACK");
+    }
+    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+  } else {
+    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"ERROR\r\n");
+  }
+  McuShell_SendStatusStr((unsigned char*)"  Feature", buf, io->stdOut);
 }
 
 uint8_t RADIO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io) {
@@ -716,6 +895,10 @@ uint8_t RADIO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
   } else if (McuUtility_strcmp((char*)cmd, (char*)McuShell_CMD_STATUS)==0 || McuUtility_strcmp((char*)cmd, (char*)"radio status")==0) {
     RADIO_PrintStatus(io);
     *handled = TRUE;
+  } else if (McuUtility_strcmp((char*)cmd, (char*)"radio init")==0) {
+    *handled = TRUE;
+    RADIO_Notify(RADIO_FLAG_REQUEST_INIT);
+    return ERR_OK;
   } else if (McuUtility_strcmp((char*)cmd, (char*)"radio sniff on")==0) {
     RADIO_isSniffing = TRUE;
     *handled = TRUE;
@@ -828,6 +1011,100 @@ uint8_t RADIO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
   return res;
 }
 
+#if McuNRF24L01_CONFIG_IRQ_PIN_ENABLED
+#include "McuGPIO.h"
+#include "RadioNRF24.h"
+#if McuLib_CONFIG_CPU_IS_KINETIS
+  #include "fsl_port.h"
+#endif
+
+static McuGPIO_Handle_t irqPin;
+
+#if McuLib_CONFIG_CPU_IS_RPxxxx
+static void gpio_IsrCallback(uint gpio, uint32_t events) {
+  switch(gpio) {
+    case McuNRF24L01_CONFIG_IRQ_PIN_NUMBER:
+      RADIO_OnInterrupt();
+      break;
+    default:
+      break;
+  }
+}
+#endif /* McuLib_CONFIG_CPU_IS_RPxxxx */
+
+#if McuLib_CONFIG_CPU_IS_KINETIS
+void PORTB_IRQHandler(void) { /* interrupt handler for PORTB */
+  uint32_t flags;
+
+  flags = GPIO_PortGetInterruptFlags(McuNRF24L01_CONFIG_IRQ_PIN_GPIO);
+  if (flags&(1U<<McuNRF24L01_CONFIG_IRQ_PIN_NUMBER)) {
+    GPIO_PortClearInterruptFlags(McuNRF24L01_CONFIG_IRQ_PIN_GPIO, 1U<<McuNRF24L01_CONFIG_IRQ_PIN_NUMBER);
+    RADIO_OnInterrupt();
+  }
+  __DSB();
+}
+#endif /* McuLib_CONFIG_CPU_IS_KINETIS */
+
+#if McuLib_CONFIG_CPU_IS_ESP32
+static void IRAM_ATTR radio_interrupt_handler(void *args) {
+  int gpio = (int)args;
+
+  switch(gpio) {
+    case McuNRF24L01_CONFIG_IRQ_PIN_NUMBER:
+      RADIO_OnInterrupt();
+      break;
+    default:
+      break;
+  }
+}
+#endif /* McuLib_CONFIG_CPU_IS_ESP32 */
+
+static void InitIRQPin(void) {
+  McuGPIO_Config_t config;
+
+#if McuLib_CONFIG_CPU_IS_KINETIS
+  config.hw.gpio = McuNRF24L01_CONFIG_IRQ_PIN_GPIO;
+  config.hw.port = McuNRF24L01_CONFIG_IRQ_PIN_PORT;
+#endif
+  config.hw.pin = McuNRF24L01_CONFIG_IRQ_PIN_NUMBER;
+  config.isInput = true;
+  config.hw.pull = McuGPIO_PULL_UP;
+  irqPin = McuGPIO_InitGPIO(&config);
+  if (irqPin==NULL) {
+    McuLog_fatal("failed createing IRQ pin");
+    for(;;) {}
+  }
+#if McuLib_CONFIG_CPU_IS_RPxxxx
+  gpio_set_irq_enabled_with_callback(McuNRF24L01_CONFIG_IRQ_PIN_NUMBER, GPIO_IRQ_EDGE_FALL, true, &gpio_IsrCallback);
+#elif McuLib_CONFIG_CPU_IS_KINETIS
+  PORT_SetPinInterruptConfig(McuNRF24L01_CONFIG_IRQ_PIN_PORT, McuNRF24L01_CONFIG_IRQ_PIN_NUMBER, kPORT_InterruptFallingEdge);
+  #if RADIO_USE_DTN
+    NVIC_SetPriority(McuNRF24L01_CONFIG_IRQ_LINE_NUMBER, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY); /* because using FreeRTOS API (DTN) in ISR */
+  #endif
+  EnableIRQ(McuNRF24L01_CONFIG_IRQ_LINE_NUMBER);
+#elif McuLib_CONFIG_CPU_IS_ESP32
+  #define ESP_INTR_FLAG_DEFAULT 0
+  esp_err_t res;
+
+  res = gpio_set_intr_type(McuNRF24L01_CONFIG_IRQ_PIN_NUMBER, GPIO_INTR_NEGEDGE); /* set to falling edge */
+  if (res!=ESP_OK) {
+    McuLog_fatal("Failed setting interrupt type");
+    for(;;) {}
+  }
+  res = gpio_install_isr_service(ESP_INTR_FLAG_DEFAULT);
+  if (res!=ESP_OK) {
+    McuLog_fatal("Failed installing interrupt service");
+    for(;;) {}
+  }
+  res = gpio_isr_handler_add(McuNRF24L01_CONFIG_IRQ_PIN_NUMBER, radio_interrupt_handler, (void *)McuNRF24L01_CONFIG_IRQ_PIN_NUMBER);
+  if (res!=ESP_OK) {
+    McuLog_fatal("Failed adding interrupt handler");
+    for(;;) {}
+  }
+#endif
+}
+#endif /* McuNRF24L01_CONFIG_IRQ_PIN_ENABLED */
+
 void RADIO_Deinit(void) {
   /* nothing to do */
 }
@@ -835,6 +1112,22 @@ void RADIO_Deinit(void) {
 void RADIO_Init(void) {
   RADIO_isSniffing = FALSE;
   RADIO_CurrChannel = RADIO_CHANNEL_DEFAULT;
+#if McuNRF24L01_CONFIG_IRQ_PIN_ENABLED
+  InitIRQPin();
+#endif
+  if (xTaskCreate(
+        RadioTask,  /* pointer to the task */
+        "Radio", /* task name for kernel awareness debugging */
+        (3*1024)/sizeof(StackType_t), /* task stack size */
+        (void*)NULL, /* optional task startup argument */
+        tskIDLE_PRIORITY+4,  /* initial priority */
+        &radioTaskHandle /* optional task handle to create */
+      ) != pdPASS) {
+    /*lint -e527 */
+    McuLog_fatal("failed creating task");
+    for(;;){}; /* error! probably out of memory */
+    /*lint +e527 */
+  }
 }
   
 #endif /* McuRNET_CONFIG_IS_ENABLED */

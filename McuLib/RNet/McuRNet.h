@@ -37,9 +37,6 @@
 **                Queue Timeout (ms)                       : 500
 **              Shell                                      : CLS1
 **     Contents    :
-**         SetChannel   - uint8_t McuRNet_SetChannel(uint8_t channel);
-**         Process      - uint8_t McuRNet_Process(void);
-**         PowerUp      - uint8_t McuRNet_PowerUp(void);
 **         ParseCommand - uint8_t McuRNet_ParseCommand(const unsigned char *cmd, bool *handled, const...
 **         Init         - void McuRNet_Init(void);
 **         Deinit       - void McuRNet_Deinit(void);
@@ -107,9 +104,9 @@ typedef enum {
   McuRNet_RADIO_ACK_RECEIVED         /* acknowledge message received */
 } McuRNet_RadioEvent;
 
-#define McuRNet_CREATE_EVENTS   1  /* call user event handler */
-
-void McuNRF24L01_OnInterrupt(void);
+#ifndef McuRNet_CREATE_EVENTS
+  #define McuRNet_CREATE_EVENTS   0  /* if to call user event handler */
+#endif
 
 void McuRNet_Init(void);
 /*
@@ -132,47 +129,6 @@ void McuRNet_Deinit(void);
 **         Deinitializes the RNet Stack
 **     Parameters  : None
 **     Returns     : Nothing
-** ===================================================================
-*/
-
-uint8_t McuRNet_Process(void);
-/*
-** ===================================================================
-**     Method      :  Process (component RNet)
-**
-**     Description :
-**         Processes the Radio Rx and Tx messages
-**     Parameters  : None
-**     Returns     :
-**         ---             - Error code
-** ===================================================================
-*/
-
-uint8_t McuRNet_PowerUp(void);
-/*
-** ===================================================================
-**     Method      :  PowerUp (component RNet)
-**
-**     Description :
-**         Initializes and powers the radio up.
-**     Parameters  : None
-**     Returns     :
-**         ---             - Error code
-** ===================================================================
-*/
-
-uint8_t McuRNet_SetChannel(uint8_t channel);
-/*
-** ===================================================================
-**     Method      :  SetChannel (component RNet)
-**
-**     Description :
-**         Sets the radio channel
-**     Parameters  :
-**         NAME            - DESCRIPTION
-**         channel         - Channel number
-**     Returns     :
-**         ---             - Error code
 ** ===================================================================
 */
 
