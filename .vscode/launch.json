@@ -6,13 +6,17 @@
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "jlink",
-            "serverpath": "${env:SEGGER_PATH}/JLinkGDBServerCL", // or: set in global json: cortex-debug.JLinkGDBServerPath
+            //"serverpath": "${env:SEGGER_PATH}/JLinkGDBServerCL",
+            "serverpath": "JLinkGDBServerCLExe", // inside container with host running JLinkRemoteServerCL, or for Linux host
+            //"serialNumber": "801048148", // connection by serial number
+            //"ipAddress": "tunnel:801048148", // connection through tunnel
+            //"ipAddress": "192.168.1.123", // connection to IP based (hardware) debug probe, e.g. J-Link Trace
+            "ipAddress": "192.168.65.254", // host.docker.internal address, JLinkRemoteServerCL runs on host
             "cwd": "${workspaceFolder}",
             "executable": "${command:cmake.launchTargetPath}",
             "armToolchainPath": "${env:TOOLCHAIN_PATH}",  // needed for the gdb
             "device": "LPC55S16",
             "interface": "swd",
-            "jlinkscript": "./src/tests/test_1.JLinkScript",
             "runToEntryPoint": "main", //"main" or "ResetISR"
             "postLaunchCommands": [
                 "monitor semihosting enable",
@@ -38,8 +42,11 @@
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "external",
-            "gdbTarget": "localhost:3333",
-            "preLaunchTask": "LinkServer: flash",
+            //"gdbTarget": "localhost:3333",
+            "gdbTarget": "192.168.65.254:3333",
+            //"preLaunchTask": "LinkServer: flash",
+            // linkserver gdbserver --keep-alive LPC55S16:LPCXpresso55S16
+            //"preLaunchTask": "LinkServer: gdbserver",
             "cwd": "${workspaceFolder}",
             "executable": "${command:cmake.launchTargetPath}",
             "armToolchainPath": "${env:TOOLCHAIN_PATH}",  // needed for the gdb
