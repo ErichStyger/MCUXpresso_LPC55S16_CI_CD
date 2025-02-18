@@ -72,8 +72,10 @@ COPY src                        /project/src/
 # Build project
 RUN \
     cd /project && \
-    cmake -G"Ninja" . -B build && \
-    cmake --build build
+    cmake --preset Debug && \
+    cmake --build --preset app-debug && \
+    cmake --preset Release && \
+    cmake --build --preset app-release
     
 # Command that will be invoked when the container starts
 ENTRYPOINT ["/bin/bash"]
