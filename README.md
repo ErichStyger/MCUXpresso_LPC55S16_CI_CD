@@ -7,6 +7,7 @@ The setup is described in details in my blog article: https://mcuoneclipse.com/2
 See following articles for details:
 - https://mcuoneclipse.com/2023/12/18/modern-on-target-embedded-system-testing-with-cmake-and-ctest/
 - https://mcuoneclipse.com/2025/02/08/optimizing-embedded-development-with-vs-code-and-devcontainer/
+- https://mcuoneclipse.com/2025/02/18/remote-debugging-with-devcontainer-and-vs-code/
 
 ## UART to on-board Debug Probe (VCOM)
 VCOM through debug probe (e.g. with on-board LinkServer probe):
