@@ -13,8 +13,20 @@
             "group": {
                 "kind": "build",
                 "isDefault": false
-            },
-            "problemMatcher": []
+            }
+        },
+        {
+          "type": "process",
+          "label": "LinkServer: flash",
+          "command": "LinkServer",
+          "args": [
+            "flash",
+            "lpc55s16",
+            "load",
+            "${command:cmake.launchTargetPath}",
+          ],
+          "isBackground": false,
+          "problemMatcher": []
         }
     ]
 }
