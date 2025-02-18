@@ -67,7 +67,7 @@ COPY CMakeLists.txt             /project/
 COPY arm-none-eabi-gcc.cmake    /project/
 COPY sdk                        /project/sdk/
 COPY src                        /project/src/
-COPY McuLib                     /project/McuLib/
+#COPY McuLib                     /project/McuLib/
 
 # Build project
 RUN \
