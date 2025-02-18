@@ -1,106 +1,131 @@
 {
-    "version": 6,
-    "cmakeMinimumRequired": {
-      "major": 3,
-      "minor": 23,
-      "patch": 0
-    },
-    "configurePresets": [
+  "version": 6,
+  "cmakeMinimumRequired":
+  {
+    "major": 3,
+    "minor": 28,
+    "patch": 0
+  },
+  "configurePresets":
+  [
     {
-      "name": "config-base",
+      "name": "default",
+      "displayName": "Default Config",
       "hidden": true,
-      "displayName": "base Configuration",
       "description": "Default build using Ninja generator",
       "generator": "Ninja",
       "binaryDir": "${sourceDir}/build/${presetName}",
-      "toolchainFile": "${sourceDir}/arm-none-eabi-gcc.cmake",
-      "warnings": {
-        "uninitialized": true,
-        "dev": false,
-        "deprecated": true
+      "toolchainFile": "${sourceDir}/arm-none-eabi-gcc.cmake"
+    },
+    {
+      "name": "Debug",
+      "inherits": "default",
+      "displayName": "Debug",
+      "description": "Debug Configuration",
+      "cacheVariables": 
+      {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "ENABLE_UNIT_TESTING": "OFF"
       }
     },
     {
-      "name": "debug",
-      "displayName": "Config Debug",
-      "description": "Sets debug build type and cortex arch",
-      "inherits": "config-base",
-      "architecture": {
-        "value": "arm",
-        "strategy": "external"
-      },
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
-      }
-    },
-    {
-      "name": "release",
-      "displayName": "Config Release",
-      "description": "Sets release build type",
-      "inherits": "debug",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
-      }
-    },
-    {
-      "name": "debug-test",
-      "displayName": "Config Debug-Test",
-      "description": "Debug build with tests enabled",
-      "inherits": "debug",
-      "cacheVariables": {
+      "name": "Test",
+      "displayName": "Test",
+      "description": "Configuration with tests enabled",
+      "inherits": "default",
+      "cacheVariables":
+      {
+        "CMAKE_BUILD_TYPE": "Debug",
         "ENABLE_UNIT_TESTING": "ON"
       }
     },
     {
-      "name": "release-test",
-      "displayName": "Config Release-Test",
-      "description": "Release build with tests enabled",
-      "inherits": "release",
-      "cacheVariables": {
-        "ENABLE_UNIT_TESTING": "ON"
+      "name": "Release",
+      "inherits": "default",
+      "displayName": "Release",
+      "description": "Release Configuration",
+      "cacheVariables":
+      {
+        "CMAKE_BUILD_TYPE": "Release",
+        "ENABLE_UNIT_TESTING": "OFF"
       }
     }
   ],
-  "buildPresets": [
+  "buildPresets": 
+  [
     {
-      "name": "build-base",
-      "description": "build base preset",
+      "name": "default",
       "hidden": true,
-      "configurePreset": "debug"
+      "displayName": "default build",
+      "configurePreset": "default"
     },
     {
-      "name": "debug",
-      "description": "debug preset",
-      "displayName": "Build Debug",
-      "inherits": "build-base"
+      "name": "app-debug",
+      "displayName": "debug build",
+      "configurePreset": "Debug",
+      "configuration": "Debug"
     },
     {
-      "name": "release",
-      "displayName": "Build Release",
-      "inherits": "build-base",
-      "configurePreset": "release"
+      "name": "app-release",
+      "displayName": "release build",
+      "configurePreset": "Release",
+      "configuration": "Release"
     },
     {
-      "name": "debug-test",
-      "displayName": "Build Debug-Test",
-      "inherits": "debug",
-      "configurePreset": "debug-test"
-    },
-    {
-      "name": "release-test",
-      "displayName": "Build Release-Test",
-      "inherits": "release",
-      "configurePreset": "release-test"
+      "name": "app-test",
+      "displayName": "test build",
+      "configurePreset": "Test",
+      "configuration": "Test"
     }
   ],
-  "testPresets": [
-  {
-    "name": "Test Debug",
-    "description": "Test Debug Preset",
-    "configurePreset": "debug-test",
-    "output": {
-      "outputOnFailure": true
+  "testPresets":
+  [
+    {
+      "name": "Test",
+      "description": "test preset",
+      "displayName": "test preset",
+      "configurePreset": "Test"
     }
-  }
+  ],
+  "packagePresets":
+  [
+    {
+      "name": "default",
+      "displayName": "default package preset",
+      "configurePreset": "default",
+      "generators":
+        [
+          "TGZ"
+        ]
+    },
+    {
+      "name": "releasePackage",
+      "description": "",
+      "displayName": "",
+      "configurePreset": "Release"
+    }
+  ],
+  "workflowPresets":
+  [
+    {
+      "name": "workflow",
+      "description": "run test",
+      "displayName": "testing",
+      "steps": 
+      [
+        {
+          "type": "configure",
+          "name": "Test"
+        },
+        {
+          "type": "build",
+          "name": "app-test"
+        },
+        {
+          "type": "test",
+          "name": "Test"
+        }
+      ]
+    }
   ]
 }

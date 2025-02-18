@@ -4,7 +4,9 @@ The project is setup for both J-Link and NXP LinkServer to run automated on-targ
 This repository is used as an example how to do CI/CD with GitHub actions.
 The setup is described in details in my blog article: https://mcuoneclipse.com/2023/10/02/ci-cd-for-embedded-with-vs-code-docker-and-github-actions/
 
-See as well https://mcuoneclipse.com/2023/12/18/modern-on-target-embedded-system-testing-with-cmake-and-ctest/
+See following articles for details:
+- https://mcuoneclipse.com/2023/12/18/modern-on-target-embedded-system-testing-with-cmake-and-ctest/
+- https://mcuoneclipse.com/2025/02/08/optimizing-embedded-development-with-vs-code-and-devcontainer/
 
 ## UART to on-board Debug Probe (VCOM)
 VCOM through debug probe (e.g. with on-board LinkServer probe):
@@ -17,27 +19,14 @@ VOM through J3 UART header (e.g. with external MCU-Link debug probe):
 
 See https://mcuoneclipse.com/2021/05/15/using-fatfs-and-minini-with-the-nxp-lpc55s16-evk/
 
-
-## Environment
-In order to have compiler and J-Link not hardcoded in the project itself, rund the setenv script file.
-
-setenv example for Windows:
-```
-set TOOLCHAIN_PREFIX=C:/Raspy/arm-none-eabi-gcc-13.2.1-1.1
-set SEGGER_PATH=C:/Program Files/SEGGER/JLink
-set LINKSERVER_PATH=C:/NXP/LinkServer
-```
-Note that the commands have to be set up *before* starting VS Code, to have the environment set.
-Alternatively, these variables can be set on user or system level.
-
 ## Build
 To initialize the build files, use
 ```
-cmake --preset debug
+cmake --preset Debug
 ```
 To build it:
 ```
-cmake --build --preset debug
+cmake --build --preset app-debug
 ```
 
 ## Docker Quick-Steps
