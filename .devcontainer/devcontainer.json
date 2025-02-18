@@ -1,0 +1,47 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/ubuntu
+{
+	"name": "LPC55S16_Blinky",
+	"build": {
+        "dockerfile": "Dockerfile" // use local docker file
+    },
+
+    // "runArgs": [
+    // ],
+
+    // use a shorter path ("/workspace") for folder in the container.
+    // This has to be cut of as prefix in semihosting file operations
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind",
+    "workspaceFolder": "/workspace",
+
+	// Features to add to the dev container. More info: https://containers.dev/features.
+	// "features": {},
+
+	// Use 'forwardPorts' to make a list of ports inside the container available locally.
+	// "forwardPorts": [],
+
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "uname -a",
+
+	// Configure tool-specific properties.
+    // Set *default* container specific settings.json values on container create.
+    "customizations": {
+        "vscode": {
+            // Add the IDs of extensions you want installed when the container is created.
+            "extensions": [
+                "ms-vscode.cpptools",
+                "mcu-debug.debug-tracker-vscode",
+                "ms-vscode.cmake-tools",
+                "ms-vscode.vscode-serial-monitor",
+                "ms-vscode.cpptools-extension-pack",
+                "marus25.cortex-debug",
+                "ms-azuretools.vscode-docker",
+                "jacqueslucke.gcov-viewer"
+            ]
+        }
+    },
+
+	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
+	// "remoteUser": "root"
+    "remoteUser": "vscode"
+}
