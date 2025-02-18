@@ -21,11 +21,11 @@ permissions:
 # Jobs run in parallel by default, each runs steps in sequence
 jobs:
   # Job to print something out
-  say-hello:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Say hello
-        run: echo "Hello, GitHub Actions!"
+  #say-hello:
+  #  runs-on: ubuntu-latest
+  #  steps:
+  #    - name: Say hello
+  #      run: echo "Hello, GitHub Actions!"
 
   # Build binary and send to releases
   build-and-deploy:
@@ -34,6 +34,8 @@ jobs:
     steps:
       - name: Check out this repository
         uses: actions/checkout@v4
+        with:
+          submodules: recursive
 
       - name: Build Docker image
         run: docker build -t lpc55s16-image .
