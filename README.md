@@ -9,6 +9,18 @@ See following articles for details:
 - https://mcuoneclipse.com/2025/02/08/optimizing-embedded-development-with-vs-code-and-devcontainer/
 - https://mcuoneclipse.com/2025/02/18/remote-debugging-with-devcontainer-and-vs-code/
 
+## Cloning the repository
+This repository is using the McuLib repository as sub-repo. 
+
+Cloning the repo with submodules:
+```
+git clone --recurse-submodules git@github.com:ErichStyger/MCUXpresso_LPC55S16_CI_CD.git
+```
+If missed, update it with:
+```
+git submodule update --init --recursive
+```
+
 ## UART to on-board Debug Probe (VCOM)
 VCOM through debug probe (e.g. with on-board LinkServer probe):
 - JP9 (lower left corner, near PMod connector): *open*
