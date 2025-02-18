@@ -198,10 +198,23 @@ int McuSemihost_SysHostClock(void) {
   return res;
 }
 
+#if McuSemihost_CONFIG_CUT_FILENAME_PREFIX
+static const unsigned char *cutOffPrefix(const unsigned char *filename, const unsigned char *prefix) {
+  size_t prefixLen = McuUtility_strlen((char*)prefix);
+  if (McuUtility_strncmp(filename, prefix, prefixLen)==0) {
+    return filename+prefixLen; /* skip prefix */
+  }
+  return filename;
+}
+#endif
+
 int McuSemihost_SysFileOpen(const unsigned char *filename, int mode) {
   int32_t param[3];
   int res;
 
+#if McuSemihost_CONFIG_CUT_FILENAME_PREFIX
+  filename = cutOffPrefix(filename, McuSemihost_CONFIG_CUT_FILENAME_PREFIX_STR);
+#endif
   param[0] = (int32_t)filename;
   param[1] = mode;
   param[2] = McuUtility_strlen((char*)filename);
@@ -317,6 +330,26 @@ int McuSemihost_SysTmpName(uint8_t fileID, unsigned char *buffer, size_t bufSize
 }
 #endif
 
+int McuSemihost_ReadLine(unsigned char *buf, size_t bufSize, bool echo) {
+  int c; /* character from semihosting */
+  int i = 0; /* cursor position in string */
+
+  if (bufSize<2) {
+    return 0; /* buffer size needs room for at least two bytes: '\n' and '\0' */
+  }
+  do {
+    c = McuSemihost_SysReadC(); /* first call is blocking until user presses enter. Then it returns each character on each iteration, until '\n' */
+    if (echo) {
+      McuSemihost_SysWriteC(c); /* echo the character */
+    }
+    if (i<bufSize-1) { /* -1 for zero byte at the end */
+      buf[i++] = c; /* only store into buffer if there is enough space, but continue reading until '\n' */
+    }
+  } while(c!='\n' && c!='\r');
+  buf[i] = '\0'; /* zero terminate buffer */
+  return McuShell_ProcessConsoleInput((char*)buf, bufSize);
+}
+
 int McuSemihost_SysReadC(void) {
   int res;
   res = McuSemihost_HostRequest(McuSemihost_Op_SYS_READC, NULL);
@@ -417,7 +450,7 @@ int McuSemihost_WriteString(const unsigned char *str) {
 
 int McuSemihost_WriteString0(const unsigned char *str) {
   /* R1 to point to the first byte of the string */
-#if McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_PEMICRO /* WRITE0 does nothing with PEMCIRO? */
+#if McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_PEMICRO /* WRITE0 does nothing with PEMICRO? */
   return McuSemihost_SysFileWrite(McuSemihost_STDOUT, str, strlen((char*)str));
 #elif McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_PYOCD /* PyOCD only supports WRITEC */
   McuShell_SendStr(str, McuSemihost_stdio.stdOut); /* buffer it, then write to a file during flush */
@@ -729,7 +762,7 @@ static int ConsoleInputOutput(void) {
   }
 #endif
 #if   McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_PEMICRO /* SYS_READ_C not implemented by PEMICRO */ \
-   || McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER /* fails in MCUXpresso 11.7.0, check with later versions */
+ //  || McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER /* fails in MCUXpresso 11.7.0, check with later versions */
     McuSemihost_WriteString((unsigned char*)"McuSemihost: SYS_READC does not work? Check for a newer release than 11.7.0\n");
 #else
   int c;
@@ -864,21 +897,17 @@ int McuSemiHost_Test(void) {
     }
   }
 #endif
-#if McuSemihost_CONFIG_DEBUG_CONNECTION!=McuSemihost_DEBUG_CONNECTION_SEGGER
-  /* not supported by SEGGER */
+#if McuSemihost_CONFIG_DEBUG_CONNECTION!=McuSemihost_DEBUG_CONNECTION_SEGGER && McuSemihost_CONFIG_DEBUG_CONNECTION!=McuSemihost_DEBUG_CONNECTION_LINKSERVER
+  /* not supported by SEGGER and LinkServer */
   {
     int32_t val = McuSemihost_SysEnterSVC();
     if (val!=0) {
       McuSemihost_WriteString((unsigned char*)"McuSemihost ENTER_SVC failed?!\n");
     }
   }
+#else
+    McuSemihost_WriteString((unsigned char*)"McuSemihost: ENTER_SVC not supported!\n");
 #endif
-
-  if (result!=0) {
-    McuSemihost_WriteString((unsigned char*)"McuSemihost test FAILED!\n");
-  } else {
-    McuSemihost_WriteString((unsigned char*)"McuSemihost test OK!\n");
-  }
 
 #if McuSemihost_CONFIG_DEBUG_CONNECTION==McuSemihost_DEBUG_CONNECTION_LINKSERVER /* fails in MCUXpresso 11.7.0, check with later versions */
   McuSemihost_WriteString((unsigned char*)"McuSemihost: SYS_EXCEPTION does not work with LinkServer\n");
@@ -886,6 +915,13 @@ int McuSemiHost_Test(void) {
   McuSemihost_WriteString((unsigned char*)"McuSemihost: SYS_EXCEPTION, going to exit debugger!\n");
   McuSemihost_SysException(McuSemihost_ADP_Stopped_ApplicationExit); /* note: will exit application! */
 #endif
+
+  if (result!=0) {
+    McuSemihost_WriteString((unsigned char*)"McuSemihost: some tests FAILED!\n");
+  } else {
+    McuSemihost_WriteString((unsigned char*)"McuSemihost: all tests OK!\n");
+  }
+  McuSemihost_WriteString((unsigned char*)"McuSemihost: Finished test!\n");
   return result;
 }
 /*--------------------------------------------------------------------------------------*/

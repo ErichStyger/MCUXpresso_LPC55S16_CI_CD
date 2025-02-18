@@ -23,7 +23,7 @@ void __assertion_failed(char *_Expr) {
 static void AppTask(void *pv) {
   for(;;) {
     Leds_Neg(LEDS_BLUE);
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    vTaskDelay(pdMS_TO_TICKS(100));
   }
 }
 
