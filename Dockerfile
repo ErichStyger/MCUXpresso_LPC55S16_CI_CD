@@ -5,7 +5,7 @@ FROM ubuntu:24.04
 # Install prerequisites
 RUN \
     apt update && \
-    apt install -y cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential ninja-build
+    apt install -y git cmake gcc-arm-none-eabi libnewlib-arm-none-eabi build-essential ninja-build
 
 # Install nano editor, used to edit files inside container
 RUN apt-get install -y nano
