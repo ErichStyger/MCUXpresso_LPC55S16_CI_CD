@@ -72,6 +72,7 @@ COPY src                        /project/src/
 # Build project
 RUN \
     cd /project && \
+    ls -al && \
     cmake --preset Debug && \
     cmake --build --preset app-debug && \
     cmake --preset Release && \
