@@ -44,7 +44,7 @@ jobs:
         run: docker create --name lpc55s16-container lpc55s16-image
         
       - name: Copy out Intel Hex file
-        run: docker cp lpc55s16-container:/project/build/${APP_NAME}.hex ./${APP_NAME}.hex
+        run: docker cp lpc55s16-container:/project/build/Release/${APP_NAME}.hex ./${APP_NAME}.hex
         
       - name: Put environment variable into the env context
         run: echo "app_name=$APP_NAME" >> $GITHUB_ENV
