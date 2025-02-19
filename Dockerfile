@@ -73,9 +73,11 @@ COPY src                        /project/src/
 RUN \
     cd /project && \
     cmake --preset Debug && \
-    cmake --build --preset app-debug && \
-    cmake --preset Release && \
-    cmake --build --preset app-release
+    cmake --build --preset app-debug
+RUN \
+    cmake --preset Release
+RUN \
+    cmake --build --preset app-releasecmake --preset Release
     
 # Command that will be invoked when the container starts
 ENTRYPOINT ["/bin/bash"]
