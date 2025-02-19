@@ -85,7 +85,7 @@ RUN \
     cmake --preset Debug && \
     cmake --build --preset app-debug && \
     cmake --preset Release && \
-    cmake --build --preset app-releasecmake --preset Release
+    cmake --build --preset app-releasec
     
 # Command that will be invoked when the container starts
 ENTRYPOINT ["/bin/bash"]
