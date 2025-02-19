@@ -71,7 +71,7 @@ COPY sdk                        /project/sdk/
 COPY src                        /project/src/
 
 RUN \
-    cd /projeect && \
+    cd /project && \
     git clone https://github.com/ErichStyger/McuLib
 
 # Build project
