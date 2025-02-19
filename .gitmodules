@@ -1,0 +1,3 @@
+[submodule "McuLib"]
+	path = McuLib
+	url = https://github.com/ErichStyger/McuLib
