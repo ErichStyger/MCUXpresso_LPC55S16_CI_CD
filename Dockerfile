@@ -64,19 +64,17 @@ RUN \
     
 # Copy project sources into image
 COPY CMakeLists.txt             /project/
+COPY CMakePresets.json          /project/
 COPY arm-none-eabi-gcc.cmake    /project/
 COPY sdk                        /project/sdk/
 COPY src                        /project/src/
-#COPY McuLib                     /project/McuLib/
 
 # Build project
 RUN \
     cd /project && \
     cmake --preset Debug && \
-    cmake --build --preset app-debug
-RUN \
-    cmake --preset Release
-RUN \
+    cmake --build --preset app-debug && \
+    cmake --preset Release && \
     cmake --build --preset app-releasecmake --preset Release
     
 # Command that will be invoked when the container starts
