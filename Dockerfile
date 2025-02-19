@@ -70,10 +70,14 @@ COPY arm-none-eabi-gcc.cmake    /project/
 COPY sdk                        /project/sdk/
 COPY src                        /project/src/
 
-# Build project
 RUN \
-    ls /home/runner/work/MCUXpresso_LPC55S16_CI_CD/MCUXpresso_LPC55S16_CI_CD \
-    cp /home/runner/work/MCUXpresso_LPC55S16_CI_CD/MCUXpresso_LPC55S16_CI_CD/McuLib /project/McuLib
+    cd /projeect && \
+    git clone https://github.com/ErichStyger/McuLib
+
+# Build project
+#RUN \
+#    ls /home/runner/work/MCUXpresso_LPC55S16_CI_CD/MCUXpresso_LPC55S16_CI_CD \
+#    cp /home/runner/work/MCUXpresso_LPC55S16_CI_CD/MCUXpresso_LPC55S16_CI_CD/McuLib /project/McuLib
 
 RUN \
     cd /project && \
