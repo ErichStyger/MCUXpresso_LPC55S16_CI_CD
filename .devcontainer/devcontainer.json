@@ -6,8 +6,12 @@
         "dockerfile": "Dockerfile" // use local docker file
     },
 
-    // "runArgs": [
-    // ],
+    "runArgs": [ 
+        // host.docker.internal is set by default in docker desktop to access the host IP address.
+        // For normal docker the line below is needed to access the host from the container.
+        // For docker desktop, this is not needed.
+    //  "--add-host=host.docker.internal:172.17.0.1"
+     ],
 
     // use a shorter path ("/workspace") for folder in the container.
     // This has to be cut of as prefix in semihosting file operations
