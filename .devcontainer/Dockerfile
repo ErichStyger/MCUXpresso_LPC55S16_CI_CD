@@ -19,7 +19,14 @@ RUN apt-get install -y nano iputils-ping udev curl
 # Install doxygen and graphviz
 RUN apt-get install -y doxygen graphviz
 
-# Get a specific version of the ARM toolchain
+# ARM compiler version:
+# RUN curl -LO -k https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz && \
+#    tar xf arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz && \
+#    rm arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz
+
+# Get a specific version of the arm toolchain
+# x86:              xpack-arm-none-eabi-gcc-13.2.1-1.1-linux-x64.tar.gz
+# Apple silicon:    xpack-arm-none-eabi-gcc-13.2.1-1.1-linux-arm64.tar.gz
 RUN \
     cd /apps \
     && wget https://github.com/xpack-dev-tools/arm-none-eabi-gcc-xpack/releases/download/v13.2.1-1.1/xpack-arm-none-eabi-gcc-13.2.1-1.1-linux-x64.tar.gz -O gcc-arm-none-eabi.tar.gz \
@@ -43,6 +50,8 @@ RUN \
     && ./venv/bin/pip install gcovr
 
 # Install SEGGER tools
+# for x86:           JLink_Linux_V810g_x86_64.deb
+# for Apple silicon: JLink_Linux_V810g_arm64.deb
 # in case issue with mismatch between J-Link version between host and container/image: use matching version
 RUN \
     apt-get install -y \
