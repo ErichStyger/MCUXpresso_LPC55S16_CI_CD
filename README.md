@@ -148,16 +148,20 @@ LinkServer --log-level 1 run --mode serial:COM57:115200 --exit-mark "*STOP*" --p
 ## Unit Tests
 Enable 'PL_CONFIG_USE_UNIT_TESTS' in platform.h
 
-CTest: add the following in the main CMakeLists.txt:
-```
-enable_testing()
-add_test(NAME ${CMAKE_PROJECT_NAME} COMMAND JRun.exe)
-```
 Manual test runs:
 ```
-ctest --verbose --output-on-failure --test-dir build/Test --timeout 15
-ctest -T test --verbose --output-on-failure -R ^Led_1$
+ctest --verbose --output-on-failure --test-dir build/Test --timeout 15 -R Led_1
 ```
+
+## Notes
+[ctest] No coverage info files for CMake project C:/Users/Erich Styger.N0007139/Data/GitRepos/GitHub_MCUXpresso_LPC55S16_CICD/MCUXpresso_LPC55S16_CI_CD. No coverage data will be analyzed for this project.
+https://gcovr.com/en/stable/output/lcov.html
+gcovr --lcov build/coverage.info
+
+settings.json:
+    "cmake.coverageInfoFiles": [
+        "${workspaceFolder}/build/coverage.info"
+    ],  
 
 ## Links
 - NXP LinkServer: https://www.nxp.com/design/design-center/software/development-software/mcuxpresso-software-and-tools-/linkserver-for-microcontrollers:LINKERSERVER
