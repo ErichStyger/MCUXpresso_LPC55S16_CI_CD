@@ -155,7 +155,7 @@ add_test(NAME ${CMAKE_PROJECT_NAME} COMMAND JRun.exe)
 ```
 Manual test runs:
 ```
-ctest --verbose --output-on-failure --test-dir build/debug-test --timeout 15
+ctest --verbose --output-on-failure --test-dir build/Test --timeout 15
 ctest -T test --verbose --output-on-failure -R ^Led_1$
 ```
 
