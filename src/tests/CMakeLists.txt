@@ -57,8 +57,10 @@ target_include_directories(
 #################################################################################
 # Using NXP LinkServer Runner
 #################################################################################
-# set (RUNNER_CTEST_MODE --mode semihost)
-set (RUNNER_CTEST_MODE --mode serial:COM205:115200)
+# for Semihosting, enable PL_CONFIG_USE_SEMIHOSTING in platform.h:
+set (RUNNER_CTEST_MODE --mode semihost)
+# for UART, enable PL_CONFIG_USE_SHELL_UART in platform.h:
+#set (RUNNER_CTEST_MODE --mode serial:COM205:115200)
 
 set (RUNNER_CTEST_CONTROL  --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --args-mark "*ARGS*")
 
