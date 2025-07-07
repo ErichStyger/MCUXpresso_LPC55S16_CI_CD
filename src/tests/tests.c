@@ -39,21 +39,14 @@ static void TestTask(void *pv) {
   McuLog_info("starting test task");
 #if USE_TEST_ARGUMENTS && PL_CONFIG_USE_RUNNER_LINKSERVER
   #if PL_CONFIG_USE_SHELL_UART
-    #if PL_CONFIG_USE_EXPERIMENTAL
-
     vTaskDelay(pdMS_TO_TICKS(1000)); /* give UART time to receive */
-
     McuLog_info("Shell suspend");
     SHELL_Suspend();
-
     McuShell_printfIO(McuShellUart_GetStdio(), "*ARGS*\r\n");
     vTaskDelay(pdMS_TO_TICKS(500)); /* \todo give UART time to receive */
     nofBytes = McuUnity_UART_GetArgs(buf, sizeof(buf), McuShellUart_GetStdio()->stdIn);
-
     McuLog_info("Shell to be resumed");
     SHELL_Resume();
-
-    #endif
     McuLog_info("uart nof: %d, buf: %s", nofBytes, buf);
     if (nofBytes>0) {
       if (McuUtility_strcmp((char*)buf, "led1")==0) {
@@ -65,9 +58,7 @@ static void TestTask(void *pv) {
       test_arg = 1; /*! \TODO */
     }
   #else
-    #if PL_CONFIG_USE_EXPERIMENTAL
     McuSemihost_printf("*ARGS*");
-    #endif
     nofBytes = McuUnity_Semihost_GetArgs(buf, sizeof(buf));
     McuLog_info("semihost nof: %d, buf: %s", nofBytes, buf);
     if (nofBytes>0) {
