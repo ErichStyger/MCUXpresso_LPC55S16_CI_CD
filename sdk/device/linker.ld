@@ -70,6 +70,16 @@ SECTIONS
         *(.after_vectors*)
 
        *(.text*)
+
+        /************************************************************/
+        /* added for gcov: */
+        . = ALIGN(4);
+        PROVIDE_HIDDEN (__init_array_start = .);
+        KEEP (*(SORT(.init_array.*)))
+        KEEP (*(.init_array*))
+        PROVIDE_HIDDEN (__init_array_end = .);
+        /************************************************************/
+
        *(.rodata .rodata.* .constdata .constdata.*)
        . = ALIGN(4);
     } > PROGRAM_FLASH

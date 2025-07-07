@@ -17,6 +17,19 @@
         },
         {
             "type": "shell",
+            "label": "gcovr",
+            "command": "gcovr --html-details -o ./gcovr/main.html",
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
             "label": "LinkServer: gdbserver (keep)",
             "command": "LinkServer gdbserver --keep-alive LPC55S16:LPCXpresso55S16",
             "options": {

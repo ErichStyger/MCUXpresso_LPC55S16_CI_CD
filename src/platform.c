@@ -24,6 +24,12 @@
 #if PL_CONFIG_USE_RTT
   #include "McuRTT.h"
 #endif
+#if McuRdimon_CONFIG_IS_ENABLED
+  #include "rdimon/McuRdimon.h"
+#endif
+#if PL_CONFIG_USE_GCOV
+  #include "McuCoverage.h"
+#endif
 #include "McuHardFault.h"
 #include "McuSemihost.h"
 
@@ -68,6 +74,13 @@ void PL_Init(void) {
   SHELL_Init();
 #if PL_CONFIG_USE_SEMIHOSTING
   McuSemiHost_Init();
+#endif
+#if McuRdimon_CONFIG_IS_ENABLED
+  McuRdimon_Init();
+#endif
+#if PL_CONFIG_USE_GCOV
+  McuCoverage_Init();  /* initialize library */
+  //McuCoverage_Check(); /* testing file I/O */
 #endif
 #if PL_CONFIG_USE_UNIT_TESTS
   Tests_Init();

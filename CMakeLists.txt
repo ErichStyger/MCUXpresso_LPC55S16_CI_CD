@@ -109,6 +109,7 @@ target_link_libraries(
   PUBLIC srcLib
   PUBLIC sdkLib
   PUBLIC rdimonLib # file I/O with semihosting
+  PUBLIC gcov      # GNU gcov library
 )
 
 # Optional: Print executable size as part of the post build process

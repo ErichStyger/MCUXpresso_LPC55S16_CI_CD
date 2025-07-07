@@ -22,6 +22,7 @@
 /* FreeRTOS */
 #define McuLib_CONFIG_SDK_USE_FREERTOS              (1)
 #define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS        (0)
+#define INCLUDE_vTaskEndScheduler                   (1)
 #define configUSE_HEAP_SCHEME                       4 /* either 1 (only alloc), 2 (alloc/free), 3 (malloc), 4 (coalesc blocks), 5 (multiple blocks), 6 (newlib) */
 #define configTOTAL_HEAP_SIZE                       (32*1024)
 #define configUSE_HEAP_SECTION_NAME                 (1)
@@ -53,7 +54,7 @@
 #define McuLog_CONFIG_NOF_CONSOLE_LOGGER        (3) /* UART, RTT and semihosting */
 /* ---------------------------------------------------------------------------------------*/
 /* McuShellUart */
-#define McuShellUart_CONFIG_UART                         McuShellUart_CONFIG_UART_LPC55S16_USART0
+#define McuShellUart_CONFIG_UART                McuShellUart_CONFIG_UART_LPC55S16_USART0
 /* -----------------------------------------------------*/
 /* RTT */
 #define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP          (1*1024)
@@ -63,16 +64,20 @@
 /* -------------------------------------------------*/
 /* Unity */
 #if ENABLE_UNIT_TESTS
-#include "McuUnity.h"
-#define UNITY_OUTPUT_CHAR(a)                        McuUnity_putc(a)
-#define UNITY_OUTPUT_FLUSH()                        McuUnity_flush()
-#define UNITY_OUTPUT_START()                        McuUnity_start()
-#define UNITY_OUTPUT_COMPLETE()                     McuUnity_complete()
-#define UNITY_OUTPUT_COLOR                          /* use colored output */
+  #include "McuUnity.h"
+  #define UNITY_OUTPUT_CHAR(a)                        McuUnity_putc(a)
+  #define UNITY_OUTPUT_FLUSH()                        McuUnity_flush()
+  #define UNITY_OUTPUT_START()                        McuUnity_start()
+  #define UNITY_OUTPUT_COMPLETE()                     McuUnity_complete()
+  #define UNITY_OUTPUT_COLOR                          /* use colored output */
 #endif
 /* ---------------------------------------------------------------------------------------*/
 /* McuRdimon */
-#define McuRdimon_CONFIG_IS_ENABLED                 (0)       /* 1: RdiMon is enabled; 0: RdiMon is disabled*/
+#define McuRdimon_CONFIG_IS_ENABLED                 (1)       /* 1: RdiMon is enabled; 0: RdiMon is disabled*/
+/* ---------------------------------------------------------------------------------------*/
+/* McuCoverage */
+#define McuCoverage_CONFIG_IS_ENABLED               (1)
+#define McuCoverage_CONFIG_USE_FREESTANDING         (0 && McuCoverage_CONFIG_IS_ENABLED)
 /* ---------------------------------------------------------------------------------------*/
 
 #endif /* MCULIB_CONFIG_CONFIG_H_ */

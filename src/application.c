@@ -13,6 +13,9 @@
 #include "McuShellUart.h"
 #include "McuSemihost.h"
 #include "leds.h"
+#if PL_CONFIG_USE_GCOV
+  #include "McuCoverage.h"
+#endif
 
 void __assertion_failed(char *_Expr) {
   for(;;) {
@@ -21,9 +24,16 @@ void __assertion_failed(char *_Expr) {
 }
 
 static void AppTask(void *pv) {
+  int count = 0;
   for(;;) {
     Leds_Neg(LEDS_BLUE);
-    vTaskDelay(pdMS_TO_TICKS(100));
+    vTaskDelay(pdMS_TO_TICKS(1000));
+    count++;
+  #if PL_CONFIG_USE_GCOV
+    if (count>5) {
+      vTaskEndScheduler();
+    }
+  #endif
   }
 }
 
@@ -70,5 +80,10 @@ void APP_Run(void) {
      for(;;){} /* error! probably out of memory */
   }
   vTaskStartScheduler();
-  for(;;) { /* should not get here */ }
+#if PL_CONFIG_USE_GCOV
+  McuCoverage_WriteFiles(); /* write coverage data files */
+#endif /* PL_CONFIG_USE_GCOV */
+  for(;;) {
+    /* do not return from main() */
+  }
 }
