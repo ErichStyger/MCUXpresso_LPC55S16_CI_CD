@@ -89,7 +89,7 @@ exit
 ## Debugging with NXP LinkServer
 Prior launching, run LinkServer GDB Server:
 ```
-C:\NXP\LinkServer\LinkServer.exe gdbserver --keep-alive LPC55S16:LPCXpresso55S16
+LinkServer gdbserver --keep-alive LPC55S16:LPCXpresso55S16
 ```
 
 ## J-Run Test runner
@@ -104,7 +104,7 @@ in src/tests/CMakeLists.txt, at the end, switch the runner part and enable the J
 
 Example to run a test directly with JRun:
 ```
-"C:\Program Files\SEGGER\JLink\JRun.exe" --verbose --device LPC55S16 --rtt -if SWD --args "led1" "build/debug-test/LPC55S16_Blinky.elf"
+JRun --verbose --device LPC55S16 --rtt -if SWD --args "led1" "build/debug-test/LPC55S16_Blinky.elf"
 ```
 
 ## NXP LinkServer Runner
@@ -119,7 +119,7 @@ Set LinkServer runner in src/platform.h:
 #define PL_CONFIG_USE_RUNNER_JLINK        (0)
 #define PL_CONFIG_USE_RUNNER_LINKSERVER   (1)
 ```
-Inside the test CMakeLists.txt, select either semihosting or UART/VCOM connection:
+Inside the test CMakeLists.txt, select either semihosting or UART/VCOM connection with corresponding COM port on your machine:
 ```
 set (RUNNER_CTEST_MODE  --mode semihost)
 #set (RUNNER_CTEST_MODE  --mode serial:COM57:115200)
@@ -132,17 +132,17 @@ Additionally, configure it in src\platform.h:
 
 To run the Linkserver runner manually (semihost mode):
 ```
-C:\NXP\LinkServer\LinkServer --log-level 1 run --mode semihost lpc55s16 build\debug-test\LPC55S16_Blinky.elf
+LinkServer --log-level 1 run --mode semihost lpc55s16 --send "led1" build\Test\LPC55S16_Blinky.elf
 ```
 
 Semihosting example with more options:
 ```
-C:\NXP\LinkServer\LinkServer.exe --log-level 2 run --mode semihost --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --send "1" lpc55s16 "build/debug-test/LPC55S16_Blinky.elf"
+LinkServer --log-level 2 run --mode semihost --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --send "led1" lpc55s16 "build/Test/LPC55S16_Blinky.elf"
 ```
 
 UART example:
 ```
-LinkServer --log-level 1 run --mode serial:COM57:115200 --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --args-mark "*ARGS*" --send "Led_1" lpc55s16 "build/debug-test/LPC55S16_Blinky.elf"
+LinkServer --log-level 1 run --mode serial:COM57:115200 --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --args-mark "*ARGS*" --send "led1" lpc55s16 "build/Test/LPC55S16_Blinky.elf"
 ```
 
 ## Unit Tests
