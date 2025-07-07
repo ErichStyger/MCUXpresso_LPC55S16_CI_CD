@@ -58,7 +58,7 @@ target_include_directories(
 # Using NXP LinkServer Runner
 #################################################################################
 # set (RUNNER_CTEST_MODE --mode semihost)
-set (RUNNER_CTEST_MODE --mode serial:COM51:115200)
+set (RUNNER_CTEST_MODE --mode serial:COM205:115200)
 
 set (RUNNER_CTEST_CONTROL  --exit-mark "*STOP*" --pass-mark "*** PASSED ***" --fail-mark "*** FAILED ***" --args-mark "*ARGS*")
 
