@@ -4,6 +4,8 @@ The project is setup for both J-Link and NXP LinkServer to run automated on-targ
 This repository is used as an example how to do CI/CD with GitHub actions.
 The setup is described in details in my blog article: https://mcuoneclipse.com/2023/10/02/ci-cd-for-embedded-with-vs-code-docker-and-github-actions/
 
+The repository of this project is available on GitHub here: https://github.com/ErichStyger/MCUXpresso_LPC55S16_CI_CD
+
 See following articles for details:
 - https://mcuoneclipse.com/2023/12/18/modern-on-target-embedded-system-testing-with-cmake-and-ctest/
 - https://mcuoneclipse.com/2025/02/08/optimizing-embedded-development-with-vs-code-and-devcontainer/
