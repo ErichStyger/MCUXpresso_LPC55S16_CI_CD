@@ -19,6 +19,9 @@
 #include "McuLog.h"
 #include "test_leds.h"
 #include "shell.h"
+#if PL_CONFIG_USE_GCOV
+  #include "McuCoverage.h"  
+#endif
 
 #define USE_TEST_ARGUMENTS  (1)  /* if using test arguments */
 
@@ -59,7 +62,7 @@ static void TestTask(void *pv) {
     }
   #else
     McuSemihost_printf("*ARGS*");
-    nofBytes = McuUnity_Semihost_GetArgs(buf, sizeof(buf));
+    nofBytes = McuUnity_Semihost_GetArgs(buf, sizeof(buf)); /* if using debugger here, skip this as no data comming from test runner */
     McuLog_info("semihost nof: %d, buf: %s", nofBytes, buf);
     if (nofBytes>0) {
       if (McuUtility_strcmp((char*)buf, "led1")==0) {
@@ -110,6 +113,11 @@ static void TestTask(void *pv) {
   } else {
     McuLog_error("*** FAILED ***");
   }
+#if PL_CONFIG_USE_GCOV
+  vTaskSuspendAll(); /* suspend all tasks, so that we can write coverage files uninterrupted */
+  McuCoverage_WriteFiles(); /* write coverage data files */
+  (void)xTaskResumeAll();
+#endif
 #if PL_CONFIG_USE_RTT
   McuUnity_Exit_JRun_RTT(nofFailures==0);
 #else

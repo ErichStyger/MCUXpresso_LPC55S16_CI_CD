@@ -29,7 +29,7 @@ static void AppTask(void *pv) {
     Leds_Neg(LEDS_BLUE);
     vTaskDelay(pdMS_TO_TICKS(1000));
     count++;
-  #if PL_CONFIG_USE_GCOV
+  #if PL_CONFIG_USE_GCOV && !PL_CONFIG_USE_UNIT_TESTS /* with unit tests, writing coverage files is done in unit test exit part */
     if (count>5) {
       vTaskEndScheduler();
     }
@@ -80,7 +80,7 @@ void APP_Run(void) {
      for(;;){} /* error! probably out of memory */
   }
   vTaskStartScheduler();
-#if PL_CONFIG_USE_GCOV
+#if PL_CONFIG_USE_GCOV && !PL_CONFIG_USE_UNIT_TESTS /* with unit tests, writing coverage files is done in unit test exit part */
   McuCoverage_WriteFiles(); /* write coverage data files */
 #endif /* PL_CONFIG_USE_GCOV */
   for(;;) {
