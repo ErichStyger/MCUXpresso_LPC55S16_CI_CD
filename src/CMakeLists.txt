@@ -16,14 +16,16 @@ if (ENABLE_UNIT_TESTING)
   add_subdirectory(./tests                  tests)
 endif()
 
-# Set coverage option only for some files, otherwise use add_compile_options(--coverage)
-#add_compile_options(--coverage) # all files
-set_source_files_properties(
-  leds.c
-  shell.c
-  main.c
-  PROPERTIES COMPILE_FLAGS --coverage
-)
+if(ENABLE_COVERAGE)
+  # Set coverage option only for some files, otherwise use add_compile_options(--coverage)
+  #add_compile_options(--coverage) # all files
+  set_source_files_properties(
+    leds.c
+    shell.c
+    main.c
+    PROPERTIES COMPILE_FLAGS --coverage
+  )
+endif()
 
 # add_library: With this declaration, you express the intent to build a library. 
 # The first argument is the name of the library, 

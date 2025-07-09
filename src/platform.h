@@ -9,7 +9,7 @@
 
 #define PL_CONFIG_USE_SHELL             (1)
 
-#define PL_CONFIG_USE_UNIT_TESTS        (1 && defined(ENABLE_UNIT_TESTS) && ENABLE_UNIT_TESTS==1) /* if using unit tests. ENABLE_UNIT_TESTS is set by the CMake file */
+#define PL_CONFIG_USE_UNIT_TESTS        (1 && defined(ENABLE_UNIT_TESTS) && ENABLE_UNIT_TESTS==1) /* if using unit tests. ENABLE_UNIT_TESTS is set in top CMakeLists.txt */
 
 #if PL_CONFIG_USE_UNIT_TESTS && !defined(UNITY_OUTPUT_CHAR)
    #error "Unity hooks need to be defined in IncludeMcuLibConfig.h!"
@@ -23,7 +23,8 @@
 #define PL_CONFIG_USE_RTT                 (1 && PL_CONFIG_USE_RUNNER_JLINK)        /* J-Link only: using J-Run and SEGGER RTT for log and test output */
 #define PL_CONFIG_USE_SEMIHOSTING         (1 && PL_CONFIG_USE_RUNNER_LINKSERVER)   /* LinkServer only: using semihosting for log and test output: : update tests/CMakeLists.txt too */
 #define PL_CONFIG_USE_SHELL_UART          (0 && PL_CONFIG_USE_RUNNER_LINKSERVER)   /* LinkServer only: using UART for log and test output: update tests/CMakeLists.txt too */
-#define PL_CONFIG_USE_GCOV                (1 && McuRdimon_CONFIG_IS_ENABLED && PL_CONFIG_USE_SEMIHOSTING)       /* if using GNU coverage with gcov */
+/* ENABLE_COVERAGE is set in top CMakeLists.txt */
+#define PL_CONFIG_USE_GCOV                (1 && defined(ENABLE_COVERAGE) && ENABLE_COVERAGE==1 && McuRdimon_CONFIG_IS_ENABLED && PL_CONFIG_USE_SEMIHOSTING)  /* if using GNU coverage with gcov */
 
 #if PL_CONFIG_USE_RUNNER_LINKSERVER && PL_CONFIG_USE_SEMIHOSTING && McuSemihost_CONFIG_DEBUG_CONNECTION!=McuSemihost_DEBUG_CONNECTION_LINKSERVER
   #error "check LinkServer settings in IncludeMcuLibConfig.h"

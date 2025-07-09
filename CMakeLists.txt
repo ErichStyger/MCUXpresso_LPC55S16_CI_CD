@@ -43,6 +43,15 @@ else()
   add_compile_options(-DENABLE_UNIT_TESTS=0) # used to disable tests in code
 endif()
 
+# Check if ENABLE_COVERAGE is set to ON in the CMake preset
+if (ENABLE_COVERAGE)
+  message(STATUS "ENABLE_COVERAGE is ON")
+  add_compile_options(-DENABLE_COVERAGE=1) # used to enable coverage in code
+else()
+  message(STATUS "ENABLE_COVERAGE is OFF")
+  add_compile_options(-DENABLE_COVERAGE=0) # used to enable coverage in code
+endif()
+
 # Defines for the project
 set(PROJECT_DEFINES
   -DCPU_LPC55S16JBD100
@@ -143,4 +152,20 @@ if (ENABLE_UNIT_TESTING)
 
   message(STATUS "Adding unity")
   add_subdirectory(${MCULIB_DIR}/unity   unity)
+endif()
+
+if(ENABLE_COVERAGE)
+  # find required tools
+  find_program(GCOVR gcovr REQUIRED)
+  find_program(DOS2UNIX dos2unix REQUIRED)
+
+  # add coverage target
+  add_custom_target(coverage
+    # gather data
+    COMMAND ${GCOVR} --lcov ./build/Test/coverage.info
+    # convert to Unix format
+    COMMAND ${DOS2UNIX} ./build/Test/coverage.info
+    # generate report
+    COMMAND ${GCOVR} --html-details -o ./gcovr/main.html
+    WORKING_DIRECTORY ${PROJECT_ROOT_DIR})
 endif()

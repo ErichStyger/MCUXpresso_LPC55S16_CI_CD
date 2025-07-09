@@ -6,12 +6,8 @@
     "cmake.buildBeforeRun": true,
     "cmake.configureOnOpen": false,
     "cmake.useCMakePresets": "always",
+    "cmake.postRunCoverageTarget": "coverage",
     "cmake.coverageInfoFiles": [
-        "${workspaceFolder}/build/coverage.info"
-    ],  
-    "files.associations": {
-        "mcurtos.h": "c",
-        "tests.h": "c",
-        "platform.h": "c"
-    }
+        "${workspaceFolder}/build/Test/coverage.info"
+    ]
 }

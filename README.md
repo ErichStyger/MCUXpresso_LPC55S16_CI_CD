@@ -156,7 +156,7 @@ ctest --verbose --output-on-failure --test-dir build/Test --timeout 15 -R Led_1
 ## Notes
 [ctest] No coverage info files for CMake project C:/Users/Erich Styger.N0007139/Data/GitRepos/GitHub_MCUXpresso_LPC55S16_CICD/MCUXpresso_LPC55S16_CI_CD. No coverage data will be analyzed for this project.
 https://gcovr.com/en/stable/output/lcov.html
-gcovr --lcov build/coverage.info
+gcovr --lcov build/Test/coverage.info
 
 settings.json:
     "cmake.coverageInfoFiles": [

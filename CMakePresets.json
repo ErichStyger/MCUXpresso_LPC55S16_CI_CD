@@ -25,7 +25,8 @@
       "cacheVariables": 
       {
         "CMAKE_BUILD_TYPE": "Debug",
-        "ENABLE_UNIT_TESTING": "OFF"
+        "ENABLE_UNIT_TESTING": "OFF",
+        "ENABLE_COVERAGE": "OFF"
       }
     },
     {
@@ -36,7 +37,8 @@
       "cacheVariables":
       {
         "CMAKE_BUILD_TYPE": "Debug",
-        "ENABLE_UNIT_TESTING": "ON"
+        "ENABLE_UNIT_TESTING": "ON",
+        "ENABLE_COVERAGE": "ON"
       }
     },
     {
@@ -47,7 +49,8 @@
       "cacheVariables":
       {
         "CMAKE_BUILD_TYPE": "Release",
-        "ENABLE_UNIT_TESTING": "OFF"
+        "ENABLE_UNIT_TESTING": "OFF",
+        "ENABLE_COVERAGE": "OFF"
       }
     }
   ],
