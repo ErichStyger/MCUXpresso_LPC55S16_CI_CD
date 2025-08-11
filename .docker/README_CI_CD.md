@@ -1,6 +1,6 @@
 # CI/CD with Docker
 Project to build a CI/CD pipeline for an embedded device with docker.
-To run it with docker, copy it to the project root first.
+To run it with docker, copy the Dockerfile from this folder to the project root first.
 
 ## Docker
 - run docker daemon (or Docker Desktop on Windows), if not already running
