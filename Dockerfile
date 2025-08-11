@@ -35,29 +35,30 @@ RUN \
     && apt install -yf
 
 # Install LinkServer software: make sure you have the same version installed on your host!
-ARG LINKSERVER_VERSION="25.7.33"
-RUN \
-  apt-get install -y whiptail libusb-1.0-0-dev dfu-util usbutils hwdata
 # Linkserver download paths, e.g.
 # Windows: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.exe
 # Linux: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin
 # MacOS Arch64: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.aarch64.pkg
 # MacOS: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.x86_64.pkg
+# Binary gets installed into: /usr/local/LinkServer_${LINKSERVER_VERSION}/LinkServer
+# see https://stackoverflow.com/questions/66353515/mcuxpresso-eclipse-project-with-c-automatic-headless-build
+
+# which version to use:
+ARG LINKSERVER_VERSION="25.7.33"
+
+# install dependencies: need to start udev manually, otherwise getting "Failed to send reload request: No such file or directory" during LinkServer installation
 RUN \
-    cd /project \
+    apt-get install -y whiptail libusb-1.0-0-dev dfu-util usbutils hwdata \
+    && /lib/systemd/systemd-udevd --daemon
+
+# install LinkServer software
+RUN \
+    /lib/systemd/systemd-udevd --daemon \
+    && cd /project \
     && curl -O https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin \
     && chmod a+x LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin \
-    && ./LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin --noexec --target linkserver \
-    && cd linkserver \
-    && dpkg --unpack LinkServer_${LINKSERVER_VERSION}.x86_64.deb \
-    && rm /var/lib/dpkg/info/linkserver_${LINKSERVER_VERSION}.postinst \
-    && dpkg --configure linkserver_${LINKSERVER_VERSION} \
-    && dpkg --unpack LPCScrypt.deb \
-    && rm /var/lib/dpkg/info/lpcscrypt.postinst \
-    && apt-get install -yf
+    && ./LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin acceptLicense skipIdeSelect
 
-# Binary: /usr/local/LinkServer_24.9.75/LinkServer
-# https://stackoverflow.com/questions/66353515/mcuxpresso-eclipse-project-with-c-automatic-headless-build
 
 # create a directory for the project
 RUN \
