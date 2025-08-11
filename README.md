@@ -10,6 +10,7 @@ See following articles for details:
 - https://mcuoneclipse.com/2023/12/18/modern-on-target-embedded-system-testing-with-cmake-and-ctest/
 - https://mcuoneclipse.com/2025/02/08/optimizing-embedded-development-with-vs-code-and-devcontainer/
 - https://mcuoneclipse.com/2025/02/18/remote-debugging-with-devcontainer-and-vs-code/
+- https://mcuoneclipse.com/2025/08/11/streamlining-linkserver-installation-for-ci-cd/
 
 ## Cloning the repository
 This repository is using the McuLib repository as sub-repo. 
