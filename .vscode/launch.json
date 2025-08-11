@@ -77,7 +77,7 @@
             },
             "showDevDebugOutput": "raw"
         },
-        {
+        {  // debug configuration for build and debug on the host with LinkServer
             "name": "LinkServer cortex-debug local",
             "type": "cortex-debug",
             "request": "launch",
@@ -95,7 +95,7 @@
             "rtos": "FreeRTOS",
             "svdFile": "./sdk/device/LPC55S16.svd",
         },        
-        {
+        { // debug configuration for debugging using DevContainer, with the debug server running on the host
             "name": "LinkServer cortex-debug remote",
             "type": "cortex-debug",
             "request": "launch",
