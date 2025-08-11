@@ -1,4 +1,5 @@
 # Docker file used with GitHub actions
+# See .docker/README_CI_CD.md
 
 FROM ubuntu:24.04
 
@@ -19,7 +20,7 @@ RUN apt-get install -y nano
 # Install doxygen and graphviz
 RUN apt-get install -y doxygen graphviz
 
-# Install ping utility
+# Install networking utilities
 RUN apt-get update && apt-get install -y iputils-ping
 
 # Install curl and others, needed to get SEGGER files
