@@ -35,22 +35,23 @@ RUN \
     && apt install -yf
 
 # Install LinkServer software: make sure you have the same version installed on your host!
+ARG LINKSERVER_VERSION="25.7.33"
 RUN \
   apt-get install -y whiptail libusb-1.0-0-dev dfu-util usbutils hwdata
 # Linkserver download paths, e.g.
-# Windows: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.9.75.exe
-# Linux: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.9.75.x86_64.deb.bin
-# MacOS Arch64: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.9.75.aarch64.pkg
-# MacOS: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.9.75.x86_64.pkg
+# Windows: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.exe
+# Linux: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin
+# MacOS Arch64: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.aarch64.pkg
+# MacOS: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.x86_64.pkg
 RUN \
     cd /project \
-    && curl -O https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.9.75.x86_64.deb.bin \
-    && chmod a+x LinkServer_24.9.75.x86_64.deb.bin \
-    && ./LinkServer_24.9.75.x86_64.deb.bin --noexec --target linkserver \
+    && curl -O https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin \
+    && chmod a+x LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin \
+    && ./LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin --noexec --target linkserver \
     && cd linkserver \
-    && dpkg --unpack LinkServer_24.9.75.x86_64.deb \
-    && rm /var/lib/dpkg/info/linkserver_24.9.75.postinst \
-    && dpkg --configure linkserver_24.9.75 \
+    && dpkg --unpack LinkServer_${LINKSERVER_VERSION}.x86_64.deb \
+    && rm /var/lib/dpkg/info/linkserver_${LINKSERVER_VERSION}.postinst \
+    && dpkg --configure linkserver_${LINKSERVER_VERSION} \
     && dpkg --unpack LPCScrypt.deb \
     && rm /var/lib/dpkg/info/lpcscrypt.postinst \
     && apt-get install -yf
