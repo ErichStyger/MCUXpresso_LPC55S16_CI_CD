@@ -6,5 +6,6 @@
         "ms-vscode.vscode-serial-monitor",
         "jacqueslucke.gcov-viewer",
         "nxpsemiconductors.mcuxpresso",
+        "ms-vscode-remote.vscode-remote-extensionpack",
     ]
 }
