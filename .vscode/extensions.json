@@ -4,6 +4,7 @@
         "ms-vscode.cpptools",
         "ms-vscode.cpptools-extension-pack",
         "ms-vscode.vscode-serial-monitor",
-        "jacqueslucke.gcov-viewer"
+        "jacqueslucke.gcov-viewer",
+        "nxpsemiconductors.mcuxpresso",
     ]
 }
