@@ -41,7 +41,8 @@
                 "ms-vscode.cpptools-extension-pack",
                 "marus25.cortex-debug",
                 "ms-azuretools.vscode-docker",
-                "jacqueslucke.gcov-viewer"
+                "jacqueslucke.gcov-viewer",
+                "nxpsemiconductors.mcuxpresso"
             ]
         }
     },
