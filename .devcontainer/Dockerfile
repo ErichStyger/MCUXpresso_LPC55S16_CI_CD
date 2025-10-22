@@ -9,7 +9,7 @@ RUN mkdir -p /apps
 # Install general prerequisites
 RUN \
     apt update \
-    && apt install -y git python3 wget unzip \
+    && apt install -y git python3 python3-pip python3-setuptools wget unzip \
     && apt install -y cmake build-essential ninja-build \
     && apt install -y gcc-arm-none-eabi gdb-arm-none-eabi libnewlib-arm-none-eabi 
 
@@ -18,6 +18,9 @@ RUN apt-get install -y nano iputils-ping udev curl
 
 # Install doxygen and graphviz
 RUN apt-get install -y doxygen graphviz
+
+# Install west globally
+RUN pip3 install --break-system-packages --upgrade west
 
 # ARM compiler version:
 # RUN curl -LO -k https://developer.arm.com/-/media/Files/downloads/gnu/13.2.rel1/binrel/arm-gnu-toolchain-13.2.rel1-x86_64-arm-none-eabi.tar.xz && \
