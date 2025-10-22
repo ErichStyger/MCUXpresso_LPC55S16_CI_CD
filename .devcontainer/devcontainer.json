@@ -5,7 +5,7 @@
 	"build": {
         "dockerfile": "Dockerfile" // use local docker file
     },
-    "initializeCommand": "git submodule update --init --recursive",
+    "initializeCommand": "git submodule update --init --recursive &&",
     "runArgs": [ 
         // host.docker.internal is set by default in docker desktop to access the host IP address.
         // For normal docker the line below is needed to access the host from the container.
