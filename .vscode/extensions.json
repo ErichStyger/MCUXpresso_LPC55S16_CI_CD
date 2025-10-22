@@ -1,5 +1,6 @@
 {
     "recommendations": [
+        "mcu-debug.debug-tracker-vscode",
         "marus25.cortex-debug",
         "ms-vscode.cpptools",
         "ms-vscode.cpptools-extension-pack",
