@@ -11,6 +11,8 @@
         // For normal docker the line below is needed to access the host from the container.
         // For docker desktop, this is not needed.
     //  "--add-host=host.docker.internal:172.17.0.1"
+        "--device=/dev/bus/usb", 
+        "--privileged"
      ],
 
     // use a shorter path ("/workspace") for folder in the container.
