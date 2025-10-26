@@ -78,14 +78,12 @@
             "rtos": "FreeRTOS",
             "svdFile": "./sdk/device/LPC55S16.svd",
         },
-        {  // debug configuration for build and debug on the host with LinkServer
+        {  // debug with LinkServer on host
             "name": "LinkServer cortex-debug local",
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "external",
-            "gdbTarget": "localhost:3333",  // linkserver gdbserver --keep-alive LPC55S16:LPCXpresso55S16
-            //"preLaunchTask": "LinkServer: flash",
-            //"preLaunchTask": "LinkServer: gdbserver",
+            "gdbTarget": "localhost:3333",  // LinkServer gdbserver --keep-alive LPC55S16:LPCXpresso55S16
             "cwd": "${workspaceFolder}",
             "executable": "${command:cmake.launchTargetPath}",
             "armToolchainPath": "${env:TOOLCHAIN_PATH}",
@@ -103,12 +101,11 @@
             "servertype": "external",
             "gdbTarget": "host.docker.internal:3333",
             //"preLaunchTask": "LinkServer: flash",
-            // linkserver gdbserver --keep-alive LPC55S16:LPCXpresso55S16
+            // LinkServer gdbserver --keep-alive LPC55S16:LPCXpresso55S16
             //"preLaunchTask": "LinkServer: gdbserver",
             "cwd": "${workspaceFolder}",
             "executable": "${command:cmake.launchTargetPath}",
             //"armToolchainPath": "${env:TOOLCHAIN_PATH}",  // needed for the gdb
-            "armToolchainPath": null,
             "postLaunchCommands": [
                 "monitor semihosting enable"
             ],
