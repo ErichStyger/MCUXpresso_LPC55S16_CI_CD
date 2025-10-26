@@ -21,6 +21,25 @@
             "rtos": "FreeRTOS",
             "svdFile": "./sdk/device/LPC55S16.svd",
         },
+        {  // normal debug on Windows host to USB based J-Link
+            "name": "J-Link with usbipd",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "jlink",
+            "serverpath": "JLinkGDBServerCLExe",
+            "cwd": "${workspaceFolder}",
+            "executable": "${command:cmake.launchTargetPath}",
+            "device": "LPC55S16",
+            "interface": "swd",
+            "runToEntryPoint": "main", // "main" or for example "ResetISR"
+            "postLaunchCommands": [
+                "monitor reset",
+                "monitor semihosting enable",
+                "monitor semihosting ioclient 1", // 1: telnet (port 2333); 2: gdb; 3: both telnet and gdbclient output
+            ],
+            "rtos": "FreeRTOS",
+            "svdFile": "./sdk/device/LPC55S16.svd",
+        },
         {  // debug from DevContainer, on the host the JLinkRemoteServerCL is running
             "name": "J-Link DevContainer with JLinkRemoteServerCL",
             "type": "cortex-debug",
