@@ -59,42 +59,6 @@
             "rtos": "FreeRTOS",
             "svdFile": "./sdk/device/LPC55S16.svd",
         },
-        {
-            "name": "LPC55S16 Blinky J-Link cortex-debug",
-            "type": "cortex-debug",
-            "request": "launch",
-            "servertype": "jlink",
-            "serverpath": "${env:SEGGER_PATH}/JLinkGDBServerCL",
-            //"serverpath": "JLinkGDBServerCLExe", // inside container with host running JLinkRemoteServerCL, or for Linux host
-            //"serialNumber": "801048148", // connection by serial number
-            //"ipAddress": "tunnel:801048148", // connection through tunnel
-            //"ipAddress": "192.168.1.123", // connection to IP based (hardware) debug probe, e.g. J-Link Trace
-            "ipAddress": "192.168.65.254", // host.docker.internal address, JLinkRemoteServerCL runs on host
-            "cwd": "${workspaceFolder}",
-            "executable": "${command:cmake.launchTargetPath}",
-            "armToolchainPath": "${env:TOOLCHAIN_PATH}",  // needed for the gdb
-            "device": "LPC55S16",
-            "interface": "swd",
-            "runToEntryPoint": "main", //"main" or "ResetISR"
-            "postLaunchCommands": [
-                "monitor semihosting enable",
-                "monitor semihosting ioclient 1", // 1: telnet (port 2333); 2: gdb; 3: both telnet and gdbclient output
-            ],
-            "rtos": "FreeRTOS",
-            "svdFile": "./sdk/device/LPC55S16.svd",
-            "rttConfig": {
-                "enabled": false,
-                "address": "auto",
-                "decoders": [
-                    {
-                        "label": "",
-                        "port": 0,
-                        "type": "console"
-                    }
-                ]
-            },
-            "showDevDebugOutput": "raw"
-        },
         {  // debug configuration for build and debug on the host with LinkServer
             "name": "LinkServer cortex-debug local",
             "type": "cortex-debug",
