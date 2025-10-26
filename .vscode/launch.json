@@ -40,7 +40,7 @@
             "rtos": "FreeRTOS",
             "svdFile": "./sdk/device/LPC55S16.svd",
         },
-        {
+        {  // debug from DevContainer with remote GDB server on the host
             "name": "J-Link DevContainer with gdbServer",
             "type": "cortex-debug",
             "request": "launch",
