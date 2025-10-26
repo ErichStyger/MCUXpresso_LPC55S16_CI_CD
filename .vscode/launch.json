@@ -1,20 +1,39 @@
 {
     "version": "0.2.0",
     "configurations": [
-        {
-            "name": "J-Link cortex-debug JLinkRemoteServerCL",
+        {  // normal debug on Windows host to USB based J-Link
+            "name": "J-Link Windows Host with USB",
             "type": "cortex-debug",
             "request": "launch",
-            "serverpath": null,
+            "servertype": "jlink",
+            "serverpath": "${env:SEGGER_PATH}/JLinkGDBServerCL",
+            "cwd": "${workspaceFolder}",
+            "executable": "${command:cmake.launchTargetPath}",
+            "armToolchainPath": "${env:TOOLCHAIN_PATH}",  // needed for the gdb
+            "device": "LPC55S16",
+            "interface": "swd",
+            "runToEntryPoint": "main", // "main" or for example "ResetISR"
+            "postLaunchCommands": [
+                "monitor reset",
+                "monitor semihosting enable",
+                "monitor semihosting ioclient 1", // 1: telnet (port 2333); 2: gdb; 3: both telnet and gdbclient output
+            ],
+            "rtos": "FreeRTOS",
+            "svdFile": "./sdk/device/LPC55S16.svd",
+        },
+        {  // debug from DevContainer, on the host the JLinkRemoteServerCL is running
+            "name": "J-Link DevContainer with JLinkRemoteServerCL",
+            "type": "cortex-debug",
+            "request": "launch",
             "servertype": "jlink",
             "ipAddress": "192.168.65.254", // IP of "host.docker.internal", // run JLinkRemoteServerCL on host
             "cwd": "${workspaceFolder}",
             "executable": "${command:cmake.launchTargetPath}",
-            "armToolchainPath": null,
             "device": "LPC55S16",
             "interface": "swd",
-            "runToEntryPoint": "main", //"main" or "ResetISR"
+            "runToEntryPoint": "main", // "main" or for example "ResetISR"
             "postLaunchCommands": [
+                "monitor reset",
                 "monitor semihosting enable",
                 "monitor semihosting ioclient 1", // 1: telnet (port 2333); 2: gdb; 3: both telnet and gdbclient output
             ],
@@ -22,19 +41,18 @@
             "svdFile": "./sdk/device/LPC55S16.svd",
         },
         {
-            "name": "J-Link cortex-debug gdbServer",
+            "name": "J-Link DevContainer with gdbServer",
             "type": "cortex-debug",
             "request": "launch",
-            "serverpath": null,
             "servertype": "external",
-            "gdbTarget": "host.docker.internal:2331", // start server with JLinkGDBServerCL -device LPC55S16 -if SWD
+            "gdbTarget": "host.docker.internal:2331", // start server on host with `JLinkGDBServerCL -device LPC55S16 -if SWD`
             "cwd": "${workspaceFolder}",
             "executable": "${command:cmake.launchTargetPath}",
-            "armToolchainPath": null,
             "device": "LPC55S16",
             "interface": "swd",
-            "runToEntryPoint": "main", //"main" or "ResetISR"
+            "runToEntryPoint": "main", // "main" or "ResetISR"
             "postLaunchCommands": [
+                "monitor reset",
                 "monitor semihosting enable",
                 "monitor semihosting ioclient 1", // 1: telnet (port 2333); 2: gdb; 3: both telnet and gdbclient output
             ],
