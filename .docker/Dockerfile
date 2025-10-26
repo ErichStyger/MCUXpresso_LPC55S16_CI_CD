@@ -10,7 +10,7 @@ RUN mkdir -p /apps
 # Install prerequisites
 RUN \
     apt update \
-    && apt install -y git python3 wget unzip \
+    && apt install -y git python3 python3-pip python3-setuptools wget unzip \
     && apt install -y cmake build-essential ninja-build \
     && apt install -y gcc-arm-none-eabi gdb-arm-none-eabi libnewlib-arm-none-eabi 
 
@@ -19,6 +19,9 @@ RUN apt-get install -y nano
 
 # Install doxygen and graphviz
 RUN apt-get install -y doxygen graphviz
+
+# Install west globally
+RUN pip3 install --break-system-packages --upgrade west
 
 # Install networking utilities
 RUN apt-get update && apt-get install -y iputils-ping
