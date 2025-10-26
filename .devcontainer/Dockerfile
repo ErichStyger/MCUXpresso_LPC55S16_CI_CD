@@ -52,7 +52,7 @@ RUN \
     && python3 -m venv venv \
     && ./venv/bin/pip install gcovr
 
-# Install SEGGER tools
+# Install SEGGER tools: make sure you have the same version installed on your host!
 # for x86:           JLink_Linux_V810g_x86_64.deb
 # for Apple silicon: JLink_Linux_V810g_arm64.deb
 # in case issue with mismatch between J-Link version between host and container/image: use matching version
@@ -76,19 +76,36 @@ RUN \
 # Linux: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.12.21.x86_64.deb.bin
 # MacOS Arch64: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.12.21.aarch64.pkg
 # MacOS: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.12.21.x86_64.pkg
+#RUN \
+#  	apt-get install -y whiptail libusb-1.0-0-dev dfu-util usbutils hwdata \
+#    && cd /apps \
+#    && curl -O https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.12.21.x86_64.deb.bin \
+#    && chmod a+x LinkServer_24.12.21.x86_64.deb.bin \
+#    && ./LinkServer_24.12.21.x86_64.deb.bin --noexec --target linkserver \
+#    && cd linkserver \
+#    && dpkg --unpack LinkServer_24.12.21.x86_64.deb \
+#    && rm /var/lib/dpkg/info/linkserver_24.12.21.postinst \
+#    && dpkg --configure linkserver_24.12.21 \
+#    && dpkg --unpack LPCScrypt.deb \
+#    && rm /var/lib/dpkg/info/lpcscrypt.postinst \
+#    && apt-get install -yf
+
+# which version to use, see https://mcuoneclipse.com/2025/08/11/streamlining-linkserver-installation-for-ci-cd/
+# it gets installed into /usr/local/LinkServer_<version>
+ARG LINKSERVER_VERSION="25.7.33"
+
+# install dependencies: need to start udev manually, otherwise getting "Failed to send reload request: No such file or directory" during LinkServer installation
 RUN \
-  	apt-get install -y whiptail libusb-1.0-0-dev dfu-util usbutils hwdata \
-    && cd /apps \
-    && curl -O https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.12.21.x86_64.deb.bin \
-    && chmod a+x LinkServer_24.12.21.x86_64.deb.bin \
-    && ./LinkServer_24.12.21.x86_64.deb.bin --noexec --target linkserver \
-    && cd linkserver \
-    && dpkg --unpack LinkServer_24.12.21.x86_64.deb \
-    && rm /var/lib/dpkg/info/linkserver_24.12.21.postinst \
-    && dpkg --configure linkserver_24.12.21 \
-    && dpkg --unpack LPCScrypt.deb \
-    && rm /var/lib/dpkg/info/lpcscrypt.postinst \
-    && apt-get install -yf
+    apt-get install -y whiptail libusb-1.0-0-dev dfu-util usbutils hwdata \
+    && /lib/systemd/systemd-udevd --daemon
+
+# install LinkServer software
+RUN \
+    /lib/systemd/systemd-udevd --daemon \
+    && cd /project \
+    && curl -O https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin \
+    && chmod a+x LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin \
+    && ./LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin acceptLicense skipIdeSelect
 
 # Command that will be invoked when the container starts
 ENTRYPOINT ["/bin/bash"]
