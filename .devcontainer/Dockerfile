@@ -70,38 +70,24 @@ RUN \
     && dpkg --configure jlink \
     && apt install -yf
 
-# Install LinkServer software: make sure you have the same version installed on your host!
-# Linkserver download paths, e.g.
-# Windows: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.exe
-# Linux: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.x86_64.deb.bin
-# MacOS Arch64: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.aarch64.pkg
-# MacOS: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.x86_64.pkg
-#RUN \
-#  	apt-get install -y whiptail libusb-1.0-0-dev dfu-util usbutils hwdata \
-#    && cd /apps \
-#    && curl -O https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.x86_64.deb.bin \
-#    && chmod a+x LinkServer_25.7.33.x86_64.deb.bin \
-#    && ./LinkServer_25.7.33.x86_64.deb.bin --noexec --target linkserver \
-#    && cd linkserver \
-#    && dpkg --unpack LinkServer_25.7.33.x86_64.deb \
-#    && rm /var/lib/dpkg/info/linkserver_25.7.33.postinst \
-#    && dpkg --configure linkserver_25.7.33 \
-#    && dpkg --unpack LPCScrypt.deb \
-#    && rm /var/lib/dpkg/info/lpcscrypt.postinst \
-#    && apt-get install -yf
+# Install LinkServer software. Linkserver download paths, e.g.
+# - Windows: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.exe
+# - Linux: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.x86_64.deb.bin
+# - MacOS Arch64: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.aarch64.pkg
+# - MacOS: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.x86_64.pkg
+# It gets installed into /usr/local/LinkServer_<version>
+# See https://mcuoneclipse.com/2025/08/11/streamlining-linkserver-installation-for-ci-cd/
+ARG LINKSERVER_VERSION="25.9.134"
 
-# which version to use, see https://mcuoneclipse.com/2025/08/11/streamlining-linkserver-installation-for-ci-cd/
-# it gets installed into /usr/local/LinkServer_<version>
-ARG LINKSERVER_VERSION="25.7.33"
-
-# install dependencies: need to start udev manually, otherwise getting "Failed to send reload request: No such file or directory" during LinkServer installation
+# install dependencies: need to start udevd manually, otherwise getting "Failed to send reload request: No such file or directory" during LinkServer installation
 RUN \
     apt-get install -y whiptail libusb-1.0-0-dev dfu-util usbutils hwdata \
     && /lib/systemd/systemd-udevd --daemon
 
 # install LinkServer software
 RUN \
-    curl -O https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin \
+    cd /apps \
+    && curl -O https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin \
     && chmod a+x LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin \
     && ./LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin acceptLicense skipIdeSelect
 
