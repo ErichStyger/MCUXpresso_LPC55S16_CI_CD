@@ -105,5 +105,8 @@ RUN \
     && chmod a+x LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin \
     && ./LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin acceptLicense skipIdeSelect
 
+# Add LinkServer to PATH
+ENV PATH="${PATH}:/usr/local/LinkServer_${LINKSERVER_VERSION}"
+
 # Command that will be invoked when the container starts
 ENTRYPOINT ["/bin/bash"]
