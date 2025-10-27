@@ -83,7 +83,7 @@
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "external",
-            "gdbTarget": "localhost:3333",  // LinkServer gdbserver --keep-alive LPC55S16:LPCXpresso55S16
+            "gdbTarget": "localhost:3333",  // /usr/local/LinkServer_25.7.33/LinkServer gdbserver --keep-alive LPC55S16:LPCXpresso55S16
             "cwd": "${workspaceFolder}",
             "executable": "${command:cmake.launchTargetPath}",
             "armToolchainPath": "${env:TOOLCHAIN_PATH}",
@@ -106,6 +106,22 @@
             "cwd": "${workspaceFolder}",
             "executable": "${command:cmake.launchTargetPath}",
             //"armToolchainPath": "${env:TOOLCHAIN_PATH}",  // needed for the gdb
+            "postLaunchCommands": [
+                "monitor semihosting enable"
+            ],
+            "runToEntryPoint": "main", // or "ResetISR"
+            "rtos": "FreeRTOS",
+            "svdFile": "./sdk/device/LPC55S16.svd",
+        },
+        {  // debug with LinkServer in DevContainer using usbipd
+            "name": "LinkServer DevContainer usbipd",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "external",
+            "gdbTarget": "localhost:3333",  // /usr/local/LinkServer_25.7.33/LinkServer gdbserver --keep-alive LPC55S16:LPCXpresso55S16
+            "cwd": "${workspaceFolder}",
+            "executable": "${command:cmake.launchTargetPath}",
+            //"armToolchainPath": "${env:TOOLCHAIN_PATH}",
             "postLaunchCommands": [
                 "monitor semihosting enable"
             ],
