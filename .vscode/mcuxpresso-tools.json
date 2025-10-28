@@ -1,0 +1,15 @@
+{
+  "version": "25.3",
+  "toolchainPath": "C:/NXP/MCUXpressoIDE_25.6.136/ide/tools",
+  "linkedProjects": [],
+  "trustZoneType": "none",
+  "multicoreType": "none",
+  "projectType": "sdk-freestanding",
+  "sdk": {
+    "version": "25.06.00",
+    "path": "c:\\tmp\\CAN\\sdks\\lpcxpresso55s16_blank_sdk",
+    "boardId": "lpcxpresso55s16",
+    "deviceId": "LPC55S16",
+    "coreId": "cm33_core0_LPC55S16"
+  }
+}
