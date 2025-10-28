@@ -128,6 +128,30 @@
             "runToEntryPoint": "main", // or "ResetISR"
             "rtos": "FreeRTOS",
             "svdFile": "./sdk/device/LPC55S16.svd",
-        },        
+        },
+        {
+            "type": "mcuxpresso-debug",
+            "name": "Debug",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "executable": {
+                "elf": ""
+            },
+            "stopAtSymbol": "main",
+            "probeSerialNumber": "LRA4AQIQ",
+            "isAttach": false,
+            "skipBuildBeforeDebug": false,
+            "gdbInitCommands": [
+                "set remotetimeout 600",
+                "set debug-file-directory",
+                "set non-stop off"
+            ],
+            "gdbServerConfigs": {
+                "linkserver": {},
+                "segger": {},
+                "pemicro": {}
+            },
+            "showDevDebugOutput": "none"
+        }
     ]
 }
