@@ -72,6 +72,43 @@
       "problemMatcher": [
         "$gcc"
       ]
+    },
+    {
+      "type": "cmake",
+      "label": "CMake: build",
+      "command": "build",
+      "preset": "app-debug",
+      "targets": [
+        "all"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "detail": "CMake template build task"
+    },
+    {
+      "type": "cmake",
+      "label": "CMake: clean",
+      "command": "clean",
+      "preset": "app-debug",
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "detail": "CMake template clean task"
+    },
+    {
+      "type": "cmake",
+      "label": "CMake: configure",
+      "command": "configure",
+      "preset": "Debug",
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "detail": "CMake template configure task"
     }
   ]
 }
