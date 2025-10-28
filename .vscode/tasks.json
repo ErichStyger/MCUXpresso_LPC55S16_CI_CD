@@ -1,67 +1,77 @@
 {
-    // See https://go.microsoft.com/fwlink/?LinkId=733558
-    // for the documentation about the tasks.json format
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "type": "shell",
-            "label": "doxygen",
-            "command": "doxygen Doxyfile",
-            "options": {
-                "cwd": "${workspaceFolder}/doxy"
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            }
-        },
-        {
-            "type": "shell",
-            "label": "gcovr",
-            "command": "gcovr --html-details -o ./gcovr/main.html",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            },
-            "problemMatcher": []
-        },
-        {
-            "type": "shell",
-            "label": "LinkServer: gdbserver (keep)",
-            "command": "LinkServer gdbserver --keep-alive LPC55S16:LPCXpresso55S16",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "group": {
-                "kind": "build",
-                "isDefault": false
-            }
-        },
-        {
-            "type": "shell",
-            "label": "LinkServer: gdbserver",
-            "command": "LinkServer gdbserver LPC55S16:LPCXpresso55S16",
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "isBackground": false,
-            "problemMatcher": []
-        },
-        {
-          "type": "process",
-          "label": "LinkServer: flash",
-          "command": "LinkServer",
-          "args": [
-            "flash",
-            "lpc55s16",
-            "load",
-            "${command:cmake.launchTargetPath}",
-          ],
-          "isBackground": false,
-          "problemMatcher": []
-        }
-    ]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "doxygen",
+      "command": "doxygen Doxyfile",
+      "options": {
+        "cwd": "${workspaceFolder}/doxy"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "type": "shell",
+      "label": "gcovr",
+      "command": "gcovr --html-details -o ./gcovr/main.html",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "type": "shell",
+      "label": "LinkServer: gdbserver (keep)",
+      "command": "LinkServer gdbserver --keep-alive LPC55S16:LPCXpresso55S16",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      },
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "type": "shell",
+      "label": "LinkServer: gdbserver",
+      "command": "LinkServer gdbserver LPC55S16:LPCXpresso55S16",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "isBackground": false,
+      "problemMatcher": [
+        "$gcc"
+      ]
+    },
+    {
+      "type": "process",
+      "label": "LinkServer: flash",
+      "command": "LinkServer",
+      "args": [
+        "flash",
+        "lpc55s16",
+        "load",
+        "${command:cmake.launchTargetPath}"
+      ],
+      "isBackground": false,
+      "problemMatcher": [
+        "$gcc"
+      ]
+    }
+  ]
 }
