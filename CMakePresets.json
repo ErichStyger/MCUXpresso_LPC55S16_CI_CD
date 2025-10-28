@@ -1,13 +1,11 @@
 {
   "version": 6,
-  "cmakeMinimumRequired":
-  {
+  "cmakeMinimumRequired": {
     "major": 3,
     "minor": 28,
     "patch": 0
   },
-  "configurePresets":
-  [
+  "configurePresets": [
     {
       "name": "default",
       "displayName": "Default Config",
@@ -22,8 +20,7 @@
       "inherits": "default",
       "displayName": "Debug",
       "description": "Debug Configuration",
-      "cacheVariables": 
-      {
+      "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "ENABLE_UNIT_TESTING": "OFF",
         "ENABLE_COVERAGE": "OFF"
@@ -34,8 +31,7 @@
       "displayName": "Test",
       "description": "Configuration with tests enabled",
       "inherits": "default",
-      "cacheVariables":
-      {
+      "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "ENABLE_UNIT_TESTING": "ON",
         "ENABLE_COVERAGE": "ON"
@@ -46,16 +42,14 @@
       "inherits": "default",
       "displayName": "Release",
       "description": "Release Configuration",
-      "cacheVariables":
-      {
+      "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release",
         "ENABLE_UNIT_TESTING": "OFF",
         "ENABLE_COVERAGE": "OFF"
       }
     }
   ],
-  "buildPresets": 
-  [
+  "buildPresets": [
     {
       "name": "default",
       "hidden": true,
@@ -81,8 +75,7 @@
       "configuration": "Test"
     }
   ],
-  "testPresets":
-  [
+  "testPresets": [
     {
       "name": "Test",
       "description": "test preset",
@@ -90,16 +83,14 @@
       "configurePreset": "Test"
     }
   ],
-  "packagePresets":
-  [
+  "packagePresets": [
     {
       "name": "default",
       "displayName": "default package preset",
       "configurePreset": "default",
-      "generators":
-        [
-          "TGZ"
-        ]
+      "generators": [
+        "TGZ"
+      ]
     },
     {
       "name": "releasePackage",
@@ -108,14 +99,12 @@
       "configurePreset": "Release"
     }
   ],
-  "workflowPresets":
-  [
+  "workflowPresets": [
     {
       "name": "workflow",
       "description": "run test",
       "displayName": "testing",
-      "steps": 
-      [
+      "steps": [
         {
           "type": "configure",
           "name": "Test"
