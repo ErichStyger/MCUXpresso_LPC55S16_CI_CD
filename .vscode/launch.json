@@ -131,7 +131,7 @@
         },
         {
             "type": "mcuxpresso-debug",
-            "name": "Debug",
+            "name": "Debug with MCUXpresso",
             "request": "launch",
             "cwd": "${workspaceFolder}",
             "executable": {
