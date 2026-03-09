@@ -77,7 +77,7 @@
       "type": "cmake",
       "label": "CMake: build",
       "command": "build",
-      "preset": "app-debug",
+      "preset": "app-test",
       "targets": [
         "all"
       ],
@@ -94,7 +94,7 @@
       "type": "cmake",
       "label": "CMake: clean",
       "command": "clean",
-      "preset": "app-debug",
+      "preset": "app-test",
       "problemMatcher": [
         "$gcc"
       ],
@@ -104,7 +104,7 @@
       "type": "cmake",
       "label": "CMake: configure",
       "command": "configure",
-      "preset": "Debug",
+      "preset": "Test",
       "problemMatcher": [
         "$gcc"
       ],
