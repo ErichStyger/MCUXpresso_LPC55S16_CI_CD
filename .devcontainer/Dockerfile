@@ -71,13 +71,14 @@ RUN \
     && apt install -yf
 
 # Install LinkServer software. Linkserver download paths, e.g.
-# - Windows: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.exe
-# - Linux: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.x86_64.deb.bin
-# - MacOS Arch64: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.aarch64.pkg
-# - MacOS: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.7.33.x86_64.pkg
+# - Windows: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.12.83.exe
+# - Linux: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.12.83.x86_64.deb.bin
+# - MacOS Arch64: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.12.83.aarch64.pkg
+# - MacOS: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.12.83.x86_64.pkg
+# - ARM64 Linux: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_25.12.83.aarch64.deb.bin
 # It gets installed into /usr/local/LinkServer_<version>
 # See https://mcuoneclipse.com/2025/08/11/streamlining-linkserver-installation-for-ci-cd/
-ARG LINKSERVER_VERSION="25.9.134"
+ARG LINKSERVER_VERSION="25.12.83"
 
 # install dependencies: need to start udevd manually, otherwise getting "Failed to send reload request: No such file or directory" during LinkServer installation
 RUN \
