@@ -69,19 +69,20 @@ RUN \
 # Linux: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.12.21.x86_64.deb.bin
 # MacOS Arch64: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.12.21.aarch64.pkg
 # MacOS: https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.12.21.x86_64.pkg
+# new version, see https://mcuoneclipse.com/2025/08/11/streamlining-linkserver-installation-for-ci-cd/
+# which version to use:
+ARG LINKSERVER_VERSION="25.7.33"
+
+# install dependencies: need to start udev manually, otherwise getting "Failed to send reload request: No such file or directory" during LinkServer installation
 RUN \
     apt-get install -y whiptail libusb-1.0-0-dev dfu-util usbutils hwdata \
-    cd /apps \
-    && curl -O https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_24.12.21.x86_64.deb.bin \
-    && chmod a+x LinkServer_24.12.21.x86_64.deb.bin \
-    && ./LinkServer_24.12.21.x86_64.deb.bin --noexec --target linkserver \
-    && cd linkserver \
-    && dpkg --unpack LinkServer_24.12.21.x86_64.deb \
-    && rm /var/lib/dpkg/info/linkserver_24.12.21.postinst \
-    && dpkg --configure linkserver_24.12.21 \
-    && dpkg --unpack LPCScrypt.deb \
-    && rm /var/lib/dpkg/info/lpcscrypt.postinst \
-    && apt-get install -yf
+    && /lib/systemd/systemd-udevd --daemon
+
+# install LinkServer software
+RUN \
+    curl -O https://www.nxp.com/lgfiles/updates/mcuxpresso/LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin \
+    && chmod a+x LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin \
+    && ./LinkServer_${LINKSERVER_VERSION}.x86_64.deb.bin acceptLicense skipIdeSelect
 
 # create a directory for the project
 RUN \
